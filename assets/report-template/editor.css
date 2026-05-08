@@ -29740,6 +29740,12 @@ kbd,
 pre {
   font-family: var(--font-mono);
 }
+.page {
+  overflow-wrap: anywhere;
+}
+pre {
+  white-space: pre-wrap;
+}
 :root {
   --paper: #f4f1ea;
   --paper-2: #ece7dc;
@@ -30487,6 +30493,7 @@ h3.sub::after {
   line-height: 1.7;
   color: var(--ink);
   padding-right: 16px;
+  min-width: 0;
 }
 .status {
   display: inline-flex;
@@ -30622,6 +30629,10 @@ body.editing figure.img-wrap {
 }
 body.editing figure.img-wrap:hover {
   outline-color: var(--focus);
+}
+body.editing figure.img-wrap.is-selected {
+  outline-color: var(--focus);
+  outline-style: solid;
 }
 .end-rule {
   display: flex;

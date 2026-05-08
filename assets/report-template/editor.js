@@ -685,9 +685,49 @@
     return wrap;
   }
   var IMG_SIZE_CLASSES = ["size-sm", "size-md", "size-full"];
+  var SELECTED_IMAGE_CLASS = "is-selected";
+  var SELECTED_IMAGE_SELECTOR = "figure.img-wrap." + SELECTED_IMAGE_CLASS;
   function setImgSize(figure, size) {
     figure.classList.remove(...IMG_SIZE_CLASSES);
     figure.classList.add("size-" + size);
+  }
+  function clearSelectedImages(scope = shell) {
+    scope.querySelectorAll(SELECTED_IMAGE_SELECTOR).forEach((figure) => {
+      figure.classList.remove(SELECTED_IMAGE_CLASS);
+      if (figure.getAttribute("tabindex") === "-1") figure.removeAttribute("tabindex");
+    });
+  }
+  function selectImageFigure(figure) {
+    if (!figure || !figure.matches("figure.img-wrap")) return;
+    clearSelectedImages();
+    figure.classList.add(SELECTED_IMAGE_CLASS);
+    figure.setAttribute("tabindex", "-1");
+    const sel = document.getSelection();
+    if (sel) sel.removeAllRanges();
+    if (figure.focus) figure.focus({ preventScroll: true });
+  }
+  function focusEditableSibling(figure) {
+    const next = figure.nextElementSibling;
+    const prev = figure.previousElementSibling;
+    let target = null;
+    if (next && next.getAttribute("contenteditable") === "true") {
+      target = next;
+    } else if (prev && prev.getAttribute("contenteditable") === "true") {
+      target = prev;
+    }
+    if (!target) return;
+    setCollapsedSelection((r) => {
+      r.selectNodeContents(target);
+      r.collapse(target === next);
+    });
+    if (target.focus) target.focus();
+  }
+  function deleteSelectedImage() {
+    const figure = shell.querySelector(SELECTED_IMAGE_SELECTOR);
+    if (!figure) return false;
+    focusEditableSibling(figure);
+    figure.remove();
+    return true;
   }
   function addImageTools(figure) {
     if (figure.querySelector(":scope > .item-tools")) return;
@@ -701,7 +741,10 @@
       if (!button || !tools.contains(button)) return;
       const size = button.getAttribute("data-size");
       if (size) setImgSize(figure, size);
-      else if (button.getAttribute("data-act") === "img-del") figure.remove();
+      else if (button.getAttribute("data-act") === "img-del") {
+        clearSelectedImages();
+        figure.remove();
+      }
     });
   }
   async function insertImageFromFile(file) {
@@ -1284,6 +1327,7 @@
       btnToggle.setAttribute("aria-pressed", "true");
       elStatus.textContent = "\u7F16\u8F91\u4E2D";
     } else {
+      clearSelectedImages();
       markEditableLeaves(false);
       safeAutoPaginate();
       try {
@@ -1368,7 +1412,21 @@
     document.execCommand("insertText", false, "\u2022 ");
     return true;
   }
+  function isEmptyParagraph(el) {
+    return el && el.tagName === "P" && (el.childNodes.length === 0 || el.textContent.trim() === "" && !el.querySelector("img, figure"));
+  }
   function setupShellEvents() {
+    shell.addEventListener("pointerdown", (e) => {
+      if (!editing) return;
+      const target = e.target instanceof Element ? e.target : null;
+      if (!target) return;
+      const figure = target.closest("figure.img-wrap");
+      if (figure && shell.contains(figure)) {
+        selectImageFigure(figure);
+        return;
+      }
+      clearSelectedImages();
+    });
     shell.addEventListener("paste", (e) => {
       if (!editing) return;
       const dt = e.clipboardData || window.clipboardData;
@@ -1394,8 +1452,13 @@
     });
     shell.addEventListener("keydown", (e) => {
       if (!editing) return;
+      const active = document.activeElement;
+      const activeEditable = active && active.closest && active.closest('[contenteditable="true"]');
+      if (!activeEditable && (e.key === "Backspace" || e.key === "Delete") && deleteSelectedImage()) {
+        e.preventDefault();
+        return;
+      }
       if (e.key === "Enter" || e.key === " ") {
-        const active = document.activeElement;
         const status = active && active.matches && active.matches(".action .status");
         const attackCell = active && active.matches && active.matches(".attack-col .c");
         if (status || attackCell) {
@@ -1407,8 +1470,8 @@
       }
       if (e.key === " ") maybeBulletAutoformat();
       if (e.key === "Enter") {
-        const active = document.activeElement;
-        const inProse = active && active.matches && active.matches(MULTILINE_SELECTOR);
+        const active2 = document.activeElement;
+        const inProse = active2 && active2.matches && active2.matches(MULTILINE_SELECTOR);
         if (!inProse) {
           e.preventDefault();
           return;
@@ -1438,11 +1501,11 @@
         if (!prev) return;
         if (prev.classList && prev.classList.contains("img-wrap")) {
           e.preventDefault();
-          prev.remove();
+          if (isEmptyParagraph(host)) host.remove();
+          selectImageFigure(prev);
           return;
         }
-        const hostEmpty = host.childNodes.length === 0 || host.textContent.trim() === "" && !host.querySelector("img, figure");
-        if (hostEmpty && host.tagName === "P" && prev.getAttribute("contenteditable") === "true") {
+        if (isEmptyParagraph(host) && prev.getAttribute("contenteditable") === "true") {
           e.preventDefault();
           host.remove();
           const nr = document.createRange();
@@ -1581,6 +1644,7 @@
   function stripInjectedControls(root, includeBanner) {
     const sel = REWIRED_CONTROLS_SEL + (includeBanner ? ",.draft-banner" : "");
     root.querySelectorAll(sel).forEach((n) => n.remove());
+    clearSelectedImages(root);
     root.querySelectorAll(".page.overflow").forEach((n) => n.classList.remove("overflow"));
     root.querySelectorAll(".chain.dynamic").forEach((n) => {
       const cols = n.querySelectorAll(".step").length;
