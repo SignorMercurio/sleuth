@@ -19,6 +19,12 @@ title-en :: Security Incident Response Report
 | 服务形式 | 远程响应 | 非现场交付 |
 :::
 
+::: rev
+| 日期 | 版本 | 描述 | 作者 |
+| {date:slash-pad} | 1.0 | 新建 — 首次响应窗口的分析结论。 | 凌星 |
+| — | — | 待客户评审与确认。 | — |
+:::
+
 ## 事件概述 / Event Overview
 
 ### 排查对象信息 / Assets in Scope
