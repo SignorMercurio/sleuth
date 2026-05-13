@@ -10,7 +10,7 @@ Reports and supporting materials are generated in Simplified Chinese by design (
 - **12 attack-type playbooks** + **6 tradecraft guides** + **MITRE ATT&CK mapping**
 - **Parallel command orchestration** — independent remote commands are dispatched in a single round to cut investigation time
 - **Strictly read-only** — only `cat / grep / find / ls / ps / netstat / lsof` and similar read-only commands are allowed; evidence integrity is preserved
-- **Markdown incident report** — each incident writes a filled `report.md` from the bundled Dossier-style template
+- **Markdown incident report** — each incident writes a named `IR-....md` from the bundled Dossier-style template
 
 ## Prerequisites
 
@@ -83,12 +83,12 @@ Files under `references/` are loaded on demand — the skill reads only the play
 
 ## Output examples
 
-The skill writes a directory into the cwd:
+The skill writes a Markdown report into the cwd:
 
-- `IR-20260417-web01-webshell-123456/` — alarm-driven, Event ID `123456`
-- `IR-20260417-db-prod-rce/` — free-form mode
+- `IR-20260417-web01-webshell-123456.md` — alarm-driven, Event ID `123456`
+- `IR-20260417-db-prod-rce.md` — free-form mode
 
-Each directory contains a filled `report.md` copied from `assets/report.md`.
+Each report file is copied from `assets/report.md` and then filled for the specific incident.
 
 The full event-type slug table (`webshell` / `miner` / `revshell` / `brute` / `abnlogin` / `privesc` / `exfil` / `ransom` / `sqli` / `rce` / `backdoor` / `unknown`) is documented in `SKILL.md` §7.1.
 

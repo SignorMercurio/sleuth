@@ -260,12 +260,12 @@ rpm -Va 2>/dev/null || dpkg -V 2>/dev/null; cat /etc/ld.so.preload 2>/dev/null; 
 
 ## 步骤 7：生成 Markdown 应急响应报告
 
-报告模板位于 `<skill_root>/assets/report.md`，来源于 `dossier/report.md`。每份报告只需要在输出目录中生成一份填好的 `report.md`。
+报告模板位于 `<skill_root>/assets/report.md`，来源于 `dossier/report.md`。每份报告直接在当前工作目录生成一个命名后的 Markdown 文件。
 
-### 7.1 输出目录命名规范
+### 7.1 输出文件命名规范
 
 ```
-IR-{YYYYMMDD}-{hostname}-{event_type}[-{event_id}]
+IR-{YYYYMMDD}-{hostname}-{event_type}[-{event_id}].md
 ```
 
 **字段说明**:
@@ -293,19 +293,19 @@ IR-{YYYYMMDD}-{hostname}-{event_type}[-{event_id}]
 | 其他/未分类 | `unknown` |
 
 **示例**:
-- 模式一：`IR-20260417-web01-webshell-123456/`
-- 模式二：`IR-20260417-db-prod-rce/`
+- 模式一：`IR-20260417-web01-webshell-123456.md`
+- 模式二：`IR-20260417-db-prod-rce.md`
 
 ### 7.2 生成步骤
 
-1. **确定输出路径**：调用 Skill 时的当前工作目录下，新建 `IR-…/` 目录
-2. **拷贝模板**：将 `<skill_root>/assets/report.md` 复制为 `IR-…/report.md`
-3. **填充报告副本**：只编辑 `IR-…/report.md`，把模板占位说明替换为本次事件的实际数据
-4. **只交付 Markdown**：不要创建 `index.html`、CSS/JS、字体资源或 dev server；本 skill 的交付物是 `report.md`
+1. **确定输出文件**：调用 Skill 时的当前工作目录下，使用 §7.1 的命名规范确定 `IR-….md`
+2. **拷贝模板**：将 `<skill_root>/assets/report.md` 复制为该输出文件
+3. **填充报告副本**：只编辑该输出文件，把模板占位说明替换为本次事件的实际数据
+4. **只交付 Markdown**：不要创建报告目录、`index.html`、CSS/JS、字体资源或 dev server；本 skill 的交付物是一个 `IR-….md` 文件
 
 ### 7.3 模板结构
 
-生成时先 Read `assets/report.md`，再编辑输出目录中的 `report.md`。保留 Markdown 标题、frontmatter 和 `:::` 指令块，只替换占位内容。
+生成时先 Read `assets/report.md`，再编辑输出文件。保留 Markdown 标题、frontmatter 和 `:::` 指令块，只替换占位内容。
 
 关键结构：
 - **Frontmatter**：填写 `date`、`sir-seq`、`version`、`client`
@@ -338,7 +338,7 @@ IR-{YYYYMMDD}-{hostname}-{event_type}[-{event_id}]
 | SAS 主机遥测（环境特有坑） | `references/sas_sls_host_telemetry.md` | 用 SAS SLS 补主机网络外联/进程启动/登录/告警覆盖时间线时加载：时间戳 CAST、`proc_start_time` 过滤、`w3wp.exe` 子进程解读、覆盖时间窗的报告写法 |
 | DNSLog / OOB 域名请求 | `references/oob_dnslog_investigation.md` | 调查 dnslog.cn、interact.sh、oast、burpcollaborator 等带外回连域名告警时加载 |
 | ATT&CK 框架 | `references/attack_framework.md` | 步骤5：攻击链映射时加载 |
-| Markdown 报告模板 | `assets/report.md` | 步骤7：复制到 `IR-…/report.md` 后原地编辑 |
+| Markdown 报告模板 | `assets/report.md` | 步骤7：复制为 `IR-….md` 后原地编辑 |
 
 ---
 
