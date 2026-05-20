@@ -1,10 +1,5 @@
 # Web Shell 后门调查指南
 
-## 告警特征
-- 检测到可疑的脚本文件（.php, .jsp, .asp, .aspx 等）
-- Web 目录下出现异常文件
-- 检测到 Web Shell 通信行为
-
 ## 调查重点
 
 ### 1. 确认 Web Shell 文件
@@ -71,9 +66,9 @@ pstree -ap | grep -A 10 "nginx\|apache\|httpd"
 - WebShell 文件当前存在不等于当前可利用：检查 nginx/PHP 配置（例如 `location ~ \.php$ { return 403; }`、仅放行 `/index.php`）并实际核对访问日志状态码。
 - 发现一个 WebShell 时，扩展排查同目录同时间段批量落地的文件、压缩包和数据库探测脚本（常见：`shell*.php`、`s.php`、`mysql.php`、`db_*.php`、`dump*.php`、`rd*.php`、`rde*.php`、`arc.tar.gz`），并检查硬编码数据库凭据与数据导出风险。
 
-## 云端日志补充（通过 `sls` skill）
+## 云端日志补充
 
-WAF 日志里才是攻击者真实 IP（不是 SLB/Nginx 后的内网 IP），且主机 `access.log` 常被清除/轮转丢失。**通过 `Skill` 工具调用 `sls` skill**：`-product waf` 按 `host` + `request_path`/`request_uri`（WebShell 路径、上传接口）+ `real_client_ip` + `final_action`/`final_rule_id` + `time` 过滤，定位上传请求、利用请求和真实攻击 IP（解读时注意 `waf_test`/`final_action`「测试模式 ≠ 实际拦截」）；再用 `-product sas` topic `aegis-log-process`（按 web 用户/`instance_id` 过滤）还原 WebShell 拉起的子进程链。需要 UID（自由调查模式没有则向用户索取）。详见 `references/cloud_log_queries.md`。
+主机 `access.log` 常被清除/轮转，WAF 里才是攻击者真实 IP——按 `references/cloud_log_queries.md`「Web 类攻击」行用 `sls` skill 查 WAF（定位上传/利用请求与真实 IP）+ SAS `aegis-log-process` 还原 WebShell 子进程链。
 
 ## 关键 IoC
 - Web Shell 文件路径和哈希

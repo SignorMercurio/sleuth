@@ -1,10 +1,5 @@
 # 反弹 Shell 调查指南
 
-## 告警特征
-- 检测到反向连接行为
-- 检测到 bash/sh 进程建立外部连接
-- 检测到 nc、socat 等工具的可疑使用
-
 ## 调查重点
 
 ### 1. 确认反弹 Shell 进程
@@ -60,14 +55,9 @@ grep -r "/dev/tcp" /tmp /var/tmp /dev/shm 2>/dev/null
 grep -r "nc.*-e" / 2>/dev/null | head -n 20
 ```
 
-## 云端日志补充（通过 `sls` skill）
+## 云端日志补充
 
-**通过 `Skill` 工具调用 `sls` skill** `-product sas`：
-- topic `aegis-log-network` 按 `instance_id` + `dst_ip`/`dst_port` + `proc_name`（`bash`/`sh`/`nc`/`socat`/`python`/`perl` 等）过滤，定位反弹连接和发起进程。
-- topic `aegis-log-process` 按 `instance_id` + `parent_proc_name`/`pcmdline` 过滤，还原 shell 进程的父进程（确认是 Web RCE 触发还是登录后手动执行）。
-- 域名回连/带 DGA 的配 topic `aegis-log-dns-query`。
-
-需要 UID（自由调查模式没有则向用户索取）。详见 `references/cloud_log_queries.md`。
+按 `references/cloud_log_queries.md`「反弹 Shell / C2 外联」行用 `sls` skill 查 SAS（`aegis-log-network` 反弹连接与发起进程、`aegis-log-process` 还原父进程；域名回连配 `aegis-log-dns-query`）。
 
 ## 关键 IoC
 - 反弹 Shell 目标 IP 和端口
