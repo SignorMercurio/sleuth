@@ -1,10 +1,5 @@
 # 数据外传调查指南
 
-## 告警特征
-- 检测到大量数据上传
-- 检测到数据传输到外部服务
-- 检测到敏感数据访问
-
 ## 调查重点
 
 ### 1. 确认外传通道
@@ -64,13 +59,9 @@ ps aux | grep -E "scp|rsync|curl|wget|nc"
 cat ~/.bash_history | grep -E "scp|rsync|curl.*-T|wget.*--post"
 ```
 
-## 云端日志补充（通过 `sls` skill）
+## 云端日志补充
 
-**通过 `Skill` 工具调用 `sls` skill**：
-- `-product sas` topic `aegis-log-network` 按 `instance_id` + `dst_ip`/`dst_port` + `proc_name`/`cmdline` 过滤，提取外联目标和发起进程（云存储地址、异常大流量目标）；DNS 隧道配 topic `aegis-log-dns-query`。
-- 若外传走 Web 通道（大响应体、下载/导出接口），再用 `-product waf` 按 `host` + `request_path` + `response_body_length`/`status` 查。
-
-需要 UID（自由调查模式没有则向用户索取）。详见 `references/cloud_log_queries.md`。
+按 `references/cloud_log_queries.md`「C2 外联 / 数据外传」行用 `sls` skill 查 SAS `aegis-log-network`（外联目标与发起进程，DNS 隧道配 `aegis-log-dns-query`）；外传走 Web 通道（大响应体、下载/导出接口）再查 WAF。
 
 ## 关键 IoC
 - 外传目标 IP/域名

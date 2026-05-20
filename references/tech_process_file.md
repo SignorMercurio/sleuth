@@ -121,7 +121,7 @@ find /var/www -type f -amin -60 -ls 2>/dev/null
 
 - **创建时间**：文件首次出现在磁盘上的时间
 - **修改时间**：文件内容最后被修改的时间
-- **访问时间**：文件状态最后改变的时间
+- **访问时间**：文件最后被读取/访问的时间
 
 ```powershell
 Get-Item <文件路径> | Format-List *Time*
@@ -131,22 +131,4 @@ Get-Item <文件路径> | Format-List *Time*
 
 ## 基于已知恶意文件时间搜索
 
-**核心思路**：攻击者通常会在短时间内植入多个恶意文件。
-
-**步骤**：
-1. 确定已知恶意文件的时间（通常取 mtime 或 ctime）
-2. 在该时间前后一个小时内搜索所有新增/修改的文件
-3. 人工分析这些文件是否可疑
-
-```bash
-# 假设已知恶意文件 /tmp/malware 的时间为 2024-05-27 18:35:07
-stat /tmp/malware
-
-# 搜索 18:00 - 19:00 之间修改的所有文件
-find / -type f -newermt "2024-05-27 18:00" ! -newermt "2024-05-27 19:00" \
-  -ls 2>/dev/null | grep -v "/proc\|/sys" > suspicious_files.txt
-
-# 重点关注的目录
-find /tmp /var/tmp /dev/shm /var/www /opt -type f \
-  -newermt "2024-05-27 18:00" ! -newermt "2024-05-27 19:00" -ls 2>/dev/null
-```
+攻击者通常在短时间内植入多个文件。确定已知恶意文件的时间（取 mtime 或 ctime）后，用上面「应用场景 2」的 `-newermt` 时间窗命令搜索前后一小时内新增/修改的文件，重点看 `/tmp /var/tmp /dev/shm /var/www /opt`，再人工研判。

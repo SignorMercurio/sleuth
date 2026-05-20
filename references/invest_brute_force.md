@@ -1,10 +1,5 @@
 # 暴力破解调查指南
 
-## 告警特征
-- 检测到大量登录失败尝试
-- 短时间内多次密码错误
-- 来自单一 IP 的密码猜测
-
 ## 调查重点
 
 ### 1. 确认攻击源
@@ -53,13 +48,9 @@ fail2ban-client status sshd
 iptables -L -n -v | grep "<攻击IP>"
 ```
 
-## 云端日志补充（通过 `sls` skill）
+## 云端日志补充
 
-主机 `lastb`/`auth.log` 可能被清除或不含 RDP/数据库登录。**通过 `Skill` 工具调用 `sls` skill** `-product sas`：
-- topic `aegis-log-login` 按 `instance_id`/`src_ip`/`host_ip` 过滤，统计失败/成功登录，找暴破源 IP 和「失败→成功」的转折点（确认是否破解成功）。
-- topic `sas-security-log` 查云安全中心暴力破解/异常登录告警。
-
-需要 UID（自由调查模式没有则向用户索取）。详见 `references/cloud_log_queries.md`。
+主机 `lastb`/`auth.log` 可能被清除或不含 RDP/数据库登录——按 `references/cloud_log_queries.md`「异常登录 / 暴力破解」行用 `sls` skill 查 SAS（`aegis-log-login` 找暴破源 IP 和「失败→成功」转折点、`sas-security-log` 查告警）。
 
 ## 关键 IoC
 - 攻击源 IP 地址

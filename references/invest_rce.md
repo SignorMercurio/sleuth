@@ -1,10 +1,5 @@
 # 远程代码执行 (RCE) 调查指南
 
-## 告警特征
-- 检测到远程代码执行攻击
-- 检测到命令注入
-- 检测到反序列化漏洞利用
-
 ## 调查重点
 
 ### 1. 确认漏洞利用
@@ -49,13 +44,9 @@ find /tmp /var/tmp -type f -newermt "<攻击时间>" -ls
 lsof -i -P -n | grep www-data
 ```
 
-## 云端日志补充（通过 `sls` skill）
+## 云端日志补充
 
-**通过 `Skill` 工具调用 `sls` skill**：
-- `-product waf` 按 `host` + `request_path`/`request_uri` + `real_client_ip` + `time` 过滤，定位利用请求和真实攻击 IP（注意 `waf_test`/`final_action`「测试模式 ≠ 实际拦截」）。
-- `-product sas` topic `aegis-log-process` 按 `instance_id` + `parent_proc_name`/`pcmdline`（含 web 进程名如 `java`/`php-fpm`/`nginx`/`w3wp.exe`）过滤，还原命令执行链和父进程；`aegis-log-network` 查 RCE 后续的外联/下载。
-
-需要 UID（自由调查模式没有则向用户索取）。详见 `references/cloud_log_queries.md`。
+按 `references/cloud_log_queries.md`「Web 类攻击」+「恶意进程」行用 `sls` skill 交叉验证：WAF 定位利用请求与真实 IP，SAS `aegis-log-process` 还原命令执行链/父进程（web 进程名如 `java`/`php-fpm`/`w3wp.exe`）、`aegis-log-network` 查后续外联。
 
 ## 关键 IoC
 - 攻击源 IP
