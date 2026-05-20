@@ -7,8 +7,6 @@ client: 客户名称
 
 <!-- 写作提示：方括号内容必须替换；没有证据时写“未观察到”或“无法确认”，不要补猜测。 -->
 
-<!-- cover-hero 与 cover-meta 保持模板原样，禁止修改：cover-hero 为固定品牌信息，cover-meta 字段由 frontmatter 自动渲染（含 [ 响应负责人 ] 占位，不替换）。 -->
-
 ::: cover-hero
 sev :: 严重等级 · 高危
 title :: 安全事件\n应急响应报告
@@ -19,7 +17,7 @@ title-en :: Security Incident Response Report
 | k | v | sub |
 | 服务编号 | SIR-{date} | {sir-seq} · 首次交付 |
 | 发布日期 | {date:slash-pad} | 版本 {version} |
-| 负责人 | [ 响应负责人 ] | 阿里云 · 应急响应工程师 |
+| 负责人 | 凌星 | 阿里云 · 应急响应工程师 |
 | 服务形式 | 远程响应 | 非现场交付 |
 :::
 
@@ -27,7 +25,7 @@ title-en :: Security Incident Response Report
 
 ::: rev
 | 日期 | 版本 | 描述 | 作者 |
-| {date:slash-pad} | 1.0 | 新建：首次响应窗口的分析结论。 | [ 响应负责人 ] |
+| {date:slash-pad} | 1.0 | 新建：首次响应窗口的分析结论。 | 凌星 |
 | — | — | 待客户评审与确认。 | — |
 :::
 
