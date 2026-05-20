@@ -207,7 +207,8 @@ mcp__siren__get_alarm_detail(uid=<UID>, event_id=<Event ID>)
 
 关键结构：
 - **Frontmatter**：填写 `date`、`sir-seq`、`version`、`client`
-- **封面块**：填写 `::: cover-hero` 与 `::: cover-meta`
+- **封面块**：`::: cover-hero` 与 `::: cover-meta` 保持模板原样，禁止修改——cover-hero 是固定品牌信息，cover-meta 字段由 frontmatter 自动渲染；只需填好 frontmatter
+- **修订记录**：`::: rev` 表「描述」列每条不超过 20 字
 - **事件概述**：填写 `::: asset`、`::: timeline`、`::: callout`，以及事件定性、影响范围、处置状态、残留风险
 - **技术分析**：填写排查过程、样本分析、入侵路径和 `::: attack`；只写支撑结论的证据链，仅给有证据支撑的 ATT&CK 技术加 `!`
 - **响应行动与总结**：用 `[x]` / `[/]` / `[ ]` 区分已完成、进行中、未开始，只保留客户下一步必须知道的动作和与本次事件直接相关的参考资料
