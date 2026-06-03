@@ -20,7 +20,7 @@ lsof -p <PID>
 netstat -antup | grep <PID>
 ss -antp | grep <PID>
 
-# 查询 IP 归属地（使用 WebSearch）
+# 查询 IP 归属地（使用联网检索工具）
 ```
 
 ### 3. 追溯触发来源

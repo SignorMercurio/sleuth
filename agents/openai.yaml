@@ -1,0 +1,14 @@
+interface:
+  display_name: "SLEUTH"
+  short_description: "Security incident response over SIREN with Chinese Markdown reports."
+  brand_color: "#0F766E"
+  default_prompt: "Use SLEUTH to investigate this security incident and generate a Chinese Markdown IR report."
+
+policy:
+  allow_implicit_invocation: true
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "siren"
+      description: "SIREN MCP server exposing client listing, read-only remote command execution, and alarm detail lookup."

@@ -21,7 +21,7 @@ vnstat -d
 # 提取外部 IP 和端口
 netstat -antup | awk '{print $5}' | grep -v "127.0.0.1\|0.0.0.0" | sort -u
 
-# 查询目标 IP（使用 WebSearch）
+# 查询目标 IP（使用联网检索工具）
 
 # 检查是否连接到云存储服务
 netstat -antup | grep -E "amazonaws|aliyun|qcloud|s3"

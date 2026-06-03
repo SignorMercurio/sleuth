@@ -10,7 +10,7 @@ Do not overstate it as host compromise unless there is follow-on evidence: shell
 
 ## SLS workflow
 
-> **执行查询走 `sls` skill**（通过 `Skill` 工具调用，或 `Read ~/.agents/skills/sls/SKILL.md`）；先看 `references/cloud_log_queries.md` 决定 `-product` / topic。下面的命令是给 `sls` skill 当模板的查询逻辑，`-c` 配置路径等调用细节由 `sls` skill 自行管理。
+> **执行查询走 `sls` skill**（调用已安装的 skill，或读取已安装的 `sls` skill 指令）；先看 `references/cloud_log_queries.md` 决定 `-product` / topic。下面的命令是给 `sls` skill 当模板的查询逻辑，`-c` 配置路径等调用细节由 `sls` skill 自行管理。
 
 1. Find the exact alert records in `sas-security-log`:
 

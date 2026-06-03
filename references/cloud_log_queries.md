@@ -1,6 +1,6 @@
 # 云端日志查询路由（WAF / 云安全中心 SLS）—— 通过 `sls` skill
 
-主机侧日志（nginx/apache `access.log`、`auth.log`、`journalctl` 等）经常被攻击者清除、被轮转丢掉，或根本定位不到。需要**交叉验证攻击者真实 IP、攻击时间窗、命中的 WAF 规则、进程启动链、登录来源**时，**通过 `Skill` 工具调用 `sls` skill** 查询阿里云云端日志（也可直接 `Read ~/.agents/skills/sls/SKILL.md` 按其用法跑命令）。
+主机侧日志（nginx/apache `access.log`、`auth.log`、`journalctl` 等）经常被攻击者清除、被轮转丢掉，或根本定位不到。需要**交叉验证攻击者真实 IP、攻击时间窗、命中的 WAF 规则、进程启动链、登录来源**时，**调用已安装的 `sls` skill** 查询阿里云云端日志（也可直接读取已安装的 `sls` skill 指令）。
 
 ## 前提：UID
 

@@ -1,6 +1,6 @@
 # SLEUTH
 
-A Claude Code skill for security incident response. Runs read-only forensic commands on compromised hosts through the SIREN MCP server, reconstructs attack chains, and produces incident reports mapped to MITRE ATT&CK.
+An agent skill for security incident response in Claude Code and Codex. It runs read-only forensic commands on compromised hosts through the SIREN MCP server, reconstructs attack chains, and produces incident reports mapped to MITRE ATT&CK.
 
 Part of a family of named security tools: **SIREN** (remote forensic runtime), **TALON** (threat hunting), **SLEUTH** (this skill — incident investigator), **DOSSIER** (report platform).
 
@@ -16,12 +16,31 @@ Reports and supporting materials are generated in Simplified Chinese by design (
 
 ## Prerequisites
 
-- **Claude Code** — latest stable
-- **SIREN MCP server** — the skill depends on the `mcp__siren__ls`, `mcp__siren__run`, and `mcp__siren__get_alarm_detail` tools for remote command execution and alarm detail fetching. Configure SIREN as an MCP server in Claude Code before using this skill.
+- **Claude Code or Codex** — latest stable. The skill follows the open agent skills format (`SKILL.md` with optional `references/`, `assets/`, and `agents/openai.yaml` metadata).
+- **SIREN MCP server** — the skill depends on SIREN list-client, remote-run, and alarm-detail tools, usually exposed as `mcp__siren__ls`, `mcp__siren__run`, and `mcp__siren__get_alarm_detail`. Configure SIREN as an MCP server in the client you use before running the skill.
+- **Optional `sls` skill** — used only when cloud-side WAF / SAS / ActionTrail logs are needed for cross-validation.
 
 ## Install
 
-### Option 1 — `npx skills` (recommended)
+### Codex — user-scope install
+
+Codex discovers user skills from `$HOME/.agents/skills`. For local use:
+
+```bash
+git clone https://github.com/SignorMercurio/sleuth.git \
+  ~/.agents/skills/sleuth
+```
+
+For active development, symlink this checkout instead of cloning a second copy:
+
+```bash
+mkdir -p ~/.agents/skills
+ln -s /path/to/sleuth ~/.agents/skills/sleuth
+```
+
+Codex also scans repository-scoped skills under `.agents/skills` from the current working directory up to the repo root.
+
+### Claude Code — `npx skills`
 
 Uses the community CLI [vercel-labs/skills](https://github.com/vercel-labs/skills):
 
@@ -29,7 +48,7 @@ Uses the community CLI [vercel-labs/skills](https://github.com/vercel-labs/skill
 npx skills add SignorMercurio/sleuth
 ```
 
-### Option 2 — `npx openskills`
+### Claude Code — `npx openskills`
 
 Uses [openskills](https://github.com/numman-ali/openskills), installing at user scope:
 
@@ -37,21 +56,21 @@ Uses [openskills](https://github.com/numman-ali/openskills), installing at user 
 npx openskills install SignorMercurio/sleuth --global
 ```
 
-### Option 3 — `git clone`
+### Manual copy or rsync
+
+For Claude Code, copy to `~/.claude/skills/sleuth`. For Codex, copy to `~/.agents/skills/sleuth` or a repo-scoped `.agents/skills/sleuth`.
 
 ```bash
-git clone https://github.com/SignorMercurio/sleuth.git \
-  ~/.claude/skills/sleuth
-```
+# Codex
+rsync -avz --exclude '.git' ./sleuth/ \
+  <host>:~/.agents/skills/sleuth/
 
-### Option 4 — `rsync` (for internal servers or air-gapped environments)
-
-```bash
+# Claude Code
 rsync -avz --exclude '.git' ./sleuth/ \
   <host>:~/.claude/skills/sleuth/
 ```
 
-After install, run `/skills` inside Claude Code to confirm the skill is loaded. It activates automatically when the context matches and can also be invoked explicitly.
+After install, run `/skills` in Claude Code or mention `$sleuth` / use the skills selector in Codex to confirm the skill is loaded. It activates automatically when the context matches and can also be invoked explicitly.
 
 ## Usage
 
@@ -72,6 +91,8 @@ When there is no alarm ID, provide the Client ID plus a short description of the
 
 ```
 .
+├── agents/
+│   └── openai.yaml                         # Codex app metadata and SIREN MCP dependency hint
 ├── SKILL.md                                # Skill definition and workflow
 ├── assets/
 │   └── report.md                           # Markdown report template copied from dossier/report.md
