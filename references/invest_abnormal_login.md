@@ -22,7 +22,7 @@ grep "Accepted" /var/log/auth.log | tail -n 50
 last | grep "<用户名>"
 grep "Accepted.*<用户名>" /var/log/auth.log
 
-# 查询 IP 归属地（使用 WebSearch）
+# 查询 IP 归属地（使用联网检索工具）
 
 # 检查是否为代理或 VPN
 ```
