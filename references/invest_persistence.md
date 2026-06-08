@@ -60,6 +60,10 @@ find /home /root -name "authorized_keys" -exec cat {} \;
 cat /etc/ssh/sshd_config | grep -v "^#"
 ```
 
+## 云端日志补充
+
+主机侧持久化（cron / systemd / rc.local / profile / SSH key）靠上面的命令；若怀疑**云侧重入通道**（云助手 RunCommand 定期下发、AK 泄露后反复操作）——按 `references/cloud_log_queries.md`「AK 泄露 / 云助手滥用」行用 `sls` skill 查 ActionTrail 的 `RunCommand`/`CreateCommand`，并核对主机 `/var/log/aliyun/assist/` 任务记录，详见 `references/tech_cloud.md`。
+
 ## 关键 IoC
 - 持久化文件路径
 - 定时任务配置

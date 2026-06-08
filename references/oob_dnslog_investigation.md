@@ -15,7 +15,7 @@ Do not overstate it as host compromise unless there is follow-on evidence: shell
 1. Find the exact alert records in `sas-security-log`:
 
 ```bash
-/usr/local/bin/sls -c /root/config/config.yaml -uid <UID> -product sas \
+sls -uid <UID> -product sas \
   -query '__topic__: sas-security-log AND <domain> | SELECT from_unixtime(CAST(start_time AS bigint)) AS ts, suspicious_event_id, name, level, status, instance_id, intranet_ip, uuid, detail ORDER BY start_time ASC LIMIT 20' \
   -from '<FROM>' -to '<TO>'
 ```
@@ -23,7 +23,7 @@ Do not overstate it as host compromise unless there is follow-on evidence: shell
 2. Confirm the raw DNS event in `aegis-log-dns-query` and extract process context:
 
 ```bash
-/usr/local/bin/sls -c /root/config/config.yaml -uid <UID> -product sas \
+sls -uid <UID> -product sas \
   -query '__topic__: aegis-log-dns-query AND (<domain> OR <lowercase-domain>) | SELECT * LIMIT 5' \
   -from '<FROM>' -to '<TO>'
 ```
@@ -33,7 +33,7 @@ Useful fields often include `domain`, `host_ip`, `instance_id`, `uuid`, `pid`, `
 3. Check whether the same domain or OOB root appears repeatedly:
 
 ```bash
-/usr/local/bin/sls -c /root/config/config.yaml -uid <UID> -product sas \
+sls -uid <UID> -product sas \
   -query '<domain> OR <lowercase-domain> | SELECT __topic__, COUNT(*) AS cnt, MIN(__time__) AS first_unix, MAX(__time__) AS last_unix GROUP BY __topic__ LIMIT 20' \
   -from '<FROM>' -to '<TO>'
 ```
@@ -41,7 +41,7 @@ Useful fields often include `domain`, `host_ip`, `instance_id`, `uuid`, `pid`, `
 4. Hunt for follow-on execution from the flagged process/PID and common payload tools:
 
 ```bash
-/usr/local/bin/sls -c /root/config/config.yaml -uid <UID> -product sas \
+sls -uid <UID> -product sas \
   -query '__topic__: aegis-log-process AND (ppid: <PID> OR pcmdline: <proc-name-or-path> OR parent_proc_name: <proc-name> OR cmdline: <domain> OR cmdline: dnslog.cn OR cmdline: curl OR cmdline: wget OR cmdline: nc OR cmdline: bash OR cmdline: sh OR cmdline: python OR cmdline: perl OR cmdline: /tmp) | SELECT proc_start_time, pid, ppid, proc_name, proc_path, username, cmdline, parent_proc_name, pcmdline ORDER BY start_time ASC LIMIT 100' \
   -from '<FROM>' -to '<TO>'
 ```
@@ -49,7 +49,7 @@ Useful fields often include `domain`, `host_ip`, `instance_id`, `uuid`, `pid`, `
 5. Hunt for network follow-on, especially public destinations and reverse-shell ports:
 
 ```bash
-/usr/local/bin/sls -c /root/config/config.yaml -uid <UID> -product sas \
+sls -uid <UID> -product sas \
   -query '__topic__: aegis-log-network AND (instance_id: <INSTANCE_ID> OR uuid: <UUID> OR src_ip: <HOST_IP> OR host_ip: <HOST_IP>) | SELECT dst_ip, dst_port, proc_name, proc_path, COUNT(*) AS cnt, MIN(from_unixtime(CAST(start_time AS bigint))) AS first_time, MAX(from_unixtime(CAST(start_time AS bigint))) AS last_time GROUP BY dst_ip, dst_port, proc_name, proc_path ORDER BY cnt DESC LIMIT 50' \
   -from '<FROM>' -to '<TO>'
 ```
@@ -57,13 +57,13 @@ Useful fields often include `domain`, `host_ip`, `instance_id`, `uuid`, `pid`, `
 6. Check same-host alert and login context:
 
 ```bash
-/usr/local/bin/sls -c /root/config/config.yaml -uid <UID> -product sas \
+sls -uid <UID> -product sas \
   -query '__topic__: sas-security-log AND (instance_id: <INSTANCE_ID> OR uuid: <UUID> OR intranet_ip: <HOST_IP>) | SELECT from_unixtime(CAST(start_time AS bigint)) AS ts, suspicious_event_id, name, level, status, detail ORDER BY start_time ASC LIMIT 100' \
   -from '<FROM>' -to '<TO>'
 ```
 
 ```bash
-/usr/local/bin/sls -c /root/config/config.yaml -uid <UID> -product sas \
+sls -uid <UID> -product sas \
   -query '__topic__: aegis-log-login AND (instance_id: <INSTANCE_ID> OR uuid: <UUID> OR src_ip: <HOST_IP> OR host_ip: <HOST_IP>) | SELECT from_unixtime(CAST(start_time AS bigint)) AS ts, login_type, username, src_ip, src_port, dst_ip, dst_port, status, instance_id, host_ip ORDER BY start_time ASC LIMIT 100' \
   -from '<FROM>' -to '<TO>'
 ```
