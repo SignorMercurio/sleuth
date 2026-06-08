@@ -8,12 +8,10 @@
 netstat -antup | grep ESTABLISHED
 ss -antp | grep ESTABLISHED
 
-# 查看大流量连接
-iftop -n -P
-nethogs
-
-# 统计流量
-vnstat -d
+# 按连接/进程快照评估流量（一次性、非交互；不要用 iftop/nethogs/vnstat 等需交互终端的工具，会在远程执行中挂起）
+ss -tinp                # 每条连接的收发字节、重传等统计
+cat /proc/net/dev       # 各网卡累计收发字节
+netstat -s | head -n 40 # 协议级累计统计
 ```
 
 ### 2. 分析外传目标
@@ -46,8 +44,8 @@ find /tmp /var/tmp /dev/shm -type f -name "*.tar*" -o -name "*.zip" -o -name "*.
 # 查看最近访问的文件
 find / -type f -atime -1 2>/dev/null | grep -E "(database|backup|data|sql)"
 
-# 检查命令历史中的数据收集命令
-history | grep -E "tar|zip|7z|scp|rsync|curl.*upload"
+# 检查命令历史中的数据收集命令（读 history 文件，不用交互式 history 内建）
+cat ~/.bash_history | grep -E "tar|zip|7z|scp|rsync|curl.*upload"
 ```
 
 ### 5. 检查外传工具

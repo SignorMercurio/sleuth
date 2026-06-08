@@ -39,8 +39,7 @@ grep "<攻击IP>" /var/log/nginx/access.log | tail -n 50
 
 ### 4. 检查命令历史
 ```bash
-# 查看当前用户的命令历史
-history
+# 查看当前用户的命令历史（读文件，不用交互式 history 内建）
 cat ~/.bash_history
 
 # 查看所有用户的命令历史
