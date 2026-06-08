@@ -8,6 +8,8 @@
 IR-{YYYYMMDD}-{hostname}-{event_type}[-{event_id}].md
 ```
 
+> 注意区分两个前缀：**报告文件名**用 `IR-`（Incident Response，即本规范）；**报告封面「服务编号」**用 `SIR-{date}`（见 `assets/report.md` 的 `::: cover-meta`，由 frontmatter 渲染）。两者命名空间不同，不要互相套用。
+
 ## 字段说明
 
 | 字段 | 说明 |
@@ -34,6 +36,11 @@ IR-{YYYYMMDD}-{hostname}-{event_type}[-{event_id}].md
 | 远程代码执行 (RCE) | `rce` |
 | 持久化后门 | `backdoor` |
 | 其他/未分类 | `unknown` |
+
+### 专项场景对应 slug
+
+- ASP.NET / IIS WebShell（`aspnet_webshell_upload_tracing.md`）→ `webshell`
+- DNSLog / 带外域名请求（`oob_dnslog_investigation.md`）→ 确认由 RCE/注入触发用 `rce`；仅有 DNS 外带、攻击类型未定时用 `unknown`
 
 ## 示例
 

@@ -9,9 +9,9 @@ Reports and supporting materials are generated in Simplified Chinese by design (
 ## Features
 
 - **Two investigation modes** — alarm-driven (UID + Event ID) or free-form (host anomaly only)
-- **12 attack-type playbooks** + **6 tradecraft guides** + **MITRE ATT&CK mapping**
+- **12 investigation playbooks** + **6 tradecraft guides** + specialized guides (cloud-log routing, OOB/DNSLog, IIS upload tracing) + **MITRE ATT&CK mapping**
 - **Parallel command orchestration** — independent remote commands are dispatched in a single round to cut investigation time
-- **Strictly read-only** — only `cat / grep / find / ls / ps / netstat / lsof` and similar read-only commands are allowed; evidence integrity is preserved
+- **Strictly read-only** — runs only commands that don't change system state (read files, list processes/network/services, inspect logs), never destructive or install commands; evidence integrity is preserved
 - **Markdown incident report** — each incident writes a named `IR-....md` from the bundled Dossier-style template
 
 ## Prerequisites
@@ -97,7 +97,7 @@ When there is no alarm ID, provide the Client ID plus a short description of the
 ├── assets/
 │   └── report.md                           # Markdown report template copied from dossier/report.md
 └── references/
-    ├── invest_*.md                         # 12 attack-type playbooks
+    ├── invest_*.md                         # 12 investigation playbooks (one is general tradecraft)
     ├── tech_*.md                           # 6 tradecraft guides
     ├── attack_framework.md                 # ATT&CK tactic/technique reference
     ├── report_naming.md                    # IR-….md filename format and event_type slug table

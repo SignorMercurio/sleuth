@@ -54,6 +54,10 @@ find / -type f -name "*.encrypted" 2>/dev/null | wc -l
 find / -type f -name "*.encrypted" 2>/dev/null | xargs dirname | sort -u
 ```
 
+## 云端日志补充
+
+主机被加密后本地证据可能不可靠——按 `references/cloud_log_queries.md`「恶意进程」「C2 外联 / 数据外传」行用 `sls` skill 查 SAS（`aegis-log-process` 还原加密进程的启动链/父进程、`aegis-log-network` 查 C2 与密钥/勒索服务器外联）；入口若疑似暴破或异常登录再配 `aegis-log-login`。
+
 ## 关键 IoC
 - 勒索软件文件路径和哈希
 - C2 服务器地址

@@ -2,7 +2,7 @@
 
 Use when building customer-facing IR timelines from Alibaba Cloud Security Center (`sas`) SLS logs.
 
-> **执行查询走 `sls` skill**（调用已安装的 skill，或读取已安装的 `sls` skill 指令）。先看 `references/cloud_log_queries.md` 决定查哪个 `-product` / topic。本文件只补充**本环境特有的坑和报告措辞要求**：时间戳 CAST、`proc_start_time` 过滤、`w3wp.exe` 子进程解读、覆盖时间窗的报告写法。下面的 `sls` 命令示例可以直接给 `sls` skill 当模板。
+> **执行查询走 `sls` skill**（调用已安装的 skill，或读取已安装的 `sls` skill 指令）。先看 `references/cloud_log_queries.md` 决定查哪个 `-product` / topic。本文件只补充**本环境特有的坑和报告措辞要求**：时间戳 CAST、`proc_start_time` 过滤、`w3wp.exe` 子进程解读、覆盖时间窗的报告写法。下面的命令示例可以直接给 `sls` skill 当模板（命令里用 `sls` 代指调用，二进制路径与 `-c` 配置由 `sls` skill 提供）。
 
 ## Core topics
 
@@ -33,7 +33,7 @@ WHERE proc_start_time != 'N/A' AND proc_start_time != ''
 Network coverage:
 
 ```bash
-/usr/local/bin/sls -c /root/config/config.yaml -uid <UID> -product sas \
+sls -uid <UID> -product sas \
   -query "__topic__: aegis-log-network AND instance_id: <INSTANCE_ID> | SELECT MIN(from_unixtime(CAST(start_time AS bigint))) AS first_time, MAX(from_unixtime(CAST(start_time AS bigint))) AS last_time, COUNT(*) AS cnt LIMIT 10" \
   -from '<FROM>' -to '<TO>'
 ```
@@ -41,7 +41,7 @@ Network coverage:
 Process coverage:
 
 ```bash
-/usr/local/bin/sls -c /root/config/config.yaml -uid <UID> -product sas \
+sls -uid <UID> -product sas \
   -query "__topic__: aegis-log-process AND instance_id: <INSTANCE_ID> | SELECT MIN(proc_start_time) AS first_proc_start, COUNT(*) AS cnt LIMIT 10" \
   -from '<FROM>' -to '<TO>'
 ```
@@ -49,7 +49,7 @@ Process coverage:
 Login coverage:
 
 ```bash
-/usr/local/bin/sls -c /root/config/config.yaml -uid <UID> -product sas \
+sls -uid <UID> -product sas \
   -query "__topic__: aegis-log-login AND (instance_id: <INSTANCE_ID> OR src_ip: <HOST_IP> OR host_ip: <HOST_IP>) | SELECT MIN(from_unixtime(CAST(start_time AS bigint))) AS first_time, MAX(from_unixtime(CAST(start_time AS bigint))) AS last_time, COUNT(*) AS cnt LIMIT 10" \
   -from '<FROM>' -to '<TO>'
 ```
@@ -57,7 +57,7 @@ Login coverage:
 Security alert coverage:
 
 ```bash
-/usr/local/bin/sls -c /root/config/config.yaml -uid <UID> -product sas \
+sls -uid <UID> -product sas \
   -query "__topic__: sas-security-log AND instance_id: <INSTANCE_ID> | SELECT name, COUNT(*) AS cnt, MIN(from_unixtime(CAST(start_time AS bigint))) AS first_time, MAX(from_unixtime(CAST(start_time AS bigint))) AS last_time GROUP BY name ORDER BY first_time ASC LIMIT 20" \
   -from '<FROM>' -to '<TO>'
 ```
@@ -67,7 +67,7 @@ Security alert coverage:
 Find `w3wp.exe` outbound connections:
 
 ```bash
-/usr/local/bin/sls -c /root/config/config.yaml -uid <UID> -product sas \
+sls -uid <UID> -product sas \
   -query "__topic__: aegis-log-network AND instance_id: <INSTANCE_ID> AND proc_name: w3wp.exe | SELECT dst_ip, dst_port, COUNT(*) AS cnt, MIN(from_unixtime(CAST(start_time AS bigint))) AS first_time, MAX(from_unixtime(CAST(start_time AS bigint))) AS last_time GROUP BY dst_ip, dst_port ORDER BY cnt DESC LIMIT 50" \
   -from '<FROM>' -to '<TO>'
 ```
@@ -75,7 +75,7 @@ Find `w3wp.exe` outbound connections:
 Find `w3wp.exe` child processes:
 
 ```bash
-/usr/local/bin/sls -c /root/config/config.yaml -uid <UID> -product sas \
+sls -uid <UID> -product sas \
   -query "__topic__: aegis-log-process AND instance_id: <INSTANCE_ID> AND (parent_proc_name: w3wp.exe OR pcmdline: w3wp.exe) | SELECT proc_start_time, proc_name, proc_path, parent_proc_name, username, cmdline, pcmdline ORDER BY proc_start_time ASC LIMIT 50" \
   -from '<FROM>' -to '<TO>'
 ```
