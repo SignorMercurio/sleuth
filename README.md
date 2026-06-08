@@ -12,6 +12,8 @@ Reports and supporting materials are generated in Simplified Chinese by design (
 - **12 investigation playbooks** + **6 tradecraft guides** + specialized guides (cloud-log routing, OOB/DNSLog, IIS upload tracing) + **MITRE ATT&CK mapping**
 - **Parallel command orchestration** — independent remote commands are dispatched in a single round to cut investigation time
 - **Strictly read-only** — runs only commands that don't change system state (read files, list processes/network/services, inspect logs), never destructive or install commands; evidence integrity is preserved
+- **Adversarial verification gate** — every load-bearing claim is independently refuted before the report (sub-agent or inline) to guard against false attribution
+- **Context-isolation sub-agents** — heavy log / SLS / full-disk output is dredged by a sub-agent (or inline) that returns only conclusions, keeping the orchestrator's context lean
 - **Markdown incident report** — each incident writes a named `IR-....md` from the bundled Dossier-style template
 
 ## Prerequisites
@@ -105,6 +107,7 @@ When there is no alarm ID, provide the Client ID plus a short description of the
     ├── sas_sls_host_telemetry.md           # SAS SLS host telemetry queries (env-specific gotchas)
     ├── oob_dnslog_investigation.md         # dnslog.cn / interact.sh / OOB callbacks
     ├── recon_residual.md                   # Residual-risk follow-ups after the 6-axis sweep
+    ├── verification_checklist.md           # Adversarial verification gate run before the report
     └── aspnet_webshell_upload_tracing.md   # ASP.NET webshell upload tracing
 ```
 
