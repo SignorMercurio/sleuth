@@ -122,7 +122,7 @@ The skill writes a Markdown report into the cwd:
 
 Each report file is copied from `assets/report.md` and then filled for the specific incident.
 
-The full event-type slug table (`webshell` / `miner` / `revshell` / `brute` / `abnlogin` / `privesc` / `exfil` / `ransom` / `sqli` / `rce` / `backdoor` / `unknown`) is documented in `references/report_naming.md`.
+Event-type slugs (e.g. `webshell`, `rce`, `unknown`) are documented in `references/report_naming.md`, the single source of truth for the full table.
 
 ## Contributing
 
