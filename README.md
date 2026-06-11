@@ -14,7 +14,9 @@ Reports and supporting materials are generated in Simplified Chinese by design (
 - **Strictly read-only** — runs only commands that don't change system state (read files, list processes/network/services, inspect logs), never destructive or install commands; evidence integrity is preserved
 - **Adversarial verification gate** — every load-bearing claim is independently refuted before the report (sub-agent or inline) to guard against false attribution
 - **Context-isolation sub-agents** — heavy log / SLS / full-disk output is dredged by a sub-agent (or inline) that returns only conclusions, keeping the orchestrator's context lean
-- **Markdown incident report** — each incident writes a named `IR-....md` from the bundled Dossier-style template
+- **Multi-host engagements** — hosts are investigated one by one (SIREN works per client), each landing a verified `*.findings.md` worksheet; the deliverable is always a single merged report (see *Multi-host and merge* below)
+- **Markdown incident report** — each engagement writes one named `IR-....md` from the bundled Dossier-style template, using the findings worksheets as the only source of facts
+- **Human writing style** — report prose follows a style guide distilled from the author's hand-written IR articles (`references/report_style.md`); drop your own writing samples into `assets/style/` (git-ignored) to steer the voice
 
 ## Prerequisites
 
@@ -89,6 +91,10 @@ The skill pulls the alarm detail and runs the matching playbook end to end.
 
 When there is no alarm ID, provide the Client ID plus a short description of the anomaly (e.g. "process X at 100% CPU", "suspicious file at /tmp/x.sh"). The skill starts from broad triage and narrows down from there.
 
+### Multi-host and merge
+
+Name several hosts / Client IDs (or point at an alarm affecting multiple assets) and the skill investigates them sequentially, writes one `*.findings.md` worksheet per host, and merges everything into a single report (`IR-{date}-{primary-host}-multiN-{type}.md`). Handing it several existing `IR-*.md` reports triggers merge-only mode: no investigation, just one consolidated report.
+
 ## Layout
 
 ```
@@ -97,12 +103,15 @@ When there is no alarm ID, provide the Client ID plus a short description of the
 │   └── openai.yaml                         # Codex app metadata and SIREN MCP dependency hint
 ├── SKILL.md                                # Skill definition and workflow
 ├── assets/
-│   └── report.md                           # Markdown report template copied from dossier/report.md
+│   ├── report.md                           # Markdown report template copied from dossier/report.md
+│   └── style/                              # Hand-written writing samples (git-ignored), see README inside
 └── references/
     ├── invest_*.md                         # 12 investigation playbooks (one is general tradecraft)
     ├── tech_*.md                           # 6 tradecraft guides
     ├── attack_framework.md                 # ATT&CK tactic/technique reference
-    ├── report_naming.md                    # IR-….md filename format and event_type slug table
+    ├── report_naming.md                    # IR-….md filename format, event_type slugs, multi-host rule
+    ├── findings_spec.md                    # Per-host findings worksheet: the investigation→report handoff
+    ├── report_style.md                     # Writing style guide distilled from hand-written articles
     ├── cloud_log_queries.md                # WAF / SAS / ActionTrail log routing
     ├── sas_sls_host_telemetry.md           # SAS SLS host telemetry queries (env-specific gotchas)
     ├── oob_dnslog_investigation.md         # dnslog.cn / interact.sh / OOB callbacks
@@ -119,6 +128,7 @@ The skill writes a Markdown report into the cwd:
 
 - `IR-20260417-web01-webshell-123456.md` — alarm-driven, Event ID `123456`
 - `IR-20260417-db-prod-rce.md` — free-form mode
+- `IR-20260417-web01-multi3-miner-123456.md` — multi-host engagement (3 hosts, primary `web01`)
 
 Each report file is copied from `assets/report.md` and then filled for the specific incident.
 
