@@ -1,1 +1,5 @@
 docs/
+
+# personal writing samples for report style (see assets/style/README.md)
+assets/style/*
+!assets/style/README.md

@@ -20,6 +20,12 @@ IR-{YYYYMMDD}-{hostname}-{event_type}[-{event_id}].md
 | `{event_type}` | 事件类型 slug（见下表），未知时填 `unknown` |
 | `{event_id}` | 仅模式一包含，用于区分同主机多起事件 |
 
+## 多主机事件
+
+一次委托覆盖多台主机时合并报告的 `{hostname}` 字段替换为 `{首要主机}-multi{N}`，其中首要主机指首发告警或影响最严重的主机，N 为主机总数；`{event_type}` 用主事件类型，各主机类型不一致时取首要主机的类型。
+
+每台主机另落一份 findings 工作底稿，命名与结构见 `references/findings_spec.md`。
+
 ## 事件类型 slug 对照表
 
 | 中文事件类型 | slug |
@@ -47,3 +53,4 @@ IR-{YYYYMMDD}-{hostname}-{event_type}[-{event_id}].md
 - 模式一（告警驱动）：`IR-20260417-web01-webshell-123456.md`
 - 模式二（自由调查）：`IR-20260417-db-prod-rce.md`
 - 多个事件同主机同日：`IR-20260417-web01-webshell-123456.md` 与 `IR-20260417-web01-revshell-123789.md`
+- 多主机合并报告（3 台，首要主机 web01）：`IR-20260417-web01-multi3-miner-123456.md`
