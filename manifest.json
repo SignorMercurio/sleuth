@@ -1,0 +1,27 @@
+{
+  "name": "sleuth",
+  "version": "1.0.0",
+  "owner": "Mercurio <signormercurio@gmail.com>",
+  "updated_at": "2026-06-22",
+  "status": "active",
+  "maturity_tier": "production",
+  "lifecycle_stage": "production",
+  "context_budget_tier": "governed",
+  "review_cadence": "quarterly",
+  "summary": "Read-only remote forensic incident response over SIREN, building ATT&CK attack chains and producing Chinese Markdown IR reports.",
+  "repository": "https://github.com/SignorMercurio/sleuth",
+  "target_platforms": [
+    "claude",
+    "openai",
+    "generic"
+  ],
+  "factory_components": [
+    "references",
+    "scripts",
+    "evals",
+    "reports",
+    "assets",
+    "agents"
+  ],
+  "notes": "Risk class is governed (public distribution, remote execution via SIREN, false-attribution risk). Maturity declared production until the deferred governed-release gates (trust report, runtime permission probes, Review Studio) are added; the governance_score already sits in the governed band."
+}

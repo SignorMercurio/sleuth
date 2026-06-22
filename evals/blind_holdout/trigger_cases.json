@@ -1,0 +1,37 @@
+{
+  "recommended_threshold": 0.48,
+  "should_trigger": [
+    {
+      "text": "服务器中了勒索软件，帮我做应急响应溯源一下",
+      "family": "ransomware"
+    },
+    {
+      "text": "查这台主机的反弹 shell，做入侵溯源",
+      "family": "reverse_shell"
+    },
+    {
+      "text": "alarm Event ID 555, please do incident response on this host",
+      "family": "en_alarm"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "text": "把这段日志翻译成中文",
+      "family": "translate_only"
+    },
+    {
+      "text": "总结一下今天的安全新闻",
+      "family": "summarize_only"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "text": "只查 WAF 日志就行，别动主机",
+      "family": "waf_log_only"
+    },
+    {
+      "text": "帮我威胁狩猎主动 hunt 一下",
+      "family": "threat_hunting_talon"
+    }
+  ]
+}

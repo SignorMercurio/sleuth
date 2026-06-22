@@ -1,0 +1,73 @@
+{
+  "recommended_threshold": 0.48,
+  "should_trigger": [
+    {
+      "text": "帮我做应急响应，UID 123456 Event ID 789 这个告警排查一下",
+      "family": "alarm_driven"
+    },
+    {
+      "text": "这台主机 CPU 跑满疑似入侵，帮我溯源排查异常进程",
+      "family": "free_form"
+    },
+    {
+      "text": "排查这台主机上的 webshell 后门，看看入侵路径",
+      "family": "webshell"
+    },
+    {
+      "text": "查一下挖矿木马，这几台主机都做应急响应，最后合并报告",
+      "family": "mining_multihost"
+    },
+    {
+      "text": "把这几台主机的应急响应报告合并成一份",
+      "family": "merge"
+    },
+    {
+      "text": "investigate this alert and trace this intrusion on host web01",
+      "family": "en_alert"
+    },
+    {
+      "text": "incident response on host db-prod, suspected reverse shell",
+      "family": "en_reverse_shell"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "text": "把这份安全事件报告翻译成英文",
+      "family": "translate_only"
+    },
+    {
+      "text": "总结一下这次安全事件的要点",
+      "family": "summarize_only"
+    },
+    {
+      "text": "看看这段代码有没有 SQL 注入漏洞",
+      "family": "code_review"
+    },
+    {
+      "text": "讲讲什么是 webshell，给我科普一下",
+      "family": "explain_only"
+    }
+  ],
+  "near_neighbor": [
+    {
+      "text": "只要 SLS 云日志的查询结果就行",
+      "family": "sls_cloud_log"
+    },
+    {
+      "text": "帮我做威胁狩猎，主动 hunt 一下可疑活动",
+      "family": "threat_hunting_talon"
+    },
+    {
+      "text": "查一下 ActionTrail 谁在控制台登录",
+      "family": "actiontrail_query"
+    },
+    {
+      "text": "给服务器写一份通用安全加固建议",
+      "family": "generic_hardening"
+    },
+    {
+      "text": "review the code in this repo for bugs",
+      "family": "code_review_en"
+    }
+  ]
+}
