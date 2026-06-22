@@ -1,0 +1,32 @@
+# Canonical, portable interface contract for the SLEUTH skill.
+# Codex-specific app metadata stays in agents/openai.yaml; this file is the
+# format-neutral descriptor consumed by skill validators and cross-target packagers.
+interface:
+  display_name: "SLEUTH"
+  short_description: "Security incident response over SIREN with Chinese Markdown reports."
+  default_prompt: "Use SLEUTH to investigate this security incident and generate a Chinese Markdown IR report."
+
+compatibility:
+  canonical_format: "agent-skills"
+  adapter_targets:
+    - "claude"
+    - "openai"
+    - "generic"
+  activation:
+    mode: "manual"
+    paths: []
+  execution:
+    context: "inline"
+    shell: "bash"
+  trust:
+    source_tier: "local"
+    # Packaging-trust posture: the skill package itself runs NO code on remote
+    # targets at load/adapter time. SLEUTH's remote forensics are a user-initiated
+    # DOMAIN capability driven through the SIREN MCP, constrained to read-only
+    # commands by the in-skill safety contract (see SKILL.md "安全护栏").
+    remote_inline_execution: "forbid"
+    remote_metadata_policy: "allow-metadata-only; remote forensics run only via the explicit SIREN MCP under the read-only safety contract — never inline shell/SSH"
+  degradation:
+    claude: "neutral-source-plus-adapter"
+    openai: "metadata-adapter"
+    generic: "neutral-source"

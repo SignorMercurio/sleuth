@@ -1,0 +1,212 @@
+{
+  "optimizer_hints": {
+    "capability": "Read-only remote forensic incident response over SIREN, building ATT&CK attack chains and Chinese IR reports",
+    "inputs": [
+      "security alerts",
+      "host anomalies",
+      "intrusion clues",
+      "SIREN Client ID",
+      "Aliyun UID",
+      "Event ID",
+      "安全告警",
+      "主机异常",
+      "入侵线索",
+      "既有 IR 报告"
+    ],
+    "trigger_actions": [
+      "investigate a security alert",
+      "respond to a host intrusion",
+      "trace an attack chain",
+      "produce an incident response report",
+      "merge IR reports",
+      "应急响应",
+      "查告警",
+      "排查这台主机",
+      "事件溯源",
+      "合并报告"
+    ],
+    "exclusions": [
+      "cloud-log-only queries (delegate to the sls skill)",
+      "proactive threat hunting (TALON domain)",
+      "code review or vulnerability fixing",
+      "generic security advice without an incident",
+      "只查云日志",
+      "主动威胁狩猎",
+      "纯代码审查",
+      "无事件的通用安全建议"
+    ],
+    "artifacts": [
+      "IR-*.md report",
+      "*.findings.md worksheet",
+      "ATT&CK mapping",
+      "应急响应报告"
+    ]
+  },
+  "fallback_positive_concepts": [
+    "incident_response",
+    "host_or_alert",
+    "attack_type"
+  ],
+  "positive_concepts": {
+    "incident_response": {
+      "weight": 0.46,
+      "phrases": [
+        "应急响应",
+        "应急",
+        "事件溯源",
+        "事件排查",
+        "溯源",
+        "排查",
+        "入侵",
+        "ir on host",
+        "incident response",
+        "incident",
+        "intrusion",
+        "trace this intrusion",
+        "forensic"
+      ]
+    },
+    "host_or_alert": {
+      "weight": 0.34,
+      "phrases": [
+        "告警",
+        "主机",
+        "受害主机",
+        "这台主机",
+        "资产",
+        "event id",
+        "alert",
+        "host",
+        "uid"
+      ]
+    },
+    "attack_type": {
+      "weight": 0.2,
+      "phrases": [
+        "webshell",
+        "web shell",
+        "挖矿",
+        "挖矿木马",
+        "mining",
+        "miner",
+        "反弹 shell",
+        "反弹shell",
+        "reverse shell",
+        "暴破",
+        "暴力破解",
+        "brute force",
+        "勒索",
+        "ransomware",
+        "rce",
+        "sql 注入",
+        "注入",
+        "持久化",
+        "后门",
+        "横向移动",
+        "提权",
+        "数据外传"
+      ]
+    }
+  },
+  "negative_concepts": {
+    "cloud_log_only": {
+      "weight": 0.34,
+      "exclusive": true,
+      "phrases": [
+        "云日志",
+        "日志查询",
+        "捞日志",
+        "只查日志",
+        "只看日志",
+        "只要日志",
+        "waf",
+        "sls",
+        "actiontrail",
+        "query the logs",
+        "cloud logs"
+      ]
+    },
+    "code_review_only": {
+      "weight": 0.34,
+      "exclusive": true,
+      "phrases": [
+        "代码审查",
+        "审查代码",
+        "看看代码",
+        "这段代码",
+        "代码里",
+        "漏洞修复",
+        "重构",
+        "code review",
+        "review the code",
+        "review this code",
+        "refactor",
+        "fix the bug"
+      ]
+    },
+    "threat_hunting_only": {
+      "weight": 0.3,
+      "exclusive": true,
+      "phrases": [
+        "威胁狩猎",
+        "主动狩猎",
+        "主动 hunt",
+        "狩猎",
+        "假设驱动",
+        "threat hunting",
+        "hunt for",
+        "proactively hunt"
+      ]
+    },
+    "generic_security_advice": {
+      "weight": 0.26,
+      "exclusive": true,
+      "phrases": [
+        "安全建议",
+        "安全意识",
+        "加固建议",
+        "怎么加固",
+        "如何加固",
+        "合规检查",
+        "security best practices",
+        "harden",
+        "compliance"
+      ]
+    },
+    "summarize_only": {
+      "weight": 0.3,
+      "exclusive": true,
+      "phrases": [
+        "总结",
+        "总结一下",
+        "概括",
+        "summary",
+        "summarize",
+        "recap"
+      ]
+    },
+    "translate_only": {
+      "weight": 0.34,
+      "exclusive": true,
+      "phrases": [
+        "翻译",
+        "译成",
+        "translate",
+        "into english",
+        "into chinese"
+      ]
+    },
+    "explain_only": {
+      "weight": 0.24,
+      "exclusive": true,
+      "phrases": [
+        "解释一下",
+        "讲讲",
+        "什么意思",
+        "科普",
+        "explain",
+        "plain english"
+      ]
+    }
+  }
+}
