@@ -1,65 +1,11 @@
 # 异常登录调查指南
 
-## 调查重点
+## 调查重点（只读检查项）
 
-### 1. 确认登录详情
-```bash
-# 查看登录记录
-last | head -n 50
-w
-who
-
-# 查看特定用户的登录记录
-last <用户名>
-
-# 查看认证日志
-grep "Accepted" /var/log/auth.log | tail -n 50
-```
-
-### 2. 分析登录来源
-```bash
-# 查看来源 IP
-last | grep "<用户名>"
-grep "Accepted.*<用户名>" /var/log/auth.log
-
-# 查询 IP 归属地（使用联网检索工具）
-
-# 检查是否为代理或 VPN
-```
-
-### 3. 检查登录方式
-```bash
-# 确认是密码登录还是密钥登录
-grep "Accepted password.*<用户名>" /var/log/auth.log
-grep "Accepted publickey.*<用户名>" /var/log/auth.log
-
-# 如果是密钥登录，检查授权密钥
-cat /home/<用户名>/.ssh/authorized_keys
-```
-
-### 4. 检查登录后的活动
-```bash
-# 查看用户的命令历史
-cat /home/<用户名>/.bash_history
-
-# 查看用户的进程
-ps aux | grep "^<用户名>"
-
-# 查看用户的网络连接
-lsof -u <用户名> -i -P -n
-```
-
-### 5. 检查账户变更
-```bash
-# 检查是否有新增用户
-grep "useradd\|adduser" /var/log/auth.log
-
-# 查看最近创建的用户
-awk -F: '$3 >= 1000 {print $1,$3}' /etc/passwd
-
-# 检查密码变更
-grep "password changed" /var/log/auth.log
-```
+1. **登录详情**：从 `last`/`w`/`who` 与 `auth.log` 的 `Accepted` 记录确认用户、时间、来源。
+2. **来源研判**：查来源 IP 归属；**判断是否代理/VPN/跳板**——来源 IP 未必是真实操作人（私网 IP 归因判读见 `references/ssh_login_attribution_sas.md`）。
+3. **登录方式**：区分密码登录(`Accepted password`)与密钥登录(`Accepted publickey`)；密钥登录则核对该用户 `authorized_keys` 是否被植入。
+4. **登录后活动 + 账户变更**：看该用户命令历史/进程/连接；查新增账户——**`awk -F: '$3>=1000'` 列普通用户**，并警惕与 root 同 UID(0) 的隐藏后门账户；查 `password changed`。
 
 ## 云端日志补充
 

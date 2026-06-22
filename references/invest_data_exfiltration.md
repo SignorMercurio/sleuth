@@ -1,61 +1,11 @@
 # 数据外传调查指南
 
-## 调查重点
+## 调查重点（只读检查项）
 
-### 1. 确认外传通道
-```bash
-# 查看当前网络连接
-netstat -antup | grep ESTABLISHED
-ss -antp | grep ESTABLISHED
-
-# 按连接/进程快照评估流量（一次性、非交互；不要用 iftop/nethogs/vnstat 等需交互终端的工具，会在远程执行中挂起）
-ss -tinp                # 每条连接的收发字节、重传等统计
-cat /proc/net/dev       # 各网卡累计收发字节
-netstat -s | head -n 40 # 协议级累计统计
-```
-
-### 2. 分析外传目标
-```bash
-# 提取外部 IP 和端口
-netstat -antup | awk '{print $5}' | grep -v "127.0.0.1\|0.0.0.0" | sort -u
-
-# 查询目标 IP（使用联网检索工具）
-
-# 检查是否连接到云存储服务
-netstat -antup | grep -E "amazonaws|aliyun|qcloud|s3"
-```
-
-### 3. 追踪外传进程
-```bash
-# 查看建立外部连接的进程
-lsof -i -P -n | grep ESTABLISHED
-lsof -i -P -n | grep "<外部IP>"
-
-# 查看进程详情
-ps aux | grep <PID>
-cat /proc/<PID>/cmdline | tr '\0' ' '
-```
-
-### 4. 检查外传的数据
-```bash
-# 查找打包的数据文件
-find /tmp /var/tmp /dev/shm -type f -name "*.tar*" -o -name "*.zip" -o -name "*.7z" -mtime -1
-
-# 查看最近访问的文件
-find / -type f -atime -1 2>/dev/null | grep -E "(database|backup|data|sql)"
-
-# 检查命令历史中的数据收集命令（读 history 文件，不用交互式 history 内建）
-cat ~/.bash_history | grep -E "tar|zip|7z|scp|rsync|curl.*upload"
-```
-
-### 5. 检查外传工具
-```bash
-# 查找文件传输工具的使用
-ps aux | grep -E "scp|rsync|curl|wget|nc"
-
-# 检查命令历史
-cat ~/.bash_history | grep -E "scp|rsync|curl.*-T|wget.*--post"
-```
+1. **确认外传通道**：看 ESTABLISHED 外连。**评估流量必须用一次性快照——`ss -tinp`（每连接收发字节）、`cat /proc/net/dev`（网卡累计）、`netstat -s`；切勿用 `iftop` / `nethogs` / `vnstat` 等需交互终端的工具，远程执行会挂起。**
+2. **外传目标**：提取外部 IP:端口，识别云存储外联（`amazonaws|aliyun|qcloud|s3` 等），归属用联网检索查。
+3. **追踪进程**：按外部 IP 反查发起进程及其 `cmdline`。
+4. **外传数据与工具**：查临时目录近 1 天的打包文件（`tar/zip/7z`）、近期被读的敏感文件（database/backup/sql）；读 `.bash_history` 找 `scp` / `rsync` / `curl -T` / `wget --post` 等外传命令（读文件，不用交互式 history）。
 
 ## 云端日志补充
 

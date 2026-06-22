@@ -1,134 +1,15 @@
 # 进程和文件分析技巧
 
-## 进程关联技巧
+## 进程关联（非显然的 pivot）
 
-### 方法 1: 通过 /proc 目录关联
+- **`/proc/<PID>/` 反查归属**：`cwd` 推测进程所属业务（如 `/opt/rocketmq`→RocketMQ），`exe` 取真实可执行路径，`environ` 看启动环境；某进程 fd 指向另一进程 → 两者关联。
+- **systemd 关联**：`systemctl status <PID>` 不止给服务名，**CGroup 字段会列出该服务的所有兄弟/子进程**，是发现关联进程的捷径；再 `journalctl -u <service>` 限时间窗看日志。
+- **网络/进程树**：按远程 IP:端口反查进程，按父进程链向上追溯到拉起者。
 
-**检查文件描述符**：
-```bash
-# 查看进程打开的所有文件描述符
-ls -la /proc/<恶意进程PID>/fd
+## 文件时间分析（判读规则）
 
-# 可能发现其他进程的 fd
-# 例如：/proc/250303/fd/X
-# 说明恶意进程与进程 250303 有关联
-```
+- **时间戳篡改判读**：攻击者通常能改 atime/mtime，**但难改 ctime**。若 `mtime` 很早而 `ctime` 很新 → 时间戳大概率被篡改，别采信 mtime。
+- **命令是否被替换**：看系统命令（如 `/usr/bin/ps`）的 `ctime` 是否接近告警时间。
+- **以已知恶意文件时间为锚扩展搜索**：取已确认恶意文件的 mtime 或 ctime，用 `find -newermt` 时间窗搜前后约 1 小时内新增/修改的文件，重点 `/tmp /var/tmp /dev/shm /var/www /opt`，再人工研判（命中即恶意是误判，需交叉）。
 
-**检查工作目录**：
-```bash
-# 查看进程的当前工作目录
-ls -la /proc/<PID>/cwd
-
-# 从工作目录路径可以推测进程归属
-# 例如：/opt/rocketmq -> RocketMQ 进程
-```
-
-**检查可执行文件路径**：
-```bash
-ls -la /proc/<PID>/exe
-cat /proc/<PID>/environ | tr '\0' '\n'
-```
-
-### 方法 2: 通过 systemd 关联
-
-**查看 systemd 服务信息**：
-```bash
-# 直接通过 PID 查询服务
-systemctl status <PID>
-
-# 会显示：
-# - 启动该进程的服务名称
-# - 服务的最近日志
-# - CGroup 中的其他关联进程
-```
-
-**查看详细日志**：
-```bash
-journalctl -u <service_name>
-journalctl -u <service_name> --since "2024-05-27 18:00" --until "2024-05-27 19:00"
-```
-
-**CGroup 信息**：systemctl status 输出中的 CGroup 字段会显示该服务相关的所有进程，可以帮助发现关联的子进程。
-
-### 方法 3: 通过网络连接关联
-
-```bash
-# 查看特定进程的连接
-lsof -i -P -n | grep <PID>
-netstat -antp | grep <PID>
-ss -antp | grep <PID>
-
-# 根据远程 IP:端口反查其他进程
-lsof -i @<远程IP>:<端口>
-```
-
-### 方法 4: 通过进程树关联
-
-```bash
-# 以树形显示进程关系
-pstree -ap | grep <关键进程名>
-
-# 或
-ps -ef --forest | grep <关键进程名>
-
-# 向上追溯父进程
-ps -o ppid= <PID>
-ps aux | grep <父进程PID>
-```
-
----
-
-## 文件时间分析
-
-### Linux 文件三个时间属性
-
-```bash
-stat <文件路径>
-```
-
-**时间含义**：
-- **atime** (访问时间): 读取文件、执行文件时更新
-- **mtime** (修改时间): 文件内容被修改时更新（ls -l 显示的时间）
-- **ctime** (改动时间): 文件状态改变时更新（内容修改、权限变更等）
-
-### 应用场景
-
-**1. 检测文件是否被篡改**：
-```bash
-# 查看系统命令的 ctime
-stat /usr/bin/ps
-stat /usr/sbin/crond
-
-# 如果 ctime 接近告警时间，说明文件可能被替换
-```
-
-**2. 基于时间全盘搜索恶意文件**：
-```bash
-# 查找某个时间范围内修改的所有文件
-find / -type f -newermt "2024-05-27 18:00" ! -newermt "2024-05-27 19:00" -ls 2>/dev/null
-
-# 查找最近 7 天修改的文件
-find /tmp /var/tmp /dev/shm -type f -mtime -7 -ls 2>/dev/null
-
-# 查找最近 1 小时内被访问的文件
-find /var/www -type f -amin -60 -ls 2>/dev/null
-```
-
-**3. 时间戳伪造检测**：
-攻击者可能修改 atime 和 mtime，但通常无法修改 ctime。如果 mtime 很早但 ctime 很新，说明时间戳被篡改。
-
-### Windows 文件三个时间属性
-
-- **创建时间**：文件首次出现在磁盘上的时间
-- **修改时间**：文件内容最后被修改的时间
-- **访问时间**：文件最后被读取/访问的时间
-
-```powershell
-Get-Item <文件路径> | Format-List *Time*
-```
-
----
-
-## 基于已知恶意文件时间搜索
-
-攻击者通常在短时间内植入多个文件。确定已知恶意文件的时间（取 mtime 或 ctime）后，用上面「应用场景 2」的 `-newermt` 时间窗命令搜索前后一小时内新增/修改的文件，重点看 `/tmp /var/tmp /dev/shm /var/www /opt`，再人工研判。
+> Windows 取文件时间：`Get-Item <文件> | Format-List *Time*`。

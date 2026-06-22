@@ -1,58 +1,11 @@
 # 勒索软件调查指南
 
-## 调查重点
+## 调查重点（只读检查项）
 
-### 1. 确认勒索软件进程
-```bash
-# 查找可疑进程
-ps aux | grep -v "^\["
-top -b -n 1
-
-# 查看进程详情
-ps -ef --forest
-lsof -p <PID>
-```
-
-### 2. 分析加密行为
-```bash
-# 查找最近修改的文件
-find / -type f -mmin -60 2>/dev/null | head -n 100
-
-# 查找勒索信息文件
-find / -type f -name "*README*" -o -name "*DECRYPT*" -o -name "*RANSOM*" 2>/dev/null
-
-# 查看勒索信息内容
-cat <勒索信息文件路径>
-```
-
-### 3. 追溯入侵源头
-```bash
-# 查看进程的启动时间和父进程
-ps -eo pid,lstart,cmd | grep <勒索软件进程名>
-
-# 检查是如何启动的
-pstree -ap <PID>
-
-# 检查邮件附件、下载目录
-ls -lat ~/Downloads
-ls -lat /tmp
-```
-
-### 4. 检查网络通信
-```bash
-# 查看勒索软件的网络连接
-lsof -i -P -n | grep <PID>
-netstat -antup | grep <PID>
-```
-
-### 5. 确定影响范围
-```bash
-# 统计被加密的文件数量
-find / -type f -name "*.encrypted" 2>/dev/null | wc -l
-
-# 查看受影响的目录
-find / -type f -name "*.encrypted" 2>/dev/null | xargs dirname | sort -u
-```
+1. **确认勒索进程**：定位异常高资源进程及其父进程/启动时间。
+2. **加密行为**：**`find -mmin -60`** 找正在被改写的文件窗口；勒索信文件名常含 **`*README*`、`*DECRYPT*`、`*RANSOM*`**，读其内容取勒索渠道/钱包地址。
+3. **追溯入口**：看进程启动链与父进程；查下载目录/临时目录的近期落地物。
+4. **影响范围**：按加密扩展名统计受影响文件数与目录。
 
 ## 云端日志补充
 
