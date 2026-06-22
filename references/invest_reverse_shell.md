@@ -1,58 +1,11 @@
 # 反弹 Shell 调查指南
 
-## 调查重点
+## 调查重点（只读检查项）
 
-### 1. 确认反弹 Shell 进程
-```bash
-# 查找与外部 IP 建立连接的 shell 进程
-lsof -i -P -n | grep -E "bash|sh|zsh"
-netstat -antup | grep -E "bash|sh"
-
-# 查看进程详情
-ps aux | grep <PID>
-cat /proc/<PID>/cmdline | tr '\0' ' '
-lsof -p <PID>
-```
-
-### 2. 分析连接信息
-```bash
-# 提取远程 IP 和端口
-netstat -antup | grep <PID>
-ss -antp | grep <PID>
-
-# 查询 IP 归属地（使用联网检索工具）
-```
-
-### 3. 追溯触发来源
-```bash
-# 查看进程树
-pstree -ap <PID>
-ps -ef --forest | grep <PID>
-
-# 检查父进程
-ps -o ppid= <PID>
-ps aux | grep <父进程PID>
-
-# 如果父进程是 Web 服务器，检查访问日志
-grep "<攻击IP>" /var/log/nginx/access.log | tail -n 50
-```
-
-### 4. 检查命令历史
-```bash
-# 查看当前用户的命令历史（读文件，不用交互式 history 内建）
-cat ~/.bash_history
-
-# 查看所有用户的命令历史
-find /home /root -name ".bash_history" -exec grep -H "nc\|bash.*-i\|sh.*-i\|/dev/tcp" {} \;
-```
-
-### 5. 搜索反弹 Shell 脚本
-```bash
-# 查找包含反弹 Shell 代码的脚本
-grep -r "bash -i" /tmp /var/tmp /dev/shm 2>/dev/null
-grep -r "/dev/tcp" /tmp /var/tmp /dev/shm 2>/dev/null
-grep -r "nc.*-e" / 2>/dev/null | head -n 20
-```
+1. **确认反弹进程**：找与外部 IP 建连的 shell 进程（`bash/sh/zsh`），取其 `cmdline` 与打开的 fd。
+2. **连接信息**：提取远程 IP:端口，归属地用联网检索查。
+3. **追溯触发来源**：看进程树与父进程；**父进程若是 Web 服务器（nginx/php/tomcat 等），转去查 access.log 里对应攻击 IP**——反弹常由 Web RCE 触发。
+4. **命令历史与脚本**：读各用户 `.bash_history`（读文件，不用交互式 history 内建）；搜临时目录与全盘的反弹特征 **`/dev/tcp`、`bash -i`、`sh -i`、`nc -e`**。
 
 ## 云端日志补充
 

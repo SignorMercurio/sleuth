@@ -1,52 +1,11 @@
 # 暴力破解调查指南
 
-## 调查重点
+## 调查重点（只读检查项）
 
-### 1. 确认攻击源
-```bash
-# 查看失败登录记录
-lastb | head -n 50
-lastb | grep "<攻击IP>"
-
-# 统计失败登录次数
-lastb | awk '{print $3}' | sort | uniq -c | sort -rn | head -n 20
-
-# 查看认证日志
-grep "Failed password" /var/log/auth.log | tail -n 100
-grep "authentication failure" /var/log/secure | tail -n 100
-```
-
-### 2. 分析攻击模式
-```bash
-# 按时间段统计失败登录
-grep "Failed password" /var/log/auth.log | grep "<日期>" | wc -l
-
-# 查看尝试的用户名
-grep "Failed password" /var/log/auth.log | awk '{print $(NF-5)}' | sort | uniq -c | sort -rn
-
-# 查看攻击的目标用户
-grep "Failed password for" /var/log/auth.log | grep "<攻击IP>"
-```
-
-### 3. 检查是否成功登录
-```bash
-# 查看成功登录记录
-last | grep "<攻击IP>"
-grep "Accepted password" /var/log/auth.log | grep "<攻击IP>"
-
-# 如果成功登录，查看登录后的活动
-grep "<攻击IP>" /var/log/auth.log | grep -A 20 "Accepted"
-```
-
-### 4. 检查防护措施
-```bash
-# 查看 fail2ban 状态
-fail2ban-client status
-fail2ban-client status sshd
-
-# 查看防火墙规则
-iptables -L -n -v | grep "<攻击IP>"
-```
+1. **确认攻击源**：从 `lastb` / `auth.log`(Debian) / `secure`(RHEL) 的失败登录里按源 IP 聚合，定位高频源。
+2. **分析模式**：统计被尝试的用户名——auth.log 里用户名字段常在 **`$(NF-5)`** 位（随发行版/日志格式偏移，先核对再取），看时间段分布。
+3. **是否得手**：查同源 IP 的成功登录（`Accepted`），找 **「失败→成功」的转折点**；得手则继续查登录后活动。
+4. **防护现状**：核对 fail2ban / 防火墙是否已拦该 IP。
 
 ## 云端日志补充
 

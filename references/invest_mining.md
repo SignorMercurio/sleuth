@@ -1,57 +1,11 @@
 # 挖矿木马调查指南
 
-## 调查重点
+## 调查重点（只读检查项）
 
-### 1. 确认挖矿进程
-```bash
-# 查看高 CPU 进程
-top -b -n 1 | head -n 20
-ps aux --sort=-%cpu | head -n 10
-
-# 查看进程详细信息
-ps -ef | grep <挖矿进程名>
-cat /proc/<PID>/cmdline | tr '\0' ' '
-ls -la /proc/<PID>/exe
-```
-
-### 2. 分析挖矿程序
-```bash
-# 查找挖矿程序文件
-ls -la /proc/<PID>/exe
-readlink /proc/<PID>/exe
-
-# 计算文件哈希
-md5sum <挖矿程序路径>
-sha256sum <挖矿程序路径>
-
-# 查看文件创建时间
-stat <挖矿程序路径>
-```
-
-### 3. 检查网络连接
-```bash
-# 查看挖矿进程的网络连接
-lsof -i -P -n | grep <PID>
-netstat -antup | grep <PID>
-ss -antp | grep <PID>
-```
-
-### 4. 追溯入侵源头与持久化
-```bash
-# 查看挖矿进程的父进程，确认是 cron / Web / 登录后拉起
-ps -ef --forest | grep <挖矿进程名>
-pstree -ap <PID>
-```
-持久化机制（cron / systemd / rc.local / profile / SSH key）完整排查见 `references/invest_persistence.md`；挖矿常用 cron 定时重拉和 `/tmp /var/tmp /dev/shm` 下的 `.sh` 下载脚本，重点核对这两处。
-
-### 5. 搜索相关恶意文件
-```bash
-# 按时间查找可疑文件
-find / -type f -newermt "<入侵时间>" ! -newermt "<当前时间>" 2>/dev/null | grep -E "(tmp|var/tmp|dev/shm)"
-
-# 查找可疑的下载脚本
-find / -type f -name "*.sh" -o -name "*.py" | xargs grep -l "curl\|wget" 2>/dev/null
-```
+1. **确认挖矿进程**：定位高 CPU 进程，取其 `cmdline`、`/proc/<PID>/exe` 真实路径与哈希。
+2. **网络连接**：查该进程外连，识别矿池地址:端口。
+3. **追溯入口与持久化**：看父进程确认由 cron / Web / 登录拉起。挖矿常用 **cron 定时重拉** 和 **`/tmp /var/tmp /dev/shm` 下的 `.sh` 下载脚本**，重点核对这两处；完整持久化排查见 `references/invest_persistence.md`。
+4. **按时间扩展**：以已知恶意文件 mtime/ctime 为锚搜同窗口落地文件，重点上述临时目录。
 
 ## 云端日志补充
 
