@@ -23,5 +23,5 @@
     "assets",
     "agents"
   ],
-  "notes": "Risk class is governed (public distribution, remote execution via SIREN, false-attribution risk). Maturity declared production until the deferred governed-release gates (trust report, runtime permission probes, Review Studio) are added; the governance_score already sits in the governed band."
+  "notes": "Risk class is governed (public distribution, remote execution via SIREN, false-attribution risk). Maturity declared production until the deferred governed-release gates (trust report, runtime permission probes, Review Studio) are added; governance_score is 95/100 (governed band) per reports/governance_scorecard.json. Accepted warnings are tracked in reports/review_waivers.md; a real model-executed output cross-check is in reports/output_execution_runs.json."
 }
