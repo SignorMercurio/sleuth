@@ -35,25 +35,32 @@ claude-fable-5 sub-agent output** for both variants — baseline given no skill 
 with-skill given the writing rules. Evidence: `reports/output_execution_runs.json`,
 snapshots under `evals/output/fixtures/overview-from-findings.*.model.md`.
 
-Honest result: **baseline 80 / with-skill 80 / delta 0** — both fail only
-`use-defanged-protocol`. Two things this exposes:
+The first pass scored **baseline 80 / with-skill 80 / delta 0** — both failing only the
+fixture-shaped `use-defanged-protocol` (requires `hxxp`), which this IP-form findings never
+produces, while the real skill increment (defanging the IP to `203.0.113[.]45` vs the
+baseline's raw `203.0.113.45`) went unrewarded by any assertion. That exposed a rubric gap,
+not a skill gap.
 
-1. A real model baseline scores 80, not the fixture's 0. The static delta is inflated;
-   treat it as reproducibility evidence, not a measure of skill effect.
-2. `use-defanged-protocol` (requires `hxxp`) is fixture-shaped: this findings has an
-   IP-form IoC, not a URL, so neither variant writes `hxxp`. Meanwhile the with-skill
-   output *did* defang the IP to `203.0.113[.]45` while the baseline left it raw — a real
-   skill increment that **no current assertion rewards**.
+Fixed in a **separate** case (`overview-from-findings-modelrun`, def in
+`evals/output/model_run_case.jsonl`) so the blind-pack rubric and the closed adjudication
+stay untouched: dropped `use-defanged-protocol` (URL-shaped, N/A to an IP IoC) and added
+`no-raw-attacker-ip` (forbids the raw dotted IP; the `[.]` defang passes because
+`run_output_eval.normalize` preserves punctuation). Re-run result:
 
-Caveat on the generated `output_execution_runs.md`: its `duration_ms` (~21ms) and token
+- **baseline 80 / with-skill 100 / delta +20**, both model-executed (claude-fable-5).
+- baseline fails only `no-raw-attacker-ip` (writes the raw IP); with-skill passes all five.
+- This is the first delta that reflects a real skill effect rather than a straw-man gap.
+
+Caveat on the generated `output_execution_runs.md`: its `duration_ms` (~20ms) and token
 counts reflect the replay harness, not the live ~13s generation; tokens are the sub-agent
 totals, marked estimated. The `output_sha256` values are the authoritative artifact.
 
 ## Next Fixes
 
-- Add a `no-raw-attacker-ip` assertion (and relax `use-defanged-protocol` to accept IP *or*
-  URL defang) so the eval rewards the IP-defang increment the model-run surfaced; regenerate
-  the blind pack and answer key after.
-- Swap the straw-man baselines for held-out real baselines so the delta reflects skill effect.
+- Port `no-raw-attacker-ip` into the main `cases.jsonl` rubric and regenerate the blind pack
+  + answer key (deferred: it invalidates the closed adjudication, so batch it with the next
+  blind review round).
+- Swap the straw-man baselines for held-out real baselines so the static delta reflects skill
+  effect the way the model-run delta now does.
 - Add holdout cases before using this as a release gate.
 - Keep assertions tied to material deliverables, not phrasing trivia.
