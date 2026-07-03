@@ -1,28 +1,28 @@
 {
   "schema_version": "1.0",
-  "reviewer": "",
-  "reviewed_at": "",
+  "reviewer": "mercury",
+  "reviewed_at": "2026-07-03",
   "review_integrity": {
-    "blind_pack_sha256": "788604c67fa31178c9bba06a52731adcbee9c1e72c00767cf7950643812a6e5c",
+    "blind_pack_sha256": "88c4c6388cce3ee608b15207d9fc8f248eac7370abd8bcaa149c4bc22587ab29",
     "case_count": 5,
     "case_ids": [
-      "skill-package-contract",
-      "output-eval-expectation",
-      "ir-before-packaging",
-      "near-neighbor-boundary",
-      "file-backed-governed-package"
+      "overview-from-findings",
+      "response-actions",
+      "single-atime-claim",
+      "attack-mapping-evidence",
+      "cloud-evidence-coverage"
     ],
     "prompt_sha256_by_case": {
-      "skill-package-contract": "95405d805bd516d0998b69d31ece2c1a465b0aa99f04d603628a3939028133b5",
-      "output-eval-expectation": "3829e97814ca269ad8e400ec984c56ddcd54b79448d3846c15e7f5ff44c2edc4",
-      "ir-before-packaging": "d00333fa41f2e28dc7505f25f259aefb82e65b2df1abda2822686c9a6f07bb80",
-      "near-neighbor-boundary": "2d0585e9fa6d03e28786f5e8f0c090781eb209afd344d25e2f91203c49a656d0",
-      "file-backed-governed-package": "c79a554b573517682da48879c1ef54399841d9ebf570088a2174dc38de39cc7d"
+      "overview-from-findings": "fdca1e35b18a5ba749d8b347f085621bb751dfc48cc5713c5e6e033d35dcb566",
+      "response-actions": "11f40f85560d8a7caa900342222f3a00e89f76ab10b1d6c0ead82ab7e6b7e51a",
+      "single-atime-claim": "673655ba687f8b6c24a0fc97a7c08dad376e112f293edb43c8e65e04487d19a6",
+      "attack-mapping-evidence": "e501452ef6948f186f8e4ff688a3eb29cef0bfe220bec07cf6af761e9f10a080",
+      "cloud-evidence-coverage": "1ad8fa0d4ec0e49583abde36d9daf550225d552fa7d10955b33a4ac9eb0730ad"
     }
   },
   "reviewer_attestation": {
-    "blind_review_completed_before_answer_key": false,
-    "answer_key_not_opened_before_decisions": false,
+    "blind_review_completed_before_answer_key": true,
+    "answer_key_not_opened_before_decisions": true,
     "raw_content_excluded": true,
     "reviewer_reason_required": true
   },
@@ -34,34 +34,34 @@
   },
   "decisions": [
     {
-      "case_id": "skill-package-contract",
-      "winner_variant": "",
+      "case_id": "overview-from-findings",
+      "winner_variant": "B",
       "confidence": null,
-      "reason": ""
+      "reason": "A 更简洁清晰，但没对 IoC 做安全处理（应写成 203.0.113[.]45）。B 没有硬伤，胜在 IoC 转义与覆盖边界；扣分项是「遥测」「得手」这类词偏生硬、不像人写，且整体可以更简洁。综合取 B。"
     },
     {
-      "case_id": "output-eval-expectation",
-      "winner_variant": "",
+      "case_id": "response-actions",
+      "winner_variant": "B",
       "confidence": null,
-      "reason": ""
+      "reason": "B 的处置动作比 A 更具体、可落地。"
     },
     {
-      "case_id": "ir-before-packaging",
-      "winner_variant": "",
+      "case_id": "single-atime-claim",
+      "winner_variant": "A",
       "confidence": null,
-      "reason": ""
+      "reason": "孤证确实不该下确定结论，A 的谨慎表述正确。但可以更简洁，不必写「按推测记录并交叉其他证据」这类过程说明。"
     },
     {
-      "case_id": "near-neighbor-boundary",
-      "winner_variant": "",
+      "case_id": "attack-mapping-evidence",
+      "winner_variant": "B",
       "confidence": null,
-      "reason": ""
+      "reason": "未观察到就不点亮技术，B 的判断正确。但可以更简洁，不必写「按证据驱动原则不点亮该技术，仅在证据缺口里说明」这类元说明。"
     },
     {
-      "case_id": "file-backed-governed-package",
-      "winner_variant": "",
+      "case_id": "cloud-evidence-coverage",
+      "winner_variant": "B",
       "confidence": null,
-      "reason": ""
+      "reason": "B 更准确、更详细（写明日志覆盖窗与 final_action 判定），A 夸大为全部拦截。"
     }
   ]
 }
