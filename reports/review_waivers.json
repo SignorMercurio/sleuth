@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "waivers": [
+    {
+      "gate_key": "context-budget",
+      "decision": "accepted-risk",
+      "reviewer": "Mercurio",
+      "reason": "SKILL.md initial load (~4k tokens, CJK-heavy) exceeds the governed 1300-token tier. The read-only safety contract and cross-client execution skeleton stay inline by design for a remote-forensics skill; domain detail remains on-demand under references/. Accepted 2026-06-22; the 2026-07-03 step-8 dedup trimmed the overage without moving the guardrails.",
+      "created_at": "2026-07-03",
+      "expires_at": "2026-09-22",
+      "evidence": "manifest.json notes (context_budget_tier: governed); references/ on-demand layering; commit e3103ea and the step-8 dedup change",
+      "scope": "current-release"
+    },
+    {
+      "gate_key": "trust-report",
+      "decision": "temporary-exception",
+      "reviewer": "Mercurio",
+      "reason": "Governed-release trust report (secret scan, script surface, dependency pinning, package hash) is deferred. Package maturity is deliberately declared production rather than governed release until that evidence is generated. Decision recorded 2026-06-22 in manifest.json notes.",
+      "created_at": "2026-07-03",
+      "expires_at": "2026-09-22",
+      "evidence": "manifest.json notes",
+      "scope": "current-release"
+    },
+    {
+      "gate_key": "permission-runtime",
+      "decision": "temporary-exception",
+      "reviewer": "Mercurio",
+      "reason": "Runtime permission probes for packaged target adapters are deferred under the same production-maturity decision. Remote forensics remain constrained by the in-skill read-only safety contract and the SIREN-only execution path declared in agents/interface.yaml. Decision recorded 2026-06-22 in manifest.json notes.",
+      "created_at": "2026-07-03",
+      "expires_at": "2026-09-22",
+      "evidence": "manifest.json notes; agents/interface.yaml trust block (remote_inline_execution: forbid)",
+      "scope": "current-release"
+    }
+  ]
+}
