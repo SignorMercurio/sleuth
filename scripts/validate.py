@@ -3,8 +3,9 @@
 
 Checks:
   1. SKILL.md frontmatter parses as YAML, name is `sleuth`, description <= 1024 chars.
-  2. agents/openai.yaml, agents/interface.yaml, and manifest.json parse; the activation
-     posture agrees between the canonical interface and the Codex adapter.
+  2. agents/openai.yaml, agents/interface.yaml, and manifest.json parse; the shared
+     display fields and activation posture agree between the canonical interface and
+     the Codex adapter (they drift silently otherwise).
   3. Every `references/*.md` / `assets/*.md` path mentioned in repo Markdown points at a
      file that exists -- catches typos and stale links. (Another skill's internal file
      paths should be described by topic, not hardcoded, so it can load its own references.)
@@ -61,10 +62,22 @@ except FileNotFoundError:
 except json.JSONDecodeError as e:
     errors.append(f"manifest.json: JSON parse failed: {e}")
 
-# Activation posture must agree between the canonical interface and the Codex adapter.
+# The canonical interface (interface.yaml) and the Codex adapter (openai.yaml) share
+# display fields and an activation posture; both must agree or they drift silently.
+# Add a synced field by extending SHARED_INTERFACE_FIELDS; activation stays separate
+# because it is a boolean mapping, not a literal-equality check.
+SHARED_INTERFACE_FIELDS = ("display_name", "short_description", "default_prompt")
 if openai_meta and iface:
+    i_face = iface.get("interface") or {}
+    o_face = openai_meta.get("interface") or {}
+    for field in SHARED_INTERFACE_FIELDS:
+        if i_face.get(field) != o_face.get(field):
+            errors.append(
+                f"adapter drift: interface.yaml interface.{field} != "
+                f"openai.yaml interface.{field}"
+            )
     mode = ((iface.get("compatibility") or {}).get("activation") or {}).get("mode")
-    implicit = ((openai_meta.get("policy") or {}).get("allow_implicit_invocation"))
+    implicit = (openai_meta.get("policy") or {}).get("allow_implicit_invocation")
     if (mode == "implicit") != bool(implicit):
         errors.append(
             f"activation mismatch: interface.yaml activation.mode={mode!r} vs "
@@ -75,7 +88,7 @@ ref_files = sorted(glob.glob("references/*.md"))
 md_files = ["SKILL.md", "README.md"] + ref_files + sorted(glob.glob("assets/*.md"))
 bodies = {f: pathlib.Path(f).read_text(encoding="utf-8") for f in md_files}
 
-ref_pattern = re.compile(r"(?:references|assets)/[A-Za-z0-9_/\-]+\.md")
+ref_pattern = re.compile(r"(?:references|assets)/[A-Za-z0-9_\-]+\.md")
 referenced = set()
 for f, body in bodies.items():
     for ref in sorted(set(ref_pattern.findall(body))):

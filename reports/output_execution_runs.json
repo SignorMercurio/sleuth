@@ -34,7 +34,7 @@
       "execution_mode": "model",
       "model_executed": true,
       "command_executed": true,
-      "duration_ms": 21.1,
+      "duration_ms": 18.64,
       "provider": "anthropic",
       "model": "claude-fable-5",
       "usage": {
@@ -59,7 +59,7 @@
       "execution_mode": "model",
       "model_executed": true,
       "command_executed": true,
-      "duration_ms": 19.84,
+      "duration_ms": 18.49,
       "provider": "anthropic",
       "model": "claude-fable-5",
       "usage": {

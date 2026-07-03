@@ -54,6 +54,8 @@ stay untouched: dropped `use-defanged-protocol` (URL-shaped, N/A to an IP IoC) a
 Caveat on the generated `output_execution_runs.md`: its `duration_ms` (~20ms) and token
 counts reflect the replay harness, not the live ~13s generation; tokens are the sub-agent
 totals, marked estimated. The `output_sha256` values are the authoritative artifact.
+Reproduce via skill-creator's `run_output_execution.py` (external harness, like every
+sleuth eval) — the in-repo `model_run_runner.py` only replays the graded text.
 
 ## Next Fixes
 

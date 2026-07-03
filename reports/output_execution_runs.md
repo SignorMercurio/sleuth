@@ -19,8 +19,8 @@ Command runner evidence is present. This proves the eval harness executed an ext
 
 | Case | Variant | Mode | Model | Duration ms | Tokens | Score | Status |
 | --- | --- | --- | --- | ---: | ---: | ---: | --- |
-| overview-from-findings-modelrun | baseline | model | claude-fable-5 | 21.1 | 22892 | 80.0 | pass |
-| overview-from-findings-modelrun | with_skill | model | claude-fable-5 | 19.84 | 23279 | 100.0 | pass |
+| overview-from-findings-modelrun | baseline | model | claude-fable-5 | 18.64 | 22892 | 80.0 | pass |
+| overview-from-findings-modelrun | with_skill | model | claude-fable-5 | 18.49 | 23279 | 100.0 | pass |
 
 ## Next Fixes
 
