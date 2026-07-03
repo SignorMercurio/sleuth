@@ -28,7 +28,7 @@ IR-{YYYYMMDD}-{hostname}-{event_type}[-{event_id}].findings.md
 
 ## 写作层使用规则
 
-- 写作（步骤 8）只读：全部 findings 文件、报告模板、`references/report_naming.md`、`references/report_style.md`、本文件。不回看调查上下文，不碰 SIREN。内联写作且 findings 刚由本上下文写出时，无需回读文件。
+- 写作（步骤 8）只读：全部 findings 文件、报告模板、`references/report_naming.md`、`references/report_style.md`、`references/report_writing_rules.md`、本文件。不回看调查上下文，不碰 SIREN。内联写作且 findings 刚由本上下文写出时，无需回读文件。
 - 写作不得改变事实与措辞等级：「推测」不得升级为「已确认」，IoC 不得增删改，时间不得四舍五入到改变先后关系。
 - 写作中发现 findings 有缺口：不补写、不脑补，在报告对应位置写「无法确认」，并把缺口回报给编排者，由编排者决定是否回到步骤 2–7 补查。
 

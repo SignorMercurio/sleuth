@@ -3,7 +3,8 @@
 
 Checks:
   1. SKILL.md frontmatter parses as YAML, name is `sleuth`, description <= 1024 chars.
-  2. agents/openai.yaml parses as YAML.
+  2. agents/openai.yaml, agents/interface.yaml, and manifest.json parse; the activation
+     posture agrees between the canonical interface and the Codex adapter.
   3. Every `references/*.md` / `assets/*.md` path mentioned in repo Markdown points at a
      file that exists -- catches typos and stale links. (Another skill's internal file
      paths should be described by topic, not hardcoded, so it can load its own references.)
@@ -12,6 +13,7 @@ Checks:
 """
 
 import glob
+import json
 import pathlib
 import re
 import sys
@@ -39,18 +41,41 @@ else:
     except yaml.YAMLError as e:
         errors.append(f"SKILL.md: frontmatter YAML parse failed: {e}")
 
+def load_yaml(path):
+    try:
+        return yaml.safe_load(pathlib.Path(path).read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        errors.append(f"{path}: missing")
+    except yaml.YAMLError as e:
+        errors.append(f"{path}: YAML parse failed: {e}")
+    return None
+
+
+openai_meta = load_yaml("agents/openai.yaml")
+iface = load_yaml("agents/interface.yaml")
+
 try:
-    yaml.safe_load(pathlib.Path("agents/openai.yaml").read_text(encoding="utf-8"))
+    json.loads(pathlib.Path("manifest.json").read_text(encoding="utf-8"))
 except FileNotFoundError:
-    errors.append("agents/openai.yaml: missing")
-except yaml.YAMLError as e:
-    errors.append(f"agents/openai.yaml: YAML parse failed: {e}")
+    errors.append("manifest.json: missing")
+except json.JSONDecodeError as e:
+    errors.append(f"manifest.json: JSON parse failed: {e}")
+
+# Activation posture must agree between the canonical interface and the Codex adapter.
+if openai_meta and iface:
+    mode = ((iface.get("compatibility") or {}).get("activation") or {}).get("mode")
+    implicit = ((openai_meta.get("policy") or {}).get("allow_implicit_invocation"))
+    if (mode == "implicit") != bool(implicit):
+        errors.append(
+            f"activation mismatch: interface.yaml activation.mode={mode!r} vs "
+            f"openai.yaml allow_implicit_invocation={implicit!r}"
+        )
 
 ref_files = sorted(glob.glob("references/*.md"))
 md_files = ["SKILL.md", "README.md"] + ref_files + sorted(glob.glob("assets/*.md"))
 bodies = {f: pathlib.Path(f).read_text(encoding="utf-8") for f in md_files}
 
-ref_pattern = re.compile(r"(?:references|assets)/[A-Za-z0-9_\-]+\.md")
+ref_pattern = re.compile(r"(?:references|assets)/[A-Za-z0-9_/\-]+\.md")
 referenced = set()
 for f, body in bodies.items():
     for ref in sorted(set(ref_pattern.findall(body))):
