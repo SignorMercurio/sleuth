@@ -14,8 +14,13 @@ Human-readable surface for `reports/review_waivers.json`. Waivers cover warning-
 
 These stay warnings until fixed or explicitly accepted here:
 
-- **`output-lab` — blind adjudication pending.** The 5 blind A/B pairs in `reports/output_blind_review_pack.md` have no recorded reviewer decisions (`reports/output_review_adjudication.json` absent). Pending pairs must not be counted as human review evidence.
-- **`output-lab` — no model-executed runs.** `reports/output_quality_scorecard.md` grades static authored fixtures; the 0→100 delta is reproducibility evidence, not model-executed output evidence. At least one recorded model-executed case is needed before the delta is cited as skill effect.
+- **`output-lab` — blind adjudication pending.** The 5 blind A/B pairs in `reports/output_blind_review_pack.md` have no recorded reviewer decisions (`reports/output_review_adjudication.json` absent). Pending pairs must not be counted as human review evidence. A decision template is staged at `reports/output_review_decisions.json`.
+- **`output-lab` — assertion coverage gap (found by the model-run).** The real model-executed cross-check (below) scored baseline 80 / with-skill 80 / delta 0: the with-skill output defanged the IP but no assertion rewards that, and `use-defanged-protocol` (requires `hxxp`) is fixture-shaped for URL IoCs. Fix: add `no-raw-attacker-ip`, relax `use-defanged-protocol`, regenerate the blind pack + answer key. See `reports/output_quality_scorecard.md` → *Next Fixes*.
+
+## Closed since last review
+
+- **`output-lab` — model-executed run (was: none).** One case (`overview-from-findings`) now has real claude-fable-5 output for both variants: `reports/output_execution_runs.json`, snapshots under `evals/output/fixtures/overview-from-findings.*.model.md`, case def `evals/output/model_run_case.jsonl`. The honest delta is 0, which anchors the inflated static delta rather than proving skill effect — see the assertion-gap warning above.
+- **`governance` — score now backed by an artifact.** `reports/governance_scorecard.json` records score 95/100 (governed band), replacing the prior manifest-notes-only claim.
 
 ## Notes
 

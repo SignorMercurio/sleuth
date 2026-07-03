@@ -1,0 +1,25 @@
+{
+  "ok": true,
+  "failures": [],
+  "warnings": [],
+  "details": {
+    "skill_dir": "/Users/merc/Projects/sleuth",
+    "manifest_present": true,
+    "frontmatter_name": "sleuth",
+    "manifest_name": "sleuth",
+    "status": "active",
+    "maturity_tier": "production",
+    "review_cadence": "quarterly",
+    "governance_score": 95,
+    "declared_maturity_minimum": 80,
+    "computed_governance_band": "governed",
+    "computed_maturity_tier": "governed",
+    "score_breakdown": {
+      "metadata_integrity": 20,
+      "ownership_and_review": 20,
+      "boundary_and_eval": 25,
+      "operational_assets": 20,
+      "maintenance_evidence": 10
+    }
+  }
+}

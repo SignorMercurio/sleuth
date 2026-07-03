@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0",
+  "ok": true,
+  "cases": "/Users/merc/Projects/sleuth/evals/output/model_run_case.jsonl",
+  "runner": {
+    "mode": "command",
+    "command": [
+      "python3",
+      "/private/tmp/claude-502/-Users-merc-Projects-sleuth/fdd595ba-b8f5-4596-a96f-c9ec238011fa/scratchpad/mr_runner.py"
+    ],
+    "timeout_seconds": 30.0
+  },
+  "summary": {
+    "case_count": 1,
+    "variant_run_count": 2,
+    "command_executed_count": 2,
+    "model_executed_count": 2,
+    "recorded_fixture_count": 0,
+    "timing_observed_count": 2,
+    "token_observed_count": 0,
+    "token_estimated_count": 2,
+    "baseline_pass_rate": 80.0,
+    "with_skill_pass_rate": 80.0,
+    "delta": 0.0,
+    "regression_count": 0,
+    "failure_count": 0,
+    "gate_pass": true
+  },
+  "runs": [
+    {
+      "case_id": "overview-from-findings",
+      "variant": "baseline",
+      "status": "pass",
+      "execution_mode": "model",
+      "model_executed": true,
+      "command_executed": true,
+      "duration_ms": 20.82,
+      "provider": "anthropic",
+      "model": "claude-fable-5",
+      "usage": {
+        "input_tokens": 6,
+        "output_tokens": 22886,
+        "total_tokens": 22892,
+        "estimated": true
+      },
+      "score": 80.0,
+      "passed_count": 4,
+      "failed_count": 1,
+      "failed_assertions": [
+        "use-defanged-protocol"
+      ],
+      "output_sha256": "09491714d07fa49b752c9b201c6b2bbe84f72e85963ca96d8ea898c7bf56f6dc",
+      "failure": ""
+    },
+    {
+      "case_id": "overview-from-findings",
+      "variant": "with_skill",
+      "status": "pass",
+      "execution_mode": "model",
+      "model_executed": true,
+      "command_executed": true,
+      "duration_ms": 21.64,
+      "provider": "anthropic",
+      "model": "claude-fable-5",
+      "usage": {
+        "input_tokens": 6,
+        "output_tokens": 23273,
+        "total_tokens": 23279,
+        "estimated": true
+      },
+      "score": 80.0,
+      "passed_count": 4,
+      "failed_count": 1,
+      "failed_assertions": [
+        "use-defanged-protocol"
+      ],
+      "output_sha256": "98c36fc8fc2360b7c148969339d873e1c5234eadebf39ff4718df28339e19692",
+      "failure": ""
+    }
+  ],
+  "failures": [],
+  "artifacts": {
+    "json": "/Users/merc/Projects/sleuth/reports/output_execution_runs.json",
+    "markdown": "/Users/merc/Projects/sleuth/reports/output_execution_runs.md"
+  }
+}
