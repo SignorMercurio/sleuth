@@ -119,40 +119,17 @@ GROUP BY userIdentity.accessKeyId ORDER BY cnt DESC
 
 ## AK 泄露利用方式总结
 
-**控制台操作**：
-- 登录控制台（ConsoleSignin）
-- 处置安全告警（ModifySecurityCheckScheduleConfig）
-- 查看资源信息（Describe* API）
+按目的归类的高危 API（在 ActionTrail 按 `eventName` 检索，重点核 `sourceIpAddress` 与 `userIdentity`）：
 
-**主机控制**：
-- 云助手执行命令（RunCommand）
-- 修改 ECS root 密码（ModifyInstanceAttribute）
-- 修改 VNC 密码（ModifyInstanceVncPasswd）
-- 重启实例使密码生效（RebootInstance）
-- 通过 Workbench 免密登录（StartTerminalSession）
+| 目的 | 关键 API |
+|---|---|
+| 控制台操作 | `ConsoleSignin`、`ModifySecurityCheckScheduleConfig`（处置告警）、`Describe*`（查资源） |
+| 主机控制 | `RunCommand`（云助手执行）、`ModifyInstanceAttribute`（改 root 密码）、`ModifyInstanceVncPasswd`、`RebootInstance`、`StartTerminalSession`（Workbench 免密登录） |
+| 权限提升 | `CreateUser`、`AttachPolicyToUser`、`UpdateRole` / `AttachPolicyToRole`、`CreateAccessKey` |
+| 数据窃取 | `DescribeInstances`、`ListBuckets`、`GetObject`、`CreateSnapshot` / `ExportImage` |
+| 痕迹清除 | `DeleteSnapshot`、`DeleteTrail`、`UpdateLogStore` |
 
-**权限提升**：
-- 创建后门 RAM 用户（CreateUser）
-- 为用户附加权限（AttachPolicyToUser）
-- 修改角色权限（UpdateRole, AttachPolicyToRole）
-- 给 RAM 用户创建 AK（CreateAccessKey）
-
-**数据窃取**：
-- 列举 ECS 实例（DescribeInstances）
-- 列举 OSS Bucket（ListBuckets）
-- 读取 OSS 对象（GetObject）
-- 创建快照并导出（CreateSnapshot, ExportImage）
-
-**痕迹清除**：
-- 删除快照（DeleteSnapshot）
-- 删除审计日志（DeleteTrail）
-- 修改日志配置（UpdateLogStore）
-
-**检测方法**：
-1. 查看 Actiontrail 中的敏感 API 调用
-2. 检查云安全中心 AK 异常调用告警
-3. 关注源 IP 为非预期地域的调用
-4. 关注创建时间较新的 RAM 用户
+**检测**：ActionTrail 敏感 API 调用 + 云安全中心 AK 异常调用告警 + 源 IP 非预期地域 + 创建时间较新的 RAM 用户。
 
 ---
 
