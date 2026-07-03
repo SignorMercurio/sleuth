@@ -32,6 +32,10 @@
     {
       "text": "帮我威胁狩猎主动 hunt 一下",
       "family": "threat_hunting_talon"
+    },
+    {
+      "text": "帮我把上周的安全值班日报合并成一份周报",
+      "family": "non_ir_report_merge"
     }
   ]
 }
