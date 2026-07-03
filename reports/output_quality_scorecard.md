@@ -11,7 +11,7 @@ This v0 scorecard compares static without-skill and with-skill outputs using ass
 - Gate pass: `True`
 
 Blind review artifacts are generated separately so reviewers can inspect A/B outputs without seeing the answer key.
-Run output review adjudication after reviewer decisions are recorded; pending cases should stay pending rather than being counted as human agreement.
+Adjudication is complete: reviewer `mercury`, 5/5 agreement (`reports/output_review_adjudication.json`). These are static-fixture pairs, so 5/5 confirms the harness rather than real-holdout skill strength; the reviewer also flagged a wordiness/meta-clause issue now captured in `references/report_style.md`.
 
 ## Case Results
 

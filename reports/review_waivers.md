@@ -14,13 +14,17 @@ Human-readable surface for `reports/review_waivers.json`. Waivers cover warning-
 
 These stay warnings until fixed or explicitly accepted here:
 
-- **`output-lab` — blind adjudication pending.** The 5 blind A/B pairs in `reports/output_blind_review_pack.md` have no recorded reviewer decisions (`reports/output_review_adjudication.json` absent). Pending pairs must not be counted as human review evidence. A decision template is staged at `reports/output_review_decisions.json`.
 - **`output-lab` — assertion coverage gap (found by the model-run).** The real model-executed cross-check (below) scored baseline 80 / with-skill 80 / delta 0: the with-skill output defanged the IP but no assertion rewards that, and `use-defanged-protocol` (requires `hxxp`) is fixture-shaped for URL IoCs. Fix: add `no-raw-attacker-ip`, relax `use-defanged-protocol`, regenerate the blind pack + answer key. See `reports/output_quality_scorecard.md` → *Next Fixes*.
 
 ## Closed since last review
 
+- **`output-lab` — blind adjudication (was: pending).** All 5 blind A/B pairs adjudicated 2026-07-03, reviewer `mercury`, 5/5 agreement with the answer key, `ready_for_human_evidence: true`. Decisions in `reports/output_review_decisions.json`, adjudication in `reports/output_review_adjudication.json`. Note: these are static-fixture pairs, so 5/5 confirms the harness, not real-holdout skill strength. Reviewer flagged a recurring quality issue — see the style follow-up below.
 - **`output-lab` — model-executed run (was: none).** One case (`overview-from-findings`) now has real claude-fable-5 output for both variants: `reports/output_execution_runs.json`, snapshots under `evals/output/fixtures/overview-from-findings.*.model.md`, case def `evals/output/model_run_case.jsonl`. The honest delta is 0, which anchors the inflated static delta rather than proving skill effect — see the assertion-gap warning above.
 - **`governance` — score now backed by an artifact.** `reports/governance_scorecard.json` records score 95/100 (governed band), replacing the prior manifest-notes-only claim.
+
+## Reviewer-flagged follow-up (from blind adjudication)
+
+The blind review recorded a consistent qualitative note across 3 of 5 cases: the winning (skill) outputs are correct but wordy, trailing self-explanatory process/meta clauses (「按推测记录并交叉其他证据」, 「按证据驱动原则不点亮该技术，仅在证据缺口里说明」) and stiff word choices (「遥测」「得手」). Captured as a new rule in `references/report_style.md` (反 AI 腔清单): give the judgment and its evidence, then stop — drop the trailing "按 X 原则做 Y" tails.
 
 ## Notes
 
