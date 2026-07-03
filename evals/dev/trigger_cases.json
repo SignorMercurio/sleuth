@@ -68,6 +68,10 @@
     {
       "text": "review the code in this repo for bugs",
       "family": "code_review_en"
+    },
+    {
+      "text": "把这几份运维周报合并成一份文档",
+      "family": "non_ir_report_merge"
     }
   ]
 }
