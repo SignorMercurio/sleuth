@@ -9,7 +9,7 @@ Reports and supporting materials are generated in Simplified Chinese by design (
 ## Features
 
 - **Two investigation modes** — alarm-driven (UID + Event ID) or free-form (host anomaly only)
-- **12 investigation playbooks** + **6 tradecraft guides** + specialized guides (cloud-log routing, OOB/DNSLog, IIS upload tracing) + **MITRE ATT&CK mapping**
+- **Per-alarm-type investigation playbooks** (webshell, miner, reverse shell, brute force, ransomware, …) + **cross-cutting tradecraft guides** (log analysis, reverse reasoning, cloud forensics, threat intel, …) + specialized guides (cloud-log routing, OOB/DNSLog, IIS upload tracing) + **MITRE ATT&CK mapping** — see `references/playbook_index.md` for the routing table
 - **Parallel command orchestration** — independent remote commands are dispatched in a single round to cut investigation time
 - **Strictly read-only** — runs only commands that don't change system state (read files, list processes/network/services, inspect logs), never destructive or install commands; evidence integrity is preserved
 - **Adversarial verification gate** — every load-bearing claim is independently refuted before the report (sub-agent or inline) to guard against false attribution
@@ -99,25 +99,35 @@ Name several hosts / Client IDs (or point at an alarm affecting multiple assets)
 
 ```
 .
-├── agents/
-│   └── openai.yaml                         # Codex app metadata and SIREN MCP dependency hint
 ├── SKILL.md                                # Skill definition and workflow
+├── manifest.json                           # Package metadata: owner, maturity, review cadence, budget tier
+├── agents/
+│   ├── interface.yaml                      # Canonical cross-target interface contract
+│   └── openai.yaml                         # Codex app metadata and SIREN MCP dependency hint
 ├── assets/
 │   ├── report.md                           # Markdown report template copied from dossier/report.md
 │   └── style/                              # Hand-written writing samples (git-ignored), see README inside
-└── references/
-    ├── invest_*.md                         # 12 investigation playbooks (one is general tradecraft)
-    ├── tech_*.md                           # 6 tradecraft guides
-    ├── attack_framework.md                 # ATT&CK tactic/technique reference
-    ├── report_naming.md                    # IR-….md filename format, event_type slugs, multi-host rule
-    ├── findings_spec.md                    # Per-host findings worksheet: the investigation→report handoff
-    ├── report_style.md                     # Writing style guide distilled from hand-written articles
-    ├── cloud_log_queries.md                # WAF / SAS / ActionTrail log routing
-    ├── sas_sls_host_telemetry.md           # SAS SLS host telemetry queries (env-specific gotchas)
-    ├── oob_dnslog_investigation.md         # dnslog.cn / interact.sh / OOB callbacks
-    ├── recon_residual.md                   # Residual-risk follow-ups after the 6-axis sweep
-    ├── verification_checklist.md           # Adversarial verification gate run before the report
-    └── aspnet_webshell_upload_tracing.md   # ASP.NET webshell upload tracing
+├── references/
+│   ├── playbook_index.md                   # Step-3 routing table into the guides below
+│   ├── invest_*.md                         # Investigation playbooks, one per alarm type
+│   ├── tech_*.md                           # Cross-cutting tradecraft guides
+│   ├── attack_framework.md                 # ATT&CK tactic/technique reference
+│   ├── runtime_compat.md                   # Cross-client tool mapping, sub-agents, SIREN failure handling
+│   ├── report_naming.md                    # IR-….md filename format, event_type slugs, multi-host rule
+│   ├── findings_spec.md                    # Per-host findings worksheet: the investigation→report handoff
+│   ├── report_writing_rules.md             # Template block-by-block filling + project-specific constraints
+│   ├── report_style.md                     # Writing style guide distilled from hand-written articles
+│   ├── cloud_log_queries.md                # WAF / SAS / ActionTrail log routing
+│   ├── sas_sls_host_telemetry.md           # SAS SLS host telemetry queries (env-specific gotchas)
+│   ├── oob_dnslog_investigation.md         # dnslog.cn / interact.sh / OOB callbacks
+│   ├── ssh_login_attribution_sas.md        # SSH login source attribution via SAS telemetry
+│   ├── recon_residual.md                   # Residual-risk follow-ups after the 6-axis sweep
+│   ├── verification_checklist.md           # Adversarial verification gate run before the report
+│   └── aspnet_webshell_upload_tracing.md   # ASP.NET webshell upload tracing
+├── scripts/
+│   └── validate.py                         # Repo consistency checks (frontmatter, links, orphans; run in CI)
+├── evals/                                  # Trigger + output eval cases (dev, blind holdout, output fixtures)
+└── reports/                                # Generated evidence: output scorecard, blind A/B pack, waivers
 ```
 
 Files under `references/` are loaded on demand — the skill reads only the entries relevant to the current alarm or scenario, keeping the context window from being flooded on the first turn.

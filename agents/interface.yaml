@@ -13,7 +13,10 @@ compatibility:
     - "openai"
     - "generic"
   activation:
-    mode: "manual"
+    # implicit: routes automatically on context match (see frontmatter description
+    # and trigger evals); explicit invocation also works. Must stay consistent with
+    # agents/openai.yaml `allow_implicit_invocation` — validate.py asserts this.
+    mode: "implicit"
     paths: []
   execution:
     context: "inline"
