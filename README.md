@@ -9,18 +9,18 @@ Reports and supporting materials are generated in Simplified Chinese by design (
 ## Features
 
 - **Two investigation modes** — alarm-driven (UID + Event ID) or free-form (host anomaly only)
-- **Per-alarm-type investigation playbooks** (webshell, miner, reverse shell, brute force, ransomware, …) + **cross-cutting tradecraft guides** (log analysis, reverse reasoning, cloud forensics, threat intel, …) + specialized guides (cloud-log routing, OOB/DNSLog, IIS upload tracing) + **MITRE ATT&CK mapping** — see `references/playbook_index.md` for the routing table
+- **Per-alarm-type investigation playbooks** (webshell, miner, reverse shell, brute force, ransomware, …) + **cross-cutting tradecraft guides** (log analysis, reverse reasoning, cloud forensics, threat intel, …) + specialized guides (cloud-log routing, OOB/DNSLog, IIS upload tracing) + **MITRE ATT&CK mapping** — see `skills/sleuth/references/playbook_index.md` for the routing table
 - **Parallel command orchestration** — independent remote commands are dispatched in a single round to cut investigation time
 - **Strictly read-only** — runs only commands that don't change system state (read files, list processes/network/services, inspect logs), never destructive or install commands; evidence integrity is preserved
 - **Adversarial verification gate** — every load-bearing claim is independently refuted before the report (sub-agent or inline) to guard against false attribution
 - **Context-isolation sub-agents** — heavy log / SLS / full-disk output is dredged by a sub-agent (or inline) that returns only conclusions, keeping the orchestrator's context lean
 - **Multi-host engagements** — hosts are investigated one by one (SIREN works per client), each landing a verified `*.findings.md` worksheet; the deliverable is always a single merged report (see *Multi-host and merge* below)
 - **Markdown incident report** — each engagement writes one named `IR-....md` from the bundled Dossier-style template, using the findings worksheets as the only source of facts
-- **Human writing style** — report prose follows a style guide distilled from the author's hand-written IR articles (`references/report_style.md`); drop your own writing samples into `assets/style/` (git-ignored) to steer the voice
+- **Human writing style** — report prose follows a style guide distilled from the author's hand-written IR articles (`skills/sleuth/references/report_style.md`); drop your own writing samples into `skills/sleuth/assets/style/` (git-ignored) to steer the voice
 
 ## Prerequisites
 
-- **Claude Code or Codex** — latest stable. The skill follows the open agent skills format (`SKILL.md` with optional `references/`, `assets/`, and `agents/openai.yaml` metadata).
+- **Claude Code or Codex** — latest stable. The installable skill follows the open agent skills format under `skills/sleuth/` (`SKILL.md` with optional `references/`, `assets/`, and `agents/openai.yaml` metadata).
 - **SIREN MCP server** — the skill depends on SIREN list-client, remote-run, and alarm-detail tools, usually exposed as `mcp__siren__ls`, `mcp__siren__run`, and `mcp__siren__get_alarm_detail`. Configure SIREN as an MCP server in the client you use before running the skill.
 - **Optional `sls` skill** — used only when cloud-side WAF / SAS / ActionTrail logs are needed for cross-validation.
 
@@ -28,18 +28,17 @@ Reports and supporting materials are generated in Simplified Chinese by design (
 
 ### Codex — user-scope install
 
-Codex discovers user skills from `$HOME/.agents/skills`. For local use:
+Codex discovers user skills from `$HOME/.agents/skills`. Install from GitHub with the `skills` CLI:
 
 ```bash
-git clone https://github.com/SignorMercurio/sleuth.git \
-  ~/.agents/skills/sleuth
+npx skills add SignorMercurio/sleuth -y -g -a codex
 ```
 
 For active development, symlink this checkout instead of cloning a second copy:
 
 ```bash
 mkdir -p ~/.agents/skills
-ln -s /path/to/sleuth ~/.agents/skills/sleuth
+ln -s /path/to/sleuth/skills/sleuth ~/.agents/skills/sleuth
 ```
 
 Codex also scans repository-scoped skills under `.agents/skills` from the current working directory up to the repo root.
@@ -49,15 +48,7 @@ Codex also scans repository-scoped skills under `.agents/skills` from the curren
 Uses the community CLI [vercel-labs/skills](https://github.com/vercel-labs/skills):
 
 ```bash
-npx skills add SignorMercurio/sleuth
-```
-
-### Claude Code — `npx openskills`
-
-Uses [openskills](https://github.com/numman-ali/openskills), installing at user scope:
-
-```bash
-npx openskills install SignorMercurio/sleuth --global
+npx skills add SignorMercurio/sleuth -a claude-code
 ```
 
 ### Manual copy or rsync
@@ -66,11 +57,11 @@ For Claude Code, copy to `~/.claude/skills/sleuth`. For Codex, copy to `~/.agent
 
 ```bash
 # Codex
-rsync -avz --exclude '.git' ./sleuth/ \
+rsync -avz ./sleuth/skills/sleuth/ \
   <host>:~/.agents/skills/sleuth/
 
 # Claude Code
-rsync -avz --exclude '.git' ./sleuth/ \
+rsync -avz ./sleuth/skills/sleuth/ \
   <host>:~/.claude/skills/sleuth/
 ```
 
@@ -99,38 +90,40 @@ Name several hosts / Client IDs (or point at an alarm affecting multiple assets)
 
 ```
 .
-├── SKILL.md                                # Skill definition and workflow
 ├── manifest.json                           # Package metadata: owner, maturity, review cadence, budget tier
-├── agents/
-│   ├── interface.yaml                      # Canonical cross-target interface contract
-│   └── openai.yaml                         # Codex app metadata and SIREN MCP dependency hint
-├── assets/
-│   ├── report.md                           # Markdown report template copied from dossier/report.md
-│   └── style/                              # Hand-written writing samples (git-ignored), see README inside
-├── references/
-│   ├── playbook_index.md                   # Step-3 routing table into the guides below
-│   ├── invest_*.md                         # Investigation playbooks, one per alarm type
-│   ├── tech_*.md                           # Cross-cutting tradecraft guides
-│   ├── attack_framework.md                 # ATT&CK tactic/technique reference
-│   ├── runtime_compat.md                   # Cross-client tool mapping, sub-agents, SIREN failure handling
-│   ├── report_naming.md                    # IR-….md filename format, event_type slugs, multi-host rule
-│   ├── findings_spec.md                    # Per-host findings worksheet: the investigation→report handoff
-│   ├── report_writing_rules.md             # Template block-by-block filling + project-specific constraints
-│   ├── report_style.md                     # Writing style guide distilled from hand-written articles
-│   ├── cloud_log_queries.md                # WAF / SAS / ActionTrail log routing
-│   ├── sas_sls_host_telemetry.md           # SAS SLS host telemetry queries (env-specific gotchas)
-│   ├── oob_dnslog_investigation.md         # dnslog.cn / interact.sh / OOB callbacks
-│   ├── ssh_login_attribution_sas.md        # SSH login source attribution via SAS telemetry
-│   ├── recon_residual.md                   # Residual-risk follow-ups after the 6-axis sweep
-│   ├── verification_checklist.md           # Adversarial verification gate run before the report
-│   └── aspnet_webshell_upload_tracing.md   # ASP.NET webshell upload tracing
+├── skills/
+│   └── sleuth/
+│       ├── SKILL.md                        # Skill definition and workflow
+│       ├── agents/
+│       │   ├── interface.yaml              # Canonical cross-target interface contract
+│       │   └── openai.yaml                 # Codex app metadata and SIREN MCP dependency hint
+│       ├── assets/
+│       │   ├── report.md                   # Markdown report template copied from dossier/report.md
+│       │   └── style/                      # Hand-written writing samples (git-ignored), see README inside
+│       └── references/
+│           ├── playbook_index.md           # Step-3 routing table into the guides below
+│           ├── invest_*.md                 # Investigation playbooks, one per alarm type
+│           ├── tech_*.md                   # Cross-cutting tradecraft guides
+│           ├── attack_framework.md         # ATT&CK tactic/technique reference
+│           ├── runtime_compat.md           # Cross-client tool mapping, sub-agents, SIREN failure handling
+│           ├── report_naming.md            # IR-….md filename format, event_type slugs, multi-host rule
+│           ├── findings_spec.md            # Per-host findings worksheet: the investigation→report handoff
+│           ├── report_writing_rules.md     # Template block-by-block filling + project-specific constraints
+│           ├── report_style.md             # Writing style guide distilled from hand-written articles
+│           ├── cloud_log_queries.md        # WAF / SAS / ActionTrail log routing
+│           ├── sas_sls_host_telemetry.md   # SAS SLS host telemetry queries (env-specific gotchas)
+│           ├── oob_dnslog_investigation.md # dnslog.cn / interact.sh / OOB callbacks
+│           ├── ssh_login_attribution_sas.md # SSH login source attribution via SAS telemetry
+│           ├── recon_residual.md           # Residual-risk follow-ups after the 6-axis sweep
+│           ├── verification_checklist.md   # Adversarial verification gate run before the report
+│           └── aspnet_webshell_upload_tracing.md # ASP.NET webshell upload tracing
 ├── scripts/
 │   └── validate.py                         # Repo consistency checks (frontmatter, links, orphans; run in CI)
 ├── evals/                                  # Trigger + output eval cases (dev, blind holdout, output fixtures)
 └── reports/                                # Generated evidence: output scorecard, blind A/B pack, waivers
 ```
 
-Files under `references/` are loaded on demand — the skill reads only the entries relevant to the current alarm or scenario, keeping the context window from being flooded on the first turn.
+Files under `skills/sleuth/references/` are loaded on demand — the skill reads only the entries relevant to the current alarm or scenario, keeping the context window from being flooded on the first turn.
 
 ## Output examples
 
@@ -140,10 +133,10 @@ The skill writes a Markdown report into the cwd:
 - `IR-20260417-db-prod-rce.md` — free-form mode
 - `IR-20260417-web01-multi3-miner-123456.md` — multi-host engagement (3 hosts, primary `web01`)
 
-Each report file is copied from `assets/report.md` and then filled for the specific incident.
+Each report file is copied from `skills/sleuth/assets/report.md` in this repo and from the same relative path inside the installed skill, then filled for the specific incident.
 
-Event-type slugs (e.g. `webshell`, `rce`, `unknown`) are documented in `references/report_naming.md`, the single source of truth for the full table.
+Event-type slugs (e.g. `webshell`, `rce`, `unknown`) are documented in `skills/sleuth/references/report_naming.md`, the single source of truth for the full table.
 
 ## Contributing
 
-Playbooks and tradecraft guides live in `references/`, and the report template lives in `assets/report.md`. Playbooks, guides, and the report template are plain Markdown — PRs adding new attack types or refining command snippets are welcome. Template changes should be made in the upstream `dossier` project and then synced into this skill.
+Playbooks and tradecraft guides live in `skills/sleuth/references/`, and the report template lives in `skills/sleuth/assets/report.md`. Playbooks, guides, and the report template are plain Markdown — PRs adding new attack types or refining command snippets are welcome. Template changes should be made in the upstream `dossier` project and then synced into this skill.
