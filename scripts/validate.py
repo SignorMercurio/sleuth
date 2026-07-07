@@ -2,18 +2,20 @@
 """Consistency checks for the SLEUTH skill repo. Run from the repo root.
 
 Checks:
-  1. SKILL.md frontmatter parses as YAML, name is `sleuth`, description <= 1024 chars.
-  2. agents/openai.yaml, agents/interface.yaml, and manifest.json parse; the shared
+  1. skills/sleuth/SKILL.md frontmatter parses as YAML, name is `sleuth`,
+     description <= 1024 chars.
+  2. skills/sleuth/agents/openai.yaml, skills/sleuth/agents/interface.yaml,
+     and manifest.json parse; the shared
      display fields and activation posture agree between the canonical interface and
      the Codex adapter (they drift silently otherwise).
-  3. Every `references/*.md` / `assets/*.md` path mentioned in repo Markdown points at a
-     file that exists -- catches typos and stale links. (Another skill's internal file
-     paths should be described by topic, not hardcoded, so it can load its own references.)
-  4. No orphan file under references/ -- each must be reachable from SKILL.md or
-     another document, or the runtime will never load it.
+  3. Every `references/*.md` / `assets/*.md` skill-relative path and every
+     `skills/sleuth/...` repo path mentioned in repo Markdown points at a file that
+     exists -- catches typos and stale links. (Another skill's internal file paths
+     should be described by topic, not hardcoded, so it can load its own references.)
+  4. No orphan file under skills/sleuth/references/ -- each must be reachable from
+     SKILL.md or another document, or the runtime will never load it.
 """
 
-import glob
 import json
 import pathlib
 import re
@@ -22,25 +24,27 @@ import sys
 import yaml
 
 DESCRIPTION_LIMIT = 1024
+SKILL_ROOT = pathlib.Path("skills/sleuth")
+SKILL_PATH = SKILL_ROOT / "SKILL.md"
 
 errors = []
 
-skill = pathlib.Path("SKILL.md").read_text(encoding="utf-8")
+skill = SKILL_PATH.read_text(encoding="utf-8")
 m = re.match(r"^---\n(.*?)\n---\n", skill, re.S)
 if not m:
-    errors.append("SKILL.md: missing YAML frontmatter")
+    errors.append(f"{SKILL_PATH}: missing YAML frontmatter")
 else:
     try:
         fm = yaml.safe_load(m.group(1))
         if fm.get("name") != "sleuth":
-            errors.append(f"SKILL.md: frontmatter name must be 'sleuth', got {fm.get('name')!r}")
+            errors.append(f"{SKILL_PATH}: frontmatter name must be 'sleuth', got {fm.get('name')!r}")
         desc = fm.get("description") or ""
         if not desc:
-            errors.append("SKILL.md: frontmatter description missing")
+            errors.append(f"{SKILL_PATH}: frontmatter description missing")
         elif len(desc) > DESCRIPTION_LIMIT:
-            errors.append(f"SKILL.md: description is {len(desc)} chars (limit {DESCRIPTION_LIMIT})")
+            errors.append(f"{SKILL_PATH}: description is {len(desc)} chars (limit {DESCRIPTION_LIMIT})")
     except yaml.YAMLError as e:
-        errors.append(f"SKILL.md: frontmatter YAML parse failed: {e}")
+        errors.append(f"{SKILL_PATH}: frontmatter YAML parse failed: {e}")
 
 def load_yaml(path):
     try:
@@ -52,8 +56,8 @@ def load_yaml(path):
     return None
 
 
-openai_meta = load_yaml("agents/openai.yaml")
-iface = load_yaml("agents/interface.yaml")
+openai_meta = load_yaml(SKILL_ROOT / "agents/openai.yaml")
+iface = load_yaml(SKILL_ROOT / "agents/interface.yaml")
 
 try:
     json.loads(pathlib.Path("manifest.json").read_text(encoding="utf-8"))
@@ -84,22 +88,42 @@ if openai_meta and iface:
             f"openai.yaml allow_implicit_invocation={implicit!r}"
         )
 
-ref_files = sorted(glob.glob("references/*.md"))
-md_files = ["SKILL.md", "README.md"] + ref_files + sorted(glob.glob("assets/*.md"))
+ref_files = sorted(str(p) for p in (SKILL_ROOT / "references").glob("*.md"))
+md_paths = (
+    [SKILL_PATH, pathlib.Path("README.md")]
+    + sorted((SKILL_ROOT / "references").glob("*.md"))
+    + sorted((SKILL_ROOT / "assets").glob("**/*.md"))
+)
+md_files = [str(p) for p in md_paths]
 bodies = {f: pathlib.Path(f).read_text(encoding="utf-8") for f in md_files}
 
-ref_pattern = re.compile(r"(?:references|assets)/[A-Za-z0-9_\-]+\.md")
+ref_pattern = re.compile(
+    r"(?:skills/sleuth/)?(?:references|assets)/[A-Za-z0-9_\-/]+\.md"
+)
+
+
+def resolve_ref(ref, source):
+    if ref.startswith("skills/sleuth/"):
+        return pathlib.Path(ref)
+    source_path = pathlib.Path(source)
+    if source_path == SKILL_PATH or SKILL_ROOT in source_path.parents:
+        return SKILL_ROOT / ref
+    return pathlib.Path(ref)
+
+
 referenced = set()
 for f, body in bodies.items():
     for ref in sorted(set(ref_pattern.findall(body))):
-        if ref != f:
-            referenced.add(ref)
-        if not pathlib.Path(ref).exists():
-            errors.append(f"{f}: broken reference {ref}")
+        resolved = resolve_ref(ref, f)
+        resolved_str = str(resolved)
+        if resolved_str != f:
+            referenced.add(resolved_str)
+        if not resolved.exists():
+            errors.append(f"{f}: broken reference {ref} -> {resolved}")
 
 for p in ref_files:
     if p not in referenced:
-        errors.append(f"{p}: orphan, not referenced from SKILL.md or any other document")
+        errors.append(f"{p}: orphan, not referenced from {SKILL_PATH} or any other document")
 
 if errors:
     print("FAIL")

@@ -2,21 +2,25 @@
 
 ## Project Scope
 
-- sleuth is a security-investigation agent skill repository: `SKILL.md` (SLEUTH,
-  read-only remote IR investigation via SIREN, ATT&CK chain + Chinese IR report),
-  plus `agents/`, `assets/`, `references/`, `scripts/`, `evals/`.
-- `assets/report.md` is a deployed copy. The source of truth is
+- sleuth is a security-investigation agent skill repository. The installable
+  skill package lives under `skills/sleuth/`: `SKILL.md` (SLEUTH, read-only
+  remote IR investigation via SIREN, ATT&CK chain + Chinese IR report), plus
+  `agents/`, `assets/`, and `references/`.
+- Repo-level `scripts/`, `evals/`, and `reports/` are validation/evidence
+  surfaces; they are not part of the installed skill package.
+- `skills/sleuth/assets/report.md` is a deployed copy. The source of truth is
   `/Users/merc/Projects/dossier/report.md`, synced here by the dossier repo's
-  deploy target. Do not hand-edit `assets/report.md`; change the dossier source
-  and re-sync (see the global `report-sync` skill).
+  deploy target. Do not hand-edit it; change the dossier source and re-sync
+  (see the global `report-sync` skill).
 - The skill also deploys to the remote SIREN host at
-  `/root/.agents/skills/sleuth`: rsync driven by `git ls-files`, never
-  `--delete`, `chown -R root:root` afterwards, verify remote hash.
+  `/root/.agents/skills/sleuth`: sync tracked files from `skills/sleuth/`
+  into that remote directory, never repo root, never `--delete`,
+  `chown -R root:root` afterwards, verify remote hash.
 
 ## Operating Style
 
-- Keep `SKILL.md` concise and imperative; preserve investigation behavior
-  unless a change is explicitly requested.
+- Keep `skills/sleuth/SKILL.md` concise and imperative; preserve investigation
+  behavior unless a change is explicitly requested.
 - Investigation output discipline: read-only on victim hosts, conclusions split
   into confirmed vs unconfirmed, no raw sensitive payloads in reports.
 - Pushes go to both GitHub (`origin`) and GitLab; check `git remote -v` before
@@ -25,5 +29,6 @@
 ## Verification
 
 - `bash /Users/merc/.agents/skills/health/scripts/check-doc-refs.sh .`
-- After report-template sync: `cmp -s assets/report.md ../dossier/report.md`.
+- After report-template sync:
+  `cmp -s skills/sleuth/assets/report.md ../dossier/report.md`.
 - After remote deploy: compare file hashes on the SIREN host.
