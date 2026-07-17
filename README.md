@@ -139,4 +139,6 @@ Event-type slugs (e.g. `webshell`, `rce`, `unknown`) are documented in `skills/s
 
 ## Contributing
 
-Playbooks and tradecraft guides live in `skills/sleuth/references/`, and the report template lives in `skills/sleuth/assets/report.md`. Playbooks, guides, and the report template are plain Markdown — PRs adding new attack types or refining command snippets are welcome. Template changes should be made in the upstream `dossier` project and then synced into this skill.
+Playbooks and tradecraft guides live in `skills/sleuth/references/`, and the report template lives in `skills/sleuth/assets/report.md`. Everything is plain Markdown — PRs adding new attack types or environment-specific tradecraft are welcome. Keep generic command recipes out of the references: the model already knows them, so the guides carry judgment rules, environment-specific gotchas, and concrete attacker indicators instead.
+
+Report-writing rules are layered, one authoritative home per rule: block-local fill rules live in the template's HTML comments, cross-cutting constraints in `skills/sleuth/references/report_writing_rules.md`, and prose style in `skills/sleuth/references/report_style.md` — put a new rule in its matching layer rather than restating it across files. Template changes (including its comments) should be made in the upstream `dossier` project and then synced into this skill.
