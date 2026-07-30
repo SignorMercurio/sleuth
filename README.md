@@ -8,7 +8,7 @@ Reports and supporting materials are generated in Simplified Chinese by design (
 
 ## Features
 
-- **Two investigation modes** — alarm-driven (UID + Event ID) or free-form (host anomaly only)
+- **Two investigation modes** — alarm-driven (UID + numeric alarm `Id`) or free-form (host anomaly only)
 - **Per-alarm-type investigation playbooks** (webshell, miner, reverse shell, brute force, ransomware, …) + **cross-cutting tradecraft guides** (log analysis, reverse reasoning, cloud forensics, threat intel, …) + specialized guides (cloud-log routing, OOB/DNSLog, IIS upload tracing) + **MITRE ATT&CK mapping** — see `skills/sleuth/references/playbook_index.md` for the routing table
 - **Parallel command orchestration** — independent remote commands are dispatched in a single round to cut investigation time
 - **Strictly read-only** — runs only commands that don't change system state (read files, list processes/network/services, inspect logs), never destructive or install commands; evidence integrity is preserved
@@ -21,7 +21,8 @@ Reports and supporting materials are generated in Simplified Chinese by design (
 ## Prerequisites
 
 - **Claude Code or Codex** — latest stable. The installable skill follows the open agent skills format under `skills/sleuth/` (`SKILL.md` with optional `references/`, `assets/`, and `agents/openai.yaml` metadata).
-- **SIREN MCP server** — the skill depends on SIREN list-client, remote-run, and alarm-detail tools, usually exposed as `mcp__siren__ls`, `mcp__siren__run`, and `mcp__siren__get_alarm_detail`. Configure SIREN as an MCP server in the client you use before running the skill.
+- **SIREN MCP server** — the skill depends on SIREN list-client and remote-run tools, usually exposed as `mcp__siren__ls` and `mcp__siren__run`. Configure SIREN as an MCP server in the client you use before running the skill.
+- **`$sas` skill** — required for alarm-driven mode to list Security Center alarms and retrieve detail by the numeric `Id` returned by an alarm list.
 - **Optional `sls` skill** — used only when cloud-side WAF / SAS / ActionTrail logs are needed for cross-validation.
 
 ## Install
@@ -73,10 +74,10 @@ After install, run `/skills` in Claude Code or mention `$sleuth` / use the skill
 
 Provide:
 - Aliyun tenant **UID**
-- Alarm **Event ID**
+- Alarm **Event ID** (the positive numeric `Id` returned by a SAS alarm list)
 - SIREN **Client ID** (if omitted, the skill lists available clients for you to pick)
 
-The skill pulls the alarm detail and runs the matching playbook end to end.
+The skill obtains the alarm detail through `$sas` and runs the matching playbook end to end.
 
 ### Free-form mode
 

@@ -34,7 +34,8 @@ description: SLEUTH · 安全应急响应专家：通过 SIREN 在受害主机�
 
 本 skill 兼容 Claude Code 与 Codex；工具按运行环境的等价物使用，不要因名称不一致而跳过流程。
 
-- **SIREN MCP**（主线，远程只读取证）：优先用 `mcp__siren__ls` / `mcp__siren__run` / `mcp__siren__get_alarm_detail`；工具名不同就用等价的 list client / remote run / alarm detail。完全不可用则告知用户缺 SIREN MCP 并结束，**不要改用本地 shell/SSH 代替**。
+- **SIREN MCP**（主线，远程只读取证）：SLEUTH 只使用 `mcp__siren__ls` / `mcp__siren__run`；仅在运行环境实际暴露了其他名称时才用等价的 list client / remote run，**不得臆造 `list_clients`、`exec`、`wait` 等不存在的工具**。即使运行环境自动批准了 `deploy` 或其他写操作，SLEUTH 也绝不调用。完全不可用则告知用户缺 SIREN MCP 并结束，**不要改用本地 shell/SSH 代替**。
+- **SAS 告警**（模式一）：只调用已安装的 `$sas` skill 获取告警详情，不要由 SLEUTH 直接执行 SAS CLI；详情查询使用告警列表返回的数字 `Id`，不要把 `AlarmUniqueInfo` 当作 ID。
 - **其余工具**（读 `references`/`assets`、调 `sls` skill、联网查 CVE/Exploit、派生子 agent）一律用运行环境的等价物；子 agent 同受只读护栏、未必能访问 SIREN，不可用时按只读护栏内联降级，**不要跳过对应步骤**。
 
 跨客户端工具映射、子 agent 重输出隔离与降级、SIREN 异常处理（超时/断线/日志被清）的完整规则见 **`references/runtime_compat.md`**。
@@ -67,7 +68,7 @@ description: SLEUTH · 安全应急响应专家：通过 SIREN 在受害主机�
 
 三个可选参数，据此**自动判断**调查模式：
 
-- **UID** + **Event ID**（阿里云账号 ID + 告警事件 ID）→ **模式一·告警驱动**：先拉告警上下文，文件名含 UID + Event ID
+- **UID** + **Event ID**（阿里云账号 ID + 告警列表中的数字 `Id`）→ **模式一·告警驱动**：先拉告警上下文，文件名含 UID + Event ID
 - 二者均缺失 → **模式二·自由调查**：跳过告警详情，向用户问异常现象作线索，文件名用主机名 + 日期（无 event_id），无需追问
 - 仅缺其一 → 先问用户，拿不到则进入模式二
 - **Client ID**（SIREN 客户端）缺失 → 用 SIREN list client 工具列出客户端让用户选
@@ -84,6 +85,7 @@ description: SLEUTH · 安全应急响应专家：通过 SIREN 在受害主机�
 本 skill 只负责「对已发生的安全告警 / 入侵线索做只读远程溯源，并产出应急响应报告」。以下相邻请求**不应**路由到这里：
 
 - **主动威胁狩猎、无告警的假设驱动横向排查（TALON 领域）**——SLEUTH 是事件驱动的事后调查，不做无线索的主动狩猎
+- **纯云安全中心告警查询**（只列举或读取 SAS 告警、不做主机溯源）——交给 `$sas` skill
 - **纯云端日志查询**（只捞 WAF / SAS / ActionTrail 日志、不做主机溯源）——交给 `sls` skill；SLEUTH 仅在需交叉验证时调用它
 - **纯代码审计 / 漏洞修复 / 系统加固**——本 skill 只产出报告与处置建议，不改代码或系统状态
 - **缺安全事件上下文的通用「检查一下 / 看看有没有问题」**——不属于应急响应
@@ -98,7 +100,7 @@ description: SLEUTH · 安全应急响应专家：通过 SIREN 在受害主机�
 多主机委托时在此确定完整主机清单与调查顺序（首发告警或影响最严重的主机优先）。调查过程中证据指向清单外的主机（如横向移动目标）时，向用户确认后追加到清单。
 
 ### 1.2 【模式一】获取告警详情
-调用 SIREN alarm detail 工具，传入 UID 与 Event ID — 提取告警类型/级别、受影响资产、攻击特征、告警时间。
+调用 `$sas` skill，传入 UID 与数字 Event ID — 提取告警类型/级别、受影响资产、攻击特征、告警时间。若输入不是告警列表返回的数字 `Id`，先让 `$sas` 做一次有边界的列表查询来定位；仍无法唯一匹配则向用户索取数字 `Id`，拿不到就明确告警上下文缺口并进入模式二。
 
 ### 1.3 【模式二】获取用户描述
 询问：观察到什么异常？何时开始？有无可疑文件/进程/IP 线索？
