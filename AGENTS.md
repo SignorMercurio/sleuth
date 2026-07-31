@@ -13,10 +13,9 @@
   deploy target. Do not hand-edit it; change the dossier source and re-sync
   (see the global `report-sync` skill).
 - The skill also deploys to the remote SIREN host at
-  `/root/.agents/skills/sleuth`: sync tracked files from `skills/sleuth/`
-  plus the git-ignored `assets/style/` writing samples (not in `git ls-files`;
-  sync them explicitly), never repo root, never `--delete`,
-  `chown -R root:root` afterwards, verify remote hash.
+  `/root/.agents/skills/sleuth`: sync tracked files from `skills/sleuth/`,
+  never repo root, never `--delete`, `chown -R root:root` afterwards, and
+  verify remote hashes.
 
 ## Operating Style
 
@@ -38,9 +37,9 @@
 - `bash /Users/merc/.agents/skills/health/scripts/check-doc-refs.sh .`
 - After report-template sync:
   `cmp -s skills/sleuth/assets/report.md ../dossier/report.md`.
-- After report-rule changes: generate a sample report from
-  `evals/output/fixtures/web01-webshell.findings.md` per SKILL step 8 (into a
-  scratch dir, not the repo) and review the prose against
-  `skills/sleuth/references/report_style.md`; have the writer report rule
-  conflicts it hit.
+- After report-rule changes: regenerate the affected fixtures under
+  `evals/output/fixtures/full_reports/` with an isolated SKILL step 8 writer,
+  run `python3 evals/output/validate_full_reports.py`, and review the prose
+  against `skills/sleuth/references/report_style.md`; have the writer report
+  rule conflicts it hit.
 - After remote deploy: compare file hashes on the SIREN host.

@@ -1,0 +1,117 @@
+{
+  "schema_version": "1.0",
+  "cases": [
+    {
+      "id": "simple-webshell",
+      "input_files": [
+        "fixtures/web01-webshell.findings.md"
+      ],
+      "report": "fixtures/full_reports/simple-webshell.md",
+      "expected_severity": "高危",
+      "attacker_iocs": [
+        "203.0.113.45"
+      ],
+      "required": [
+        "很可能",
+        "访问日志",
+        "进程启动记录"
+      ],
+      "forbidden": [
+        "- [x]",
+        "- [/]",
+        "SIP Flood",
+        "loader.exe"
+      ],
+      "timeline_min": 4,
+      "timeline_max": 6,
+      "action_min": 5,
+      "action_max": 8,
+      "visible_han_min": 900,
+      "visible_han_max": 2400
+    },
+    {
+      "id": "no-current-intrusion",
+      "input_files": [
+        "fixtures/app01-no-current-intrusion.findings.md"
+      ],
+      "report": "fixtures/full_reports/no-current-intrusion.md",
+      "expected_severity": "低危",
+      "attacker_iocs": [],
+      "required": [
+        "未发现当前入侵痕迹",
+        "无法确认"
+      ],
+      "forbidden": [
+        "已确认入侵",
+        "SIP Flood",
+        "loader.exe",
+        "203.0.113[.]45"
+      ],
+      "timeline_min": 4,
+      "timeline_max": 6,
+      "action_min": 1,
+      "action_max": 4,
+      "visible_han_min": 700,
+      "visible_han_max": 1900
+    },
+    {
+      "id": "complex-rce-credential",
+      "input_files": [
+        "fixtures/api01-rce-credential.findings.md"
+      ],
+      "report": "fixtures/full_reports/complex-rce-credential.md",
+      "expected_severity": "高危",
+      "attacker_iocs": [
+        "203.0.113.77"
+      ],
+      "required": [
+        "- [x]",
+        "- [/]",
+        "- [ ]",
+        "云凭据"
+      ],
+      "forbidden": [
+        "SIP Flood",
+        "loader.exe",
+        "203.0.113[.]45"
+      ],
+      "timeline_min": 4,
+      "timeline_max": 6,
+      "action_min": 5,
+      "action_max": 8,
+      "visible_han_min": 1200,
+      "visible_han_max": 3200
+    },
+    {
+      "id": "multi-host-rce",
+      "input_files": [
+        "fixtures/gateway01-multi-rce.findings.md",
+        "fixtures/worker02-multi-rce.findings.md"
+      ],
+      "report": "fixtures/full_reports/multi-host-rce.md",
+      "expected_severity": "高危",
+      "attacker_iocs": [
+        "203.0.113.88"
+      ],
+      "required": [
+        "gateway01",
+        "worker02",
+        "跨主机关联分析",
+        "- [x]",
+        "- [/]",
+        "- [ ]"
+      ],
+      "forbidden": [
+        "SIP Flood",
+        "loader.exe",
+        "203.0.113[.]45"
+      ],
+      "timeline_min": 4,
+      "timeline_max": 6,
+      "action_min": 5,
+      "action_max": 8,
+      "visible_han_min": 1500,
+      "visible_han_max": 4000
+    }
+  ]
+}

@@ -14,18 +14,18 @@ Human-readable surface for `reports/review_waivers.json`. Waivers cover warning-
 
 These stay warnings until fixed or explicitly accepted here:
 
-- **`output-lab` — main rubric not yet synced (low priority, intentional).** The defang-aware `no-raw-attacker-ip` assertion is only on the separate model-run case, not the main `cases.jsonl`/blind pack. Porting it invalidates the closed adjudication (rubric change → blind-pack sha change → re-attest), so it's deferred to the next blind review round. See `reports/output_quality_scorecard.md` → *Next Fixes*.
+- **`output-lab` — refreshed blind review pending.** The 2026-07-31 rubric and output pairs changed, so the previous five reviewer choices were cleared. `reports/output_review_decisions.json` is now a blank template and the answer key remains hidden by the adjudication output until a new blind review is recorded.
+- **`output-lab` — no current paired model holdout.** Four current full reports now exercise simple, no-current-intrusion, complex, and multi-host cases, but they are skill-only forward tests. They prove contract compliance, not causal improvement against a no-skill baseline.
 
 ## Closed since last review
 
-- **`output-lab` — assertion coverage gap (was: open).** The model-run rubric now rewards the real skill increment: dropped the URL-shaped `use-defanged-protocol` (N/A to an IP IoC), added `no-raw-attacker-ip`. Re-run scores baseline 80 / with-skill 100 / delta +20 — the first delta reflecting skill effect, not a straw-man gap. Done on the separate case `overview-from-findings-modelrun` so the closed adjudication stays valid.
-- **`output-lab` — blind adjudication (was: pending).** All 5 blind A/B pairs adjudicated 2026-07-03, reviewer `mercury`, 5/5 agreement with the answer key, `ready_for_human_evidence: true`. Decisions in `reports/output_review_decisions.json`, adjudication in `reports/output_review_adjudication.json`. Note: these are static-fixture pairs, so 5/5 confirms the harness, not real-holdout skill strength. Reviewer flagged a recurring quality issue — see the style follow-up below.
-- **`output-lab` — model-executed run (was: none).** One case (`overview-from-findings`) now has real claude-fable-5 output for both variants: `reports/output_execution_runs.json`, snapshots under `evals/output/fixtures/overview-from-findings.*.model.md`, case def `evals/output/model_run_case.jsonl`. The honest delta is 0, which anchors the inflated static delta rather than proving skill effect — see the assertion-gap warning above.
+- **`output-lab` — complete-report regression (was: absent).** Four synthetic findings bundles and four reports generated through isolated step-8 writers now cover a simple Webshell, a historical alert with no current intrusion, a complex RCE with credential exposure, and a multi-host chain. `python3 evals/output/validate_full_reports.py` checks structure, severity, action status, IoC display, internal-language leakage, repetition, and broad case-specific length bands.
+- **`output-lab` — unnatural wording follow-up (was: open).** The current style rules reject 「进程遥测」「大概率得手」 and process-meta tails, prefer customer-facing evidence terms, and forbid semicolon-compressed action chains. The refreshed micro scorecard passes all five skill-side cases; human naturalness review remains pending as recorded above.
 - **`governance` — score now backed by an artifact.** `reports/governance_scorecard.json` records score 95/100 (governed band), replacing the prior manifest-notes-only claim.
 
-## Reviewer-flagged follow-up (from blind adjudication)
+## Historical reviewer feedback
 
-The blind review recorded a consistent qualitative note across 3 of 5 cases: the winning (skill) outputs are correct but wordy, trailing self-explanatory process/meta clauses (「按推测记录并交叉其他证据」, 「按证据驱动原则不点亮该技术，仅在证据缺口里说明」) and stiff word choices (「遥测」「得手」). Captured as a new rule in `references/report_style.md` (反 AI 腔清单): give the judgment and its evidence, then stop — drop the trailing "按 X 原则做 Y" tails.
+The superseded 2026-07-03 blind review found correct outputs were still wordy, retained process-meta tails, and used stiff words such as 「遥测」「得手」. The 2026-07-31 style and eval changes target those findings. This note preserves provenance but is not evidence that the refreshed output pairs have passed human review.
 
 ## Notes
 

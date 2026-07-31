@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "ok": true,
+  "manifest": "evals/output/full_report_cases.json",
+  "template": "skills/sleuth/assets/report.md",
+  "summary": {
+    "case_count": 4,
+    "passed_count": 4,
+    "failed_count": 0,
+    "gate_pass": true
+  },
+  "results": [
+    {
+      "id": "simple-webshell",
+      "report": "evals/output/fixtures/full_reports/simple-webshell.md",
+      "passed": true,
+      "failures": [],
+      "metrics": {
+        "directive_starts": 11,
+        "directive_ends": 11,
+        "severity": "高危",
+        "timeline_nodes": 5,
+        "actions": 6,
+        "visible_han_chars_without_attack_matrix": 1491,
+        "duplicate_sentence_count": 0
+      }
+    },
+    {
+      "id": "no-current-intrusion",
+      "report": "evals/output/fixtures/full_reports/no-current-intrusion.md",
+      "passed": true,
+      "failures": [],
+      "metrics": {
+        "directive_starts": 11,
+        "directive_ends": 11,
+        "severity": "低危",
+        "timeline_nodes": 4,
+        "actions": 2,
+        "visible_han_chars_without_attack_matrix": 1375,
+        "duplicate_sentence_count": 0
+      }
+    },
+    {
+      "id": "complex-rce-credential",
+      "report": "evals/output/fixtures/full_reports/complex-rce-credential.md",
+      "passed": true,
+      "failures": [],
+      "metrics": {
+        "directive_starts": 11,
+        "directive_ends": 11,
+        "severity": "高危",
+        "timeline_nodes": 5,
+        "actions": 7,
+        "visible_han_chars_without_attack_matrix": 1573,
+        "duplicate_sentence_count": 0
+      }
+    },
+    {
+      "id": "multi-host-rce",
+      "report": "evals/output/fixtures/full_reports/multi-host-rce.md",
+      "passed": true,
+      "failures": [],
+      "metrics": {
+        "directive_starts": 11,
+        "directive_ends": 11,
+        "severity": "高危",
+        "timeline_nodes": 6,
+        "actions": 7,
+        "visible_han_chars_without_attack_matrix": 1828,
+        "duplicate_sentence_count": 0
+      }
+    }
+  ]
+}

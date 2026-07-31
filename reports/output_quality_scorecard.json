@@ -3,12 +3,12 @@
   "cases": "/Users/merc/Projects/sleuth/evals/output/cases.jsonl",
   "summary": {
     "case_count": 5,
-    "file_backed_case_count": 1,
+    "file_backed_case_count": 2,
     "near_neighbor_case_count": 1,
-    "boundary_case_count": 1,
-    "baseline_pass_rate": 0.0,
+    "boundary_case_count": 2,
+    "baseline_pass_rate": 22.33,
     "with_skill_pass_rate": 100.0,
-    "delta": 100.0,
+    "delta": 77.67,
     "regression_count": 0,
     "gate_pass": true,
     "failure_taxonomy": [],
@@ -21,7 +21,9 @@
       "input_files": [
         "fixtures/web01-webshell.findings.md"
       ],
-      "metadata": {},
+      "metadata": {
+        "case_type": "file_backed"
+      },
       "baseline": {
         "score": 0.0,
         "passed_count": 0,
@@ -50,24 +52,26 @@
             ]
           },
           {
-            "id": "no-raw-protocol",
-            "description": "IoC 协议 defang，不出现裸 http",
-            "weight": 1.0,
-            "failure_type": "ioc_not_defanged",
-            "passed": false,
-            "missing": [],
-            "present_forbidden": [
-              "http"
-            ]
-          },
-          {
-            "id": "use-defanged-protocol",
-            "description": "使用 defang 协议 hxxp",
+            "id": "defang-attacker-ip",
+            "description": "攻击者 IP 已转义",
             "weight": 1.0,
             "failure_type": "ioc_not_defanged",
             "passed": false,
             "missing": [
-              "hxxp"
+              "203.0.113[.]45"
+            ],
+            "present_forbidden": [
+              "203.0.113.45"
+            ]
+          },
+          {
+            "id": "natural-evidence-terms",
+            "description": "使用客户可理解的证据用语",
+            "weight": 1.0,
+            "failure_type": "unnatural_chinese",
+            "passed": false,
+            "missing": [
+              "进程启动记录"
             ],
             "present_forbidden": []
           },
@@ -78,7 +82,8 @@
             "failure_type": "missing_coverage",
             "passed": false,
             "missing": [
-              "覆盖"
+              "覆盖",
+              "无法确认"
             ],
             "present_forbidden": []
           }
@@ -107,24 +112,26 @@
             ]
           },
           {
-            "id": "no-raw-protocol",
-            "description": "IoC 协议 defang，不出现裸 http",
-            "weight": 1.0,
-            "failure_type": "ioc_not_defanged",
-            "passed": false,
-            "missing": [],
-            "present_forbidden": [
-              "http"
-            ]
-          },
-          {
-            "id": "use-defanged-protocol",
-            "description": "使用 defang 协议 hxxp",
+            "id": "defang-attacker-ip",
+            "description": "攻击者 IP 已转义",
             "weight": 1.0,
             "failure_type": "ioc_not_defanged",
             "passed": false,
             "missing": [
-              "hxxp"
+              "203.0.113[.]45"
+            ],
+            "present_forbidden": [
+              "203.0.113.45"
+            ]
+          },
+          {
+            "id": "natural-evidence-terms",
+            "description": "使用客户可理解的证据用语",
+            "weight": 1.0,
+            "failure_type": "unnatural_chinese",
+            "passed": false,
+            "missing": [
+              "进程启动记录"
             ],
             "present_forbidden": []
           },
@@ -135,7 +142,8 @@
             "failure_type": "missing_coverage",
             "passed": false,
             "missing": [
-              "覆盖"
+              "覆盖",
+              "无法确认"
             ],
             "present_forbidden": []
           }
@@ -165,8 +173,8 @@
             "present_forbidden": []
           },
           {
-            "id": "no-raw-protocol",
-            "description": "IoC 协议 defang，不出现裸 http",
+            "id": "defang-attacker-ip",
+            "description": "攻击者 IP 已转义",
             "weight": 1.0,
             "failure_type": "ioc_not_defanged",
             "passed": true,
@@ -174,10 +182,10 @@
             "present_forbidden": []
           },
           {
-            "id": "use-defanged-protocol",
-            "description": "使用 defang 协议 hxxp",
+            "id": "natural-evidence-terms",
+            "description": "使用客户可理解的证据用语",
             "weight": 1.0,
-            "failure_type": "ioc_not_defanged",
+            "failure_type": "unnatural_chinese",
             "passed": true,
             "missing": [],
             "present_forbidden": []
@@ -200,79 +208,98 @@
     },
     {
       "id": "response-actions",
-      "prompt": "写「响应行动」章节的处置动作",
-      "input_files": [],
-      "metadata": {},
+      "prompt": "根据 findings 中尚未处置的 Webshell 事件，写「响应行动」章节的核心动作",
+      "input_files": [
+        "fixtures/web01-webshell.findings.md"
+      ],
+      "metadata": {
+        "case_type": "boundary"
+      },
       "baseline": {
-        "score": 0.0,
-        "passed_count": 0,
+        "score": 25.0,
+        "passed_count": 1,
         "failed_count": 3,
         "checks": [
           {
             "id": "no-vague-advice",
-            "description": "不写空泛的加强安全意识",
+            "description": "不写空泛安全建议",
             "weight": 1.0,
             "failure_type": "vague_advice",
             "passed": false,
             "missing": [],
             "present_forbidden": [
-              "加强安全意识"
+              "加强安全意识",
+              "提高整体防护水平"
             ]
           },
           {
-            "id": "no-faceless-improve",
-            "description": "不写无主体的提高类套话",
+            "id": "pending-status-only",
+            "description": "未取得处置记录时只使用未开始状态",
             "weight": 1.0,
-            "failure_type": "vague_advice",
+            "failure_type": "invented_action_status",
             "passed": false,
-            "missing": [],
-            "present_forbidden": [
-              "提高"
-            ]
+            "missing": [
+              "- [ ]"
+            ],
+            "present_forbidden": []
           },
           {
-            "id": "concrete-verb",
-            "description": "动作以具体动词开头",
+            "id": "concrete-actions",
+            "description": "动作包含明确对象和动词",
             "weight": 1.0,
             "failure_type": "non_actionable",
             "passed": false,
             "missing": [
-              "封禁"
+              "封禁",
+              "移除",
+              "修复"
             ],
+            "present_forbidden": []
+          },
+          {
+            "id": "no-compressed-action-chain",
+            "description": "不用分号把多项行动压成一句",
+            "weight": 1.0,
+            "failure_type": "compressed_prose",
+            "passed": true,
+            "missing": [],
             "present_forbidden": []
           }
         ],
         "failed": [
           {
             "id": "no-vague-advice",
-            "description": "不写空泛的加强安全意识",
+            "description": "不写空泛安全建议",
             "weight": 1.0,
             "failure_type": "vague_advice",
             "passed": false,
             "missing": [],
             "present_forbidden": [
-              "加强安全意识"
+              "加强安全意识",
+              "提高整体防护水平"
             ]
           },
           {
-            "id": "no-faceless-improve",
-            "description": "不写无主体的提高类套话",
+            "id": "pending-status-only",
+            "description": "未取得处置记录时只使用未开始状态",
             "weight": 1.0,
-            "failure_type": "vague_advice",
+            "failure_type": "invented_action_status",
             "passed": false,
-            "missing": [],
-            "present_forbidden": [
-              "提高"
-            ]
+            "missing": [
+              "- [ ]"
+            ],
+            "present_forbidden": []
           },
           {
-            "id": "concrete-verb",
-            "description": "动作以具体动词开头",
+            "id": "concrete-actions",
+            "description": "动作包含明确对象和动词",
             "weight": 1.0,
             "failure_type": "non_actionable",
             "passed": false,
             "missing": [
-              "封禁"
+              "封禁",
+              "移除",
+              "修复"
             ],
             "present_forbidden": []
           }
@@ -280,12 +307,12 @@
       },
       "with_skill": {
         "score": 100.0,
-        "passed_count": 3,
+        "passed_count": 4,
         "failed_count": 0,
         "checks": [
           {
             "id": "no-vague-advice",
-            "description": "不写空泛的加强安全意识",
+            "description": "不写空泛安全建议",
             "weight": 1.0,
             "failure_type": "vague_advice",
             "passed": true,
@@ -293,19 +320,28 @@
             "present_forbidden": []
           },
           {
-            "id": "no-faceless-improve",
-            "description": "不写无主体的提高类套话",
+            "id": "pending-status-only",
+            "description": "未取得处置记录时只使用未开始状态",
             "weight": 1.0,
-            "failure_type": "vague_advice",
+            "failure_type": "invented_action_status",
             "passed": true,
             "missing": [],
             "present_forbidden": []
           },
           {
-            "id": "concrete-verb",
-            "description": "动作以具体动词开头",
+            "id": "concrete-actions",
+            "description": "动作包含明确对象和动词",
             "weight": 1.0,
             "failure_type": "non_actionable",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "no-compressed-action-chain",
+            "description": "不用分号把多项行动压成一句",
+            "weight": 1.0,
+            "failure_type": "compressed_prose",
             "passed": true,
             "missing": [],
             "present_forbidden": []
@@ -313,7 +349,7 @@
         ],
         "failed": []
       },
-      "delta": 100.0,
+      "delta": 75.0,
       "winner": "with_skill",
       "failure_taxonomy": []
     },
@@ -325,9 +361,9 @@
         "case_type": "near_neighbor"
       },
       "baseline": {
-        "score": 0.0,
-        "passed_count": 0,
-        "failed_count": 3,
+        "score": 33.33,
+        "passed_count": 1,
+        "failed_count": 2,
         "checks": [
           {
             "id": "no-overclaim",
@@ -341,25 +377,23 @@
             ]
           },
           {
-            "id": "use-cannot-confirm",
-            "description": "证据不足写无法确认",
+            "id": "state-cannot-confirm",
+            "description": "明确说明证据不足",
             "weight": 1.0,
             "failure_type": "false_attribution",
             "passed": false,
             "missing": [
-              "无法确认"
+              "无法据此确认"
             ],
             "present_forbidden": []
           },
           {
-            "id": "mark-inference",
-            "description": "标注推测",
+            "id": "no-process-meta",
+            "description": "不写工作底稿式过程话术",
             "weight": 1.0,
-            "failure_type": "false_attribution",
-            "passed": false,
-            "missing": [
-              "推测"
-            ],
+            "failure_type": "process_meta",
+            "passed": true,
+            "missing": [],
             "present_forbidden": []
           }
         ],
@@ -376,24 +410,13 @@
             ]
           },
           {
-            "id": "use-cannot-confirm",
-            "description": "证据不足写无法确认",
+            "id": "state-cannot-confirm",
+            "description": "明确说明证据不足",
             "weight": 1.0,
             "failure_type": "false_attribution",
             "passed": false,
             "missing": [
-              "无法确认"
-            ],
-            "present_forbidden": []
-          },
-          {
-            "id": "mark-inference",
-            "description": "标注推测",
-            "weight": 1.0,
-            "failure_type": "false_attribution",
-            "passed": false,
-            "missing": [
-              "推测"
+              "无法据此确认"
             ],
             "present_forbidden": []
           }
@@ -414,8 +437,8 @@
             "present_forbidden": []
           },
           {
-            "id": "use-cannot-confirm",
-            "description": "证据不足写无法确认",
+            "id": "state-cannot-confirm",
+            "description": "明确说明证据不足",
             "weight": 1.0,
             "failure_type": "false_attribution",
             "passed": true,
@@ -423,10 +446,10 @@
             "present_forbidden": []
           },
           {
-            "id": "mark-inference",
-            "description": "标注推测",
+            "id": "no-process-meta",
+            "description": "不写工作底稿式过程话术",
             "weight": 1.0,
-            "failure_type": "false_attribution",
+            "failure_type": "process_meta",
             "passed": true,
             "missing": [],
             "present_forbidden": []
@@ -434,7 +457,7 @@
         ],
         "failed": []
       },
-      "delta": 100.0,
+      "delta": 66.67,
       "winner": "with_skill",
       "failure_taxonomy": []
     },
@@ -446,13 +469,13 @@
         "case_type": "boundary"
       },
       "baseline": {
-        "score": 0.0,
-        "passed_count": 0,
-        "failed_count": 3,
+        "score": 33.33,
+        "passed_count": 1,
+        "failed_count": 2,
         "checks": [
           {
             "id": "no-assume-light",
-            "description": "不因常见就点亮技术",
+            "description": "不因常见行为点亮技术",
             "weight": 1.0,
             "failure_type": "unsupported_mapping",
             "passed": false,
@@ -462,32 +485,31 @@
             ]
           },
           {
-            "id": "state-not-observed",
-            "description": "无证据写未观察到",
+            "id": "state-evidence-result",
+            "description": "直接写观察结果和矩阵结论",
             "weight": 1.0,
             "failure_type": "unsupported_mapping",
             "passed": false,
             "missing": [
-              "未观察到"
+              "未发现",
+              "不点亮"
             ],
             "present_forbidden": []
           },
           {
-            "id": "evidence-driven",
-            "description": "以证据为准",
+            "id": "no-process-meta",
+            "description": "不写规则执行过程",
             "weight": 1.0,
-            "failure_type": "unsupported_mapping",
-            "passed": false,
-            "missing": [
-              "证据"
-            ],
+            "failure_type": "process_meta",
+            "passed": true,
+            "missing": [],
             "present_forbidden": []
           }
         ],
         "failed": [
           {
             "id": "no-assume-light",
-            "description": "不因常见就点亮技术",
+            "description": "不因常见行为点亮技术",
             "weight": 1.0,
             "failure_type": "unsupported_mapping",
             "passed": false,
@@ -497,24 +519,14 @@
             ]
           },
           {
-            "id": "state-not-observed",
-            "description": "无证据写未观察到",
+            "id": "state-evidence-result",
+            "description": "直接写观察结果和矩阵结论",
             "weight": 1.0,
             "failure_type": "unsupported_mapping",
             "passed": false,
             "missing": [
-              "未观察到"
-            ],
-            "present_forbidden": []
-          },
-          {
-            "id": "evidence-driven",
-            "description": "以证据为准",
-            "weight": 1.0,
-            "failure_type": "unsupported_mapping",
-            "passed": false,
-            "missing": [
-              "证据"
+              "未发现",
+              "不点亮"
             ],
             "present_forbidden": []
           }
@@ -527,7 +539,7 @@
         "checks": [
           {
             "id": "no-assume-light",
-            "description": "不因常见就点亮技术",
+            "description": "不因常见行为点亮技术",
             "weight": 1.0,
             "failure_type": "unsupported_mapping",
             "passed": true,
@@ -535,8 +547,8 @@
             "present_forbidden": []
           },
           {
-            "id": "state-not-observed",
-            "description": "无证据写未观察到",
+            "id": "state-evidence-result",
+            "description": "直接写观察结果和矩阵结论",
             "weight": 1.0,
             "failure_type": "unsupported_mapping",
             "passed": true,
@@ -544,10 +556,10 @@
             "present_forbidden": []
           },
           {
-            "id": "evidence-driven",
-            "description": "以证据为准",
+            "id": "no-process-meta",
+            "description": "不写规则执行过程",
             "weight": 1.0,
-            "failure_type": "unsupported_mapping",
+            "failure_type": "process_meta",
             "passed": true,
             "missing": [],
             "present_forbidden": []
@@ -555,7 +567,7 @@
         ],
         "failed": []
       },
-      "delta": 100.0,
+      "delta": 66.67,
       "winner": "with_skill",
       "failure_taxonomy": []
     },
@@ -563,11 +575,13 @@
       "id": "cloud-evidence-coverage",
       "prompt": "云端 WAF 证据这段怎么写",
       "input_files": [],
-      "metadata": {},
+      "metadata": {
+        "case_type": "file_backed"
+      },
       "baseline": {
-        "score": 0.0,
-        "passed_count": 0,
-        "failed_count": 3,
+        "score": 20.0,
+        "passed_count": 1,
+        "failed_count": 4,
         "checks": [
           {
             "id": "state-time-window",
@@ -576,7 +590,8 @@
             "failure_type": "missing_coverage",
             "passed": false,
             "missing": [
-              "覆盖"
+              "覆盖",
+              "无法确认"
             ],
             "present_forbidden": []
           },
@@ -588,7 +603,7 @@
             "passed": false,
             "missing": [],
             "present_forbidden": [
-              "全部"
+              "全部攻击"
             ]
           },
           {
@@ -598,8 +613,31 @@
             "failure_type": "waf_misread",
             "passed": false,
             "missing": [
-              "final_action"
+              "final_action",
+              "block"
             ],
+            "present_forbidden": []
+          },
+          {
+            "id": "defang-attacker-ip",
+            "description": "攻击者 IP 已转义",
+            "weight": 1.0,
+            "failure_type": "ioc_not_defanged",
+            "passed": false,
+            "missing": [
+              "198.51.100[.]23"
+            ],
+            "present_forbidden": [
+              "198.51.100.23"
+            ]
+          },
+          {
+            "id": "no-compressed-prose",
+            "description": "不用分号压缩多个判断",
+            "weight": 1.0,
+            "failure_type": "compressed_prose",
+            "passed": true,
+            "missing": [],
             "present_forbidden": []
           }
         ],
@@ -611,7 +649,8 @@
             "failure_type": "missing_coverage",
             "passed": false,
             "missing": [
-              "覆盖"
+              "覆盖",
+              "无法确认"
             ],
             "present_forbidden": []
           },
@@ -623,7 +662,7 @@
             "passed": false,
             "missing": [],
             "present_forbidden": [
-              "全部"
+              "全部攻击"
             ]
           },
           {
@@ -633,15 +672,29 @@
             "failure_type": "waf_misread",
             "passed": false,
             "missing": [
-              "final_action"
+              "final_action",
+              "block"
             ],
             "present_forbidden": []
+          },
+          {
+            "id": "defang-attacker-ip",
+            "description": "攻击者 IP 已转义",
+            "weight": 1.0,
+            "failure_type": "ioc_not_defanged",
+            "passed": false,
+            "missing": [
+              "198.51.100[.]23"
+            ],
+            "present_forbidden": [
+              "198.51.100.23"
+            ]
           }
         ]
       },
       "with_skill": {
         "score": 100.0,
-        "passed_count": 3,
+        "passed_count": 5,
         "failed_count": 0,
         "checks": [
           {
@@ -670,11 +723,29 @@
             "passed": true,
             "missing": [],
             "present_forbidden": []
+          },
+          {
+            "id": "defang-attacker-ip",
+            "description": "攻击者 IP 已转义",
+            "weight": 1.0,
+            "failure_type": "ioc_not_defanged",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
+          },
+          {
+            "id": "no-compressed-prose",
+            "description": "不用分号压缩多个判断",
+            "weight": 1.0,
+            "failure_type": "compressed_prose",
+            "passed": true,
+            "missing": [],
+            "present_forbidden": []
           }
         ],
         "failed": []
       },
-      "delta": 100.0,
+      "delta": 80.0,
       "winner": "with_skill",
       "failure_taxonomy": []
     }

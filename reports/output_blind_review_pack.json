@@ -13,7 +13,9 @@
       "input_files": [
         "fixtures/web01-webshell.findings.md"
       ],
-      "metadata": {},
+      "metadata": {
+        "case_type": "file_backed"
+      },
       "review_instruction": "Pick A or B based only on the rubric. Do not infer which output came from the skill.",
       "rubric": [
         {
@@ -27,13 +29,13 @@
           "weight": 1.0
         },
         {
-          "id": "no-raw-protocol",
-          "description": "IoC 协议 defang，不出现裸 http",
+          "id": "defang-attacker-ip",
+          "description": "攻击者 IP 已转义",
           "weight": 1.0
         },
         {
-          "id": "use-defanged-protocol",
-          "description": "使用 defang 协议 hxxp",
+          "id": "natural-evidence-terms",
+          "description": "使用客户可理解的证据用语",
           "weight": 1.0
         },
         {
@@ -48,29 +50,38 @@
       },
       "variant_b": {
         "blind_id": "overview-from-findings:B",
-        "output": "web01 于 4 月 17 日触发 webshell 告警。结合 access 日志与 SAS 进程遥测交叉判断，攻击者经上传点写入 webshell 并访问，大概率得手；访问来源 hxxp://203.0.113[.]45。access 日志覆盖自 4 月 10 日起，更早区间已轮转、无法确认。"
+        "output": "2026 年 4 月 17 日，web01 触发 Webshell 通信告警。访问日志显示，203.0.113[.]45 向上传接口写入了 PHP 文件；随后取得的进程启动记录表明，Web 进程调用了命令解释器。综合现有证据，攻击者很可能已经通过该文件执行系统命令。现有日志自 4 月 10 日起覆盖，更早的活动无法确认。"
       }
     },
     {
       "case_id": "response-actions",
-      "prompt": "写「响应行动」章节的处置动作",
-      "input_files": [],
-      "metadata": {},
+      "prompt": "根据 findings 中尚未处置的 Webshell 事件，写「响应行动」章节的核心动作",
+      "input_files": [
+        "fixtures/web01-webshell.findings.md"
+      ],
+      "metadata": {
+        "case_type": "boundary"
+      },
       "review_instruction": "Pick A or B based only on the rubric. Do not infer which output came from the skill.",
       "rubric": [
         {
           "id": "no-vague-advice",
-          "description": "不写空泛的加强安全意识",
+          "description": "不写空泛安全建议",
           "weight": 1.0
         },
         {
-          "id": "no-faceless-improve",
-          "description": "不写无主体的提高类套话",
+          "id": "pending-status-only",
+          "description": "未取得处置记录时只使用未开始状态",
           "weight": 1.0
         },
         {
-          "id": "concrete-verb",
-          "description": "动作以具体动词开头",
+          "id": "concrete-actions",
+          "description": "动作包含明确对象和动词",
+          "weight": 1.0
+        },
+        {
+          "id": "no-compressed-action-chain",
+          "description": "不用分号把多项行动压成一句",
           "weight": 1.0
         }
       ],
@@ -80,7 +91,7 @@
       },
       "variant_b": {
         "blind_id": "response-actions:B",
-        "output": "封禁 203.0.113[.]45 的入站访问；下线并取证 webshell 文件 /var/www/upload/x.php；重置 web 服务相关账号口令并核查上传点修复。"
+        "output": "- [ ] 封禁 203.0.113[.]45 对业务入口的访问，并临时限制受影响的上传接口。\n- [ ] 保全必要证据后移除 `/var/www/upload/x.php`，检查上传目录中是否还有同类文件。\n- [ ] 修复上传接口，并验证上传目录不能解析或执行 PHP 文件。"
       }
     },
     {
@@ -98,19 +109,19 @@
           "weight": 1.0
         },
         {
-          "id": "use-cannot-confirm",
-          "description": "证据不足写无法确认",
+          "id": "state-cannot-confirm",
+          "description": "明确说明证据不足",
           "weight": 1.0
         },
         {
-          "id": "mark-inference",
-          "description": "标注推测",
+          "id": "no-process-meta",
+          "description": "不写工作底稿式过程话术",
           "weight": 1.0
         }
       ],
       "variant_a": {
         "blind_id": "single-atime-claim:A",
-        "output": "该文件 atime 在 18:00 前后更新，但 atime 可能被扫描或备份刷新，缺日志佐证，无法确认即攻击者访问，按推测记录并交叉其他证据。"
+        "output": "该文件的 atime 在 18:00 前后更新，但扫描和备份也可能改变这一时间。由于缺少同期日志，无法据此确认攻击者曾访问该文件。"
       },
       "variant_b": {
         "blind_id": "single-atime-claim:B",
@@ -128,17 +139,17 @@
       "rubric": [
         {
           "id": "no-assume-light",
-          "description": "不因常见就点亮技术",
+          "description": "不因常见行为点亮技术",
           "weight": 1.0
         },
         {
-          "id": "state-not-observed",
-          "description": "无证据写未观察到",
+          "id": "state-evidence-result",
+          "description": "直接写观察结果和矩阵结论",
           "weight": 1.0
         },
         {
-          "id": "evidence-driven",
-          "description": "以证据为准",
+          "id": "no-process-meta",
+          "description": "不写规则执行过程",
           "weight": 1.0
         }
       ],
@@ -148,14 +159,16 @@
       },
       "variant_b": {
         "blind_id": "attack-mapping-evidence:B",
-        "output": "未观察到计划任务或 systemd 持久化的直接证据，按证据驱动原则不点亮该技术，仅在证据缺口里说明。"
+        "output": "现有记录中未发现计划任务或 systemd 持久化证据，因此不点亮 T1053。"
       }
     },
     {
       "case_id": "cloud-evidence-coverage",
       "prompt": "云端 WAF 证据这段怎么写",
       "input_files": [],
-      "metadata": {},
+      "metadata": {
+        "case_type": "file_backed"
+      },
       "review_instruction": "Pick A or B based only on the rubric. Do not infer which output came from the skill.",
       "rubric": [
         {
@@ -172,6 +185,16 @@
           "id": "waf-final-action",
           "description": "WAF 拦截以 final_action 判定",
           "weight": 1.0
+        },
+        {
+          "id": "defang-attacker-ip",
+          "description": "攻击者 IP 已转义",
+          "weight": 1.0
+        },
+        {
+          "id": "no-compressed-prose",
+          "description": "不用分号压缩多个判断",
+          "weight": 1.0
         }
       ],
       "variant_a": {
@@ -180,7 +203,7 @@
       },
       "variant_b": {
         "blind_id": "cloud-evidence-coverage:B",
-        "output": "云防火墙 WAF 日志（覆盖 4 月 10 日至今）显示攻击源 198.51.100[.]23；其中 final_action 为 block 的记录才是实际拦截，观察模式不计入。最早记录 4 月 10 日，更早无法确认。"
+        "output": "云防火墙日志覆盖 4 月 10 日至今，记录到来源 198.51.100[.]23 的请求。只有 `final_action` 为 `block` 的记录可以确认已拦截。观察模式下的请求不计入拦截结果。4 月 10 日以前的情况无法确认。"
       }
     }
   ]

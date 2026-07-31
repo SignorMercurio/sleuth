@@ -3,43 +3,48 @@
 This report adjudicates reviewer choices from the blind A/B output review pack against the separate answer key.
 
 - Pairs: `5`
-- Judgments: `5`
-- Pending: `0`
-- Agreement rate: `100.0`
+- Judgments: `0`
+- Pending: `5`
+- Agreement rate: `n/a`
 - Invalid decisions: `0`
-- Answer keys revealed: `5`
-- Pending/invalid answers hidden: `0`
-- Reviewer checklist: `5` ready / `5` total
-- Reviewer metadata present: `true`
-- Blind review attested: `true`
+- Answer keys revealed: `0`
+- Pending/invalid answers hidden: `5`
+- Reviewer checklist: `0` ready / `5` total
+- Reviewer metadata present: `false`
+- Blind review attested: `false`
 - Raw content excluded: `true`
-- Ready for human evidence: `true`
+- Ready for human evidence: `false`
+
+No reviewer decisions recorded yet.
+
+Generate a template with `--write-template`, fill `winner_variant` with `A` or `B`, then rerun adjudication.
+Expected winners stay hidden until a valid reviewer decision is recorded.
 
 ## Case Adjudication
 
 | Case | Reviewer | Expected | Status | Confidence | Reason |
 | --- | --- | --- | --- | ---: | --- |
-| overview-from-findings | B | B | match |  | A 更简洁清晰，但没对 IoC 做安全处理（应写成 203.0.113[.]45）。B 没有硬伤，胜在 IoC 转义与覆盖边界；扣分项是「遥测」「得手」这类词偏生硬、不像人写，且整体可以更简洁。综合取 B。 |
-| response-actions | B | B | match |  | B 的处置动作比 A 更具体、可落地。 |
-| single-atime-claim | A | A | match |  | 孤证确实不该下确定结论，A 的谨慎表述正确。但可以更简洁，不必写「按推测记录并交叉其他证据」这类过程说明。 |
-| attack-mapping-evidence | B | B | match |  | 未观察到就不点亮技术，B 的判断正确。但可以更简洁，不必写「按证据驱动原则不点亮该技术，仅在证据缺口里说明」这类元说明。 |
-| cloud-evidence-coverage | B | B | match |  | B 更准确、更详细（写明日志覆盖窗与 final_action 判定），A 夸大为全部拦截。 |
+| overview-from-findings | pending | hidden | pending |  |  |
+| response-actions | pending | hidden | pending |  |  |
+| single-atime-claim | pending | hidden | pending |  |  |
+| attack-mapping-evidence | pending | hidden | pending |  |  |
+| cloud-evidence-coverage | pending | hidden | pending |  |  |
 
 ## Reviewer Checklist
 
 | Case | Readiness | Answer key | Decision file |
 | --- | --- | --- | --- |
-| `overview-from-findings` | `adjudicated` | `visible` | `/Users/merc/Projects/sleuth/reports/output_review_decisions.json` |
-| `response-actions` | `adjudicated` | `visible` | `/Users/merc/Projects/sleuth/reports/output_review_decisions.json` |
-| `single-atime-claim` | `adjudicated` | `visible` | `/Users/merc/Projects/sleuth/reports/output_review_decisions.json` |
-| `attack-mapping-evidence` | `adjudicated` | `visible` | `/Users/merc/Projects/sleuth/reports/output_review_decisions.json` |
-| `cloud-evidence-coverage` | `adjudicated` | `visible` | `/Users/merc/Projects/sleuth/reports/output_review_decisions.json` |
+| `overview-from-findings` | `awaiting-decision` | `hidden` | `/Users/merc/Projects/sleuth/reports/output_review_decisions.json` |
+| `response-actions` | `awaiting-decision` | `hidden` | `/Users/merc/Projects/sleuth/reports/output_review_decisions.json` |
+| `single-atime-claim` | `awaiting-decision` | `hidden` | `/Users/merc/Projects/sleuth/reports/output_review_decisions.json` |
+| `attack-mapping-evidence` | `awaiting-decision` | `hidden` | `/Users/merc/Projects/sleuth/reports/output_review_decisions.json` |
+| `cloud-evidence-coverage` | `awaiting-decision` | `hidden` | `/Users/merc/Projects/sleuth/reports/output_review_decisions.json` |
 
 ### overview-from-findings
 
-- readiness: `adjudicated`
-- blocking reason: Reviewer decision is valid; answer key is revealed for this case.
-- answer key visible: `true`
+- readiness: `awaiting-decision`
+- blocking reason: Reviewer has not selected A or B yet; answer key remains hidden.
+- answer key visible: `false`
 - blind pack: `/Users/merc/Projects/sleuth/reports/output_blind_review_pack.json`
 - decisions: `/Users/merc/Projects/sleuth/reports/output_review_decisions.json`
 
@@ -69,9 +74,9 @@ This report adjudicates reviewer choices from the blind A/B output review pack a
 
 ### response-actions
 
-- readiness: `adjudicated`
-- blocking reason: Reviewer decision is valid; answer key is revealed for this case.
-- answer key visible: `true`
+- readiness: `awaiting-decision`
+- blocking reason: Reviewer has not selected A or B yet; answer key remains hidden.
+- answer key visible: `false`
 - blind pack: `/Users/merc/Projects/sleuth/reports/output_blind_review_pack.json`
 - decisions: `/Users/merc/Projects/sleuth/reports/output_review_decisions.json`
 
@@ -101,9 +106,9 @@ This report adjudicates reviewer choices from the blind A/B output review pack a
 
 ### single-atime-claim
 
-- readiness: `adjudicated`
-- blocking reason: Reviewer decision is valid; answer key is revealed for this case.
-- answer key visible: `true`
+- readiness: `awaiting-decision`
+- blocking reason: Reviewer has not selected A or B yet; answer key remains hidden.
+- answer key visible: `false`
 - blind pack: `/Users/merc/Projects/sleuth/reports/output_blind_review_pack.json`
 - decisions: `/Users/merc/Projects/sleuth/reports/output_review_decisions.json`
 
@@ -133,9 +138,9 @@ This report adjudicates reviewer choices from the blind A/B output review pack a
 
 ### attack-mapping-evidence
 
-- readiness: `adjudicated`
-- blocking reason: Reviewer decision is valid; answer key is revealed for this case.
-- answer key visible: `true`
+- readiness: `awaiting-decision`
+- blocking reason: Reviewer has not selected A or B yet; answer key remains hidden.
+- answer key visible: `false`
 - blind pack: `/Users/merc/Projects/sleuth/reports/output_blind_review_pack.json`
 - decisions: `/Users/merc/Projects/sleuth/reports/output_review_decisions.json`
 
@@ -165,9 +170,9 @@ This report adjudicates reviewer choices from the blind A/B output review pack a
 
 ### cloud-evidence-coverage
 
-- readiness: `adjudicated`
-- blocking reason: Reviewer decision is valid; answer key is revealed for this case.
-- answer key visible: `true`
+- readiness: `awaiting-decision`
+- blocking reason: Reviewer has not selected A or B yet; answer key remains hidden.
+- answer key visible: `false`
 - blind pack: `/Users/merc/Projects/sleuth/reports/output_blind_review_pack.json`
 - decisions: `/Users/merc/Projects/sleuth/reports/output_review_decisions.json`
 

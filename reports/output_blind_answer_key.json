@@ -23,7 +23,7 @@
       "expected_winner_role": "with_skill",
       "expected_winner_variant": "B",
       "score_winner_role": "with_skill",
-      "delta": 100.0
+      "delta": 75.0
     },
     {
       "case_id": "single-atime-claim",
@@ -32,7 +32,7 @@
       "expected_winner_role": "with_skill",
       "expected_winner_variant": "A",
       "score_winner_role": "with_skill",
-      "delta": 100.0
+      "delta": 66.67
     },
     {
       "case_id": "attack-mapping-evidence",
@@ -41,7 +41,7 @@
       "expected_winner_role": "with_skill",
       "expected_winner_variant": "B",
       "score_winner_role": "with_skill",
-      "delta": 100.0
+      "delta": 66.67
     },
     {
       "case_id": "cloud-evidence-coverage",
@@ -50,7 +50,7 @@
       "expected_winner_role": "with_skill",
       "expected_winner_variant": "B",
       "score_winner_role": "with_skill",
-      "delta": 100.0
+      "delta": 80.0
     }
   ]
 }

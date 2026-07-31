@@ -164,7 +164,7 @@ description: SLEUTH · 安全应急响应专家：通过 SIREN 在受害主机�
 - 运行时支持子 agent 就为每条（或按报告章节分组）派一个核验 agent，只给「断言 + 所引证据 + 清单」、不给主 agent 的推理，让它尽力反驳；不支持则换怀疑视角内联逐条自检。
 - 被成功反驳 / 孤证 / 证据不足的结论，在报告里降级措辞（「已确认」→「推测」/「无法确认」/「未观察到」）或删除；扛住反驳的保留确定措辞。
 
-每台主机过完验证门后，把定稿结论写成 findings 工作底稿（结构与命名见 `references/findings_spec.md`）。多主机委托时回到步骤 2 调查下一台，全部完成后进入步骤 8。**跨主机关联断言**（同源攻击、横向移动、同一攻击者）在合并阶段基于多份 findings 提出，同样要过本验证门，不因属于「合并层」而免检。
+每台主机过完验证门后，把定稿结论写成 findings 工作底稿（结构与命名见 `references/findings_spec.md`）。进入步骤 8 前确认严重等级、当前事件状态和三阶段处置进展完整；缺失就先补查或向用户确认，不把缺口留给写作层猜测。多主机委托时回到步骤 2 调查下一台，全部完成后进入步骤 8。**跨主机关联断言**（同源攻击、横向移动、同一攻击者）在合并阶段基于多份 findings 提出，同样要过本验证门，不因属于「合并层」而免检。
 
 > 子 agent 派生与降级规则见 `references/runtime_compat.md`。
 
@@ -174,7 +174,7 @@ description: SLEUTH · 安全应急响应专家：通过 SIREN 在受害主机�
 
 每次委托只在当前工作目录生成**一份**命名后的 Markdown 报告；交付物仅此一个 `IR-….md` 文件（findings 工作底稿不算交付物）。
 
-写作只以 findings 文件为事实来源；输入文件清单与禁止事项（不得改变事实与措辞等级、证据缺口处理）以 `references/findings_spec.md`「写作层使用规则」为准。写作可按子 agent 重输出隔离模式（见 `references/runtime_compat.md`）执行——只传入该规则列出的文件路径，不传调查上下文，写作子 agent 不碰 SIREN。
+写作只以 findings 文件为事实来源；输入文件清单与禁止事项（不得改变事实与措辞等级、证据缺口处理）以 `references/findings_spec.md`「写作层使用规则」为准。默认按 `references/runtime_compat.md`「报告写作隔离」使用全新 writer 上下文；只传入规定文件路径，不传调查上下文，writer 不碰 SIREN。运行时不支持子 agent 时才内联降级，并重新读取全部 findings 后按同一输入边界写作。
 
 ### 8.1 生成步骤
 
@@ -184,7 +184,8 @@ description: SLEUTH · 安全应急响应专家：通过 SIREN 在受害主机�
 2. **读取写作规则**：读取 `references/report_style.md`（文风，含 `assets/style/` 样本读取规则）与 `references/report_writing_rules.md`（模板逐块填充 + 本项目特有约束，含两条不可让渡红线：结论可信度、IoC 展示层转义）并执行
 3. **拷贝模板**：将 `<skill_root>/assets/report.md`（来源于 `dossier/report.md`）复制为该输出文件
 4. **填充报告副本**：只编辑该输出文件，按 `references/report_writing_rules.md` 的逐块细则替换占位内容
-5. **只交付 Markdown**：不要创建报告目录、`index.html`、CSS/JS、字体资源或 dev server
+5. **交稿前 QA**：按 `references/runtime_compat.md`「报告写作隔离」的清单复核事实边界、必填字段、章节、占位符、内部术语、IoC、样本串案、重复与文风；问题回报编排者，不写进客户报告
+6. **只交付 Markdown**：不要创建报告目录、`index.html`、CSS/JS、字体资源或 dev server
 
 ### 8.2 多主机合并规则（多主机委托与合并模式）
 
