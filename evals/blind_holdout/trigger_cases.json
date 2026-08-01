@@ -12,6 +12,10 @@
     {
       "text": "alarm Event ID 555, please do incident response on this host",
       "family": "en_alarm"
+    },
+    {
+      "text": "UID 123456，调查 ECS 实例 ID i-demo001 上的全部云安全中心告警并生成应急响应报告",
+      "family": "alarm_ecs_instance"
     }
   ],
   "should_not_trigger": [

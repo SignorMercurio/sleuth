@@ -18,7 +18,7 @@ IR-{YYYYMMDD}-{hostname}-{event_type}[-{event_id}].md
 | `{YYYYMMDD}` | 事件发生日期（优先使用告警时间，其次使用调查时间） |
 | `{hostname}` | 受影响主机名（不含域名后缀，特殊字符转 `-`） |
 | `{event_type}` | 事件类型 slug（见下表），未知时填 `unknown` |
-| `{event_id}` | 仅模式一包含，用于区分同主机多起事件 |
+| `{event_id}` | 仅使用数字告警 `Id` 直接启动的模式一包含；资产 UUID / ECS 实例 ID 的列表型输入不加此字段，即使列表只返回一条告警 |
 
 ## 多主机事件
 
@@ -51,6 +51,7 @@ IR-{YYYYMMDD}-{hostname}-{event_type}[-{event_id}].md
 ## 示例
 
 - 模式一（告警驱动）：`IR-20260417-web01-webshell-123456.md`
+- 模式一（资产 / 实例范围内多条告警）：`IR-20260417-web01-webshell.md`
 - 模式二（自由调查）：`IR-20260417-db-prod-rce.md`
 - 多个事件同主机同日：`IR-20260417-web01-webshell-123456.md` 与 `IR-20260417-web01-revshell-123789.md`
 - 多主机合并报告（3 台，首要主机 web01）：`IR-20260417-web01-multi3-miner-123456.md`

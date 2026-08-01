@@ -6,6 +6,10 @@
       "family": "alarm_driven"
     },
     {
+      "text": "UID 123456，按云安全中心资产 UUID 00000000-0000-4000-8000-000000000001 排查这个资产的全部告警并做应急响应",
+      "family": "alarm_asset_uuid"
+    },
+    {
       "text": "这台主机 CPU 跑满疑似入侵，帮我溯源排查异常进程",
       "family": "free_form"
     },
