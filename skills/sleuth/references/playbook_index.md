@@ -29,7 +29,7 @@
 | 找不到 Web 日志、需要日志分析 | `references/tech_log_analysis.md` |
 | 正向证据不足、需要反向推理 | `references/tech_reverse_reasoning.md` |
 | 涉及云助手/AK/Actiontrail，或进程父链含 `aliyun-service` / `AliyunService.exe` | `references/tech_cloud.md` |
-| 需要查云端日志（WAF / 云安全中心 / ActionTrail）—— 什么攻击类型查哪个 | `references/cloud_log_queries.md`（实际查询走 `sls` skill） |
+| 需要查阿里云云侧证据（WAF / SAS / 云防火墙 / ActionTrail / 云资源配置）—— 什么攻击类型查什么 | `references/cloud_log_queries.md`（`$sas` / `sls` 优先，`opencli-aliyun-ir` 补缺） |
 | SAS 主机遥测的覆盖时间窗算法、`w3wp.exe` 子进程解读、报告措辞（本环境特有的坑） | `references/sas_sls_host_telemetry.md` |
 | 告警父链含 `sshd`、用户问是否 SSH 登录触发 / SSH 客户端来源 IP | `references/ssh_login_attribution_sas.md` |
 | 需要进程关联或文件时间分析 | `references/tech_process_file.md` |

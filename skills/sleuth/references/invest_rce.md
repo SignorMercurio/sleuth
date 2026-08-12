@@ -9,7 +9,7 @@
 
 ## 云端日志补充
 
-按 `references/cloud_log_queries.md`「Web 类攻击」+「恶意进程」行用 `sls` skill 交叉验证：WAF 定位利用请求与真实 IP，SAS `aegis-log-process` 还原命令执行链/父进程（web 进程名如 `java`/`php-fpm`/`w3wp.exe`）、`aegis-log-network` 查后续外联。
+按 `references/cloud_log_queries.md`「WebShell、SQL 注入、RCE、文件上传」优先用 `sls`：WAF 定位利用请求与来源 IP，SAS 进程遥测还原 Web 进程（如 `java`/`php-fpm`/`w3wp.exe`）的命令执行链。
 
 ## 关键 IoC
 - 攻击源 IP

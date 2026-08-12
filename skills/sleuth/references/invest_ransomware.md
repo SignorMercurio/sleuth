@@ -9,7 +9,7 @@
 
 ## 云端日志补充
 
-主机被加密后本地证据可能不可靠——按 `references/cloud_log_queries.md`「恶意进程」「C2 外联 / 数据外传」行用 `sls` skill 查 SAS（`aegis-log-process` 还原加密进程的启动链/父进程、`aegis-log-network` 查 C2 与密钥/勒索服务器外联）；入口若疑似暴破或异常登录再配 `aegis-log-login`。
+主机被加密后本地证据可能不可靠——按 `references/cloud_log_queries.md`「挖矿、恶意进程、勒索」和「反弹 Shell、C2、数据外传」优先用 `sls` 还原加密进程父链及 C2、密钥或勒索服务器外联。
 
 ## 关键 IoC
 - 勒索软件文件路径和哈希

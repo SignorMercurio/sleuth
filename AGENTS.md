@@ -30,6 +30,11 @@
   contract is `../log0-utils/.agents/skills/sas/SKILL.md`. Keep SLEUTH step 1.2,
   README usage, report naming, findings handoff, and selector evals synchronized
   when that contract changes; do not duplicate the CLI contract elsewhere.
+- Direct `sas` remains first priority for alarms and direct `sls` for delivered
+  WAF/SAS/ActionTrail logs. Alibaba Cloud control-plane, dedicated-adapter and
+  cross-product gaps are delegated to the read-only `opencli-aliyun-ir` skill,
+  whose source of truth lives in the `clis` repository. SLEUTH owns only scenario
+  routing and the findings handoff; do not duplicate OpenCLI adapter contracts.
 - Findings are the report writer's fact boundary. The writer receives only the
   findings, template, curated style sample, and named writing references; it
   must not receive the investigation transcript or access SIREN, SAS, SLS, or

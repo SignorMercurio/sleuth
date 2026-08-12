@@ -9,7 +9,7 @@
 
 ## 云端日志补充
 
-按 `references/cloud_log_queries.md`「C2 外联 / 数据外传」行用 `sls` skill 查 SAS `aegis-log-network`（外联目标与发起进程，DNS 隧道配 `aegis-log-dns-query`）；外传走 Web 通道（大响应体、下载/导出接口）再查 WAF。
+按 `references/cloud_log_queries.md`「反弹 Shell、C2、数据外传」优先用 `sls` 关联 SAS 网络/DNS 遥测、发起进程和 WAF。
 
 ## 关键 IoC
 - 外传目标 IP/域名

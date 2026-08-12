@@ -9,7 +9,7 @@
 
 ## 云端日志补充
 
-主机本地提权（SUID / 内核漏洞 / sudo 滥用）靠上面的主机命令；若涉及**云上权限提升**（AK 泄露后创建 RAM 用户、附加策略、改角色权限）——按 `references/cloud_log_queries.md`「AK 泄露 / 云助手滥用」行用 `sls` skill 查 ActionTrail（`CreateUser` / `AttachPolicyToUser` / `AttachPolicyToRole` / `CreateAccessKey` 等敏感 API 的 `sourceIpAddress` 与 `userIdentity`），详见 `references/tech_cloud.md`。
+主机本地提权（SUID / 内核漏洞 / sudo 滥用）靠上面的主机命令；若涉及**云上权限提升**（AK 泄露后创建 RAM 用户、附加策略、改角色权限）——按 `references/cloud_log_queries.md`「AK 泄露、RAM 提权、资源归属」优先用 `sls` 查已投递 ActionTrail，详见 `references/tech_cloud.md`。
 
 ## 关键 IoC
 - 使用的提权漏洞或技术

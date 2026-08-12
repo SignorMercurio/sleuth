@@ -2,7 +2,7 @@
 
 Use when building customer-facing IR timelines from Alibaba Cloud Security Center (`sas`) SLS logs.
 
-> **执行查询走 `sls` skill**（调用已安装的 skill，或读取已安装的 `sls` skill 指令）。先看 `references/cloud_log_queries.md` 决定查哪个 `-product` / topic。本文件只补充**本环境特有的坑和报告措辞要求**：时间戳 CAST、`proc_start_time` 过滤、`w3wp.exe` 子进程解读、覆盖时间窗的报告写法。下面的命令示例可以直接给 `sls` skill 当模板（命令里用 `sls` 代指调用，二进制路径与 `-c` 配置由 `sls` skill 提供）。
+> **执行查询优先走 `sls` skill**（调用已安装的 skill，或读取已安装的 `sls` skill 指令）。先看 `references/cloud_log_queries.md` 决定查哪个 `-product` / topic。本文件只补充**本环境特有的坑和报告措辞要求**：时间戳 CAST、`proc_start_time` 过滤、`w3wp.exe` 子进程解读、覆盖时间窗的报告写法。下面的命令示例可以直接给 `sls` skill 当模板（命令里用 `sls` 代指调用，二进制路径与 `-c` 配置由 `sls` skill 提供）。
 
 ## Core topics
 

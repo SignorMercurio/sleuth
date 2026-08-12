@@ -22,7 +22,8 @@ Reports and supporting materials are generated in Simplified Chinese by design (
 - **Claude Code or Codex**: latest stable. The installable skill follows the open agent skills format under `skills/sleuth/` (`SKILL.md` with optional `references/`, `assets/`, and `agents/openai.yaml` metadata).
 - **SIREN MCP server**: the skill depends on SIREN list-client and remote-run tools, usually exposed as `mcp__siren__ls` and `mcp__siren__run`. Configure SIREN as an MCP server in the client you use before running the skill.
 - **`$sas` skill**: required for alarm-driven lookup.
-- **Optional `sls` skill**: used only when cloud-side WAF / SAS / ActionTrail logs are needed for cross-validation.
+- **Optional `sls` skill**: the first choice for WAF / SAS / ActionTrail cloud-log cross-validation.
+- **Optional `opencli-aliyun-ir` skill**: used after direct `sas` / `sls` for Alibaba Cloud control-plane state, dedicated adapters, internal consoles, cross-product correlation, and explicit coverage gaps.
 
 ## Install
 

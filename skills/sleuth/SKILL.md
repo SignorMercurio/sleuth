@@ -36,7 +36,8 @@ description: SLEUTH · 安全应急响应专家：通过 SIREN 在受害主机�
 
 - **SIREN MCP**（主线，远程只读取证）：SLEUTH 只使用 `mcp__siren__ls` / `mcp__siren__run`；仅在运行环境实际暴露了其他名称时才用等价的 list client / remote run，**不得臆造 `list_clients`、`exec`、`wait` 等不存在的工具**。即使运行环境自动批准了 `deploy` 或其他写操作，SLEUTH 也绝不调用。完全不可用则告知用户缺 SIREN MCP 并结束，**不要改用本地 shell/SSH 代替**。
 - **SAS 告警**（模式一）：只调用已安装的 `$sas` skill，查询与多告警范围规则见步骤 1.2；不要直接执行 SAS CLI。
-- **其余工具**（读 `references`/`assets`、调 `sls` skill、联网查 CVE/Exploit、派生子 agent）一律用运行环境的等价物；子 agent 同受只读护栏、未必能访问 SIREN，不可用时按只读护栏内联降级，**不要跳过对应步骤**。
+- **云侧交叉验证**：告警先调用 `$sas`，已投递的 WAF / SAS / ActionTrail 日志先调用 `sls`；云控制面、专用适配器、内部控制台、跨产品关联或明确覆盖缺口才调用只读 `opencli-aliyun-ir`。SLEUTH 不直接执行 OpenCLI 或复制适配器参数。
+- **其余工具**（读 `references`/`assets`、联网查 CVE/Exploit、派生子 agent）一律用运行环境的等价物；子 agent 同受只读护栏、未必能访问 SIREN，不可用时按只读护栏内联降级，**不要跳过对应步骤**。
 
 跨客户端工具映射、子 agent 重输出隔离与降级、SIREN 异常处理（超时/断线/日志被清）的完整规则见 **`references/runtime_compat.md`**。
 
@@ -90,7 +91,8 @@ description: SLEUTH · 安全应急响应专家：通过 SIREN 在受害主机�
 
 - **主动威胁狩猎、无告警的假设驱动横向排查（TALON 领域）**——SLEUTH 是事件驱动的事后调查，不做无线索的主动狩猎
 - **纯云安全中心告警查询**（只列举或读取 SAS 告警、不做主机溯源）——交给 `$sas` skill
-- **纯云端日志查询**（只捞 WAF / SAS / ActionTrail 日志、不做主机溯源）——交给 `sls` skill；SLEUTH 仅在需交叉验证时调用它
+- **纯云端日志查询**（只查已投递的 WAF / SAS / ActionTrail 日志）——交给 `sls` skill
+- **纯阿里云控制面或跨产品调查**（云防火墙、ACK/DAS、OSS/RDS/ECS/VPC/SLB 配置、内部控制台或直接工具覆盖缺口）——交给 `opencli-aliyun-ir`
 - **纯代码审计 / 漏洞修复 / 系统加固**——本 skill 只产出报告与处置建议，不改代码或系统状态
 - **缺安全事件上下文的通用「检查一下 / 看看有没有问题」**——不属于应急响应
 
@@ -134,12 +136,18 @@ description: SLEUTH · 安全应急响应专家：通过 SIREN 在受害主机�
 
 **模式二**：先据用户描述的异常推断最可能的攻击类型，再从相应指南入手。命令仅供参考，按实际参数调整。
 
-### 3.2 云端日志查询 —— 调用 `sls` skill
+### 3.2 阿里云云侧交叉验证 —— 直接工具优先
 
-主机侧日志常被清除/轮转/定位不到。需交叉验证攻击者真实 IP、攻击时间窗、命中的 WAF 规则、进程启动链、登录来源时，**调用 `sls` skill** 查阿里云云端日志（WAF / SAS / ActionTrail），作**补充证据源**（主线仍是 SIREN）。无跨 skill 调用工具则读 `sls` 指令或用户给的路径，仍不可用则跳过并在报告说明。
+主机侧日志常被清除、轮转或定位不到。云侧证据只作**补充证据源**，主线仍是 SIREN。按以下优先级调用：
 
-- **路由**（什么攻击类型查哪个 `-product`/logstore）以 **`references/cloud_log_queries.md`** 为准。
-- `sls` 查询要 UID：模式一已有；模式二没有则索取，拿不到就跳过并在报告说明。不要在本 skill 重抄 `sls` 的语法/字段坑。
+1. `$sas`：告警列表与详情，契约见步骤 1.2。
+2. `sls`：已投递的 WAF / SAS / ActionTrail 日志，包括初始入口、进程/网络/登录遥测和云侧操作记录。
+3. `opencli-aliyun-ir`：云控制面、云防火墙、ACK/DAS、OSS/RDS/ECS/VPC/SLB、内部控制台、跨产品关联，或 `$sas` / `sls` 的明确覆盖缺口。
+
+- **委派输入**：目标 UID、已确认的站点/地域、资产标识、调查时间窗、待验证问题和已知 IoC；不传整段调查对话或无关主机输出。
+- **委派输出**：只接收查询身份与范围、已确认事实、未确认项、IoC、覆盖缺口和只读下一步；原始大日志先在委派侧收窄。
+- **路由**以 **`references/cloud_log_queries.md`** 为准。`sls` 自己管理查询契约；OpenCLI 适配器、参数和字段由 `opencli-aliyun-ir` 自己管理。
+- 模式一已有 UID；模式二没有则索取。对应直接 skill 不可用时才尝试下一层；全部不可用则跳过并披露缺口，不改用本地 shell、SSH、浏览器或任意云 CLI。
 
 ---
 

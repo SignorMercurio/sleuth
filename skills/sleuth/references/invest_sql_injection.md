@@ -9,7 +9,7 @@
 
 ## 云端日志补充
 
-主机 `access.log` 常被清除/轮转，WAF 里才是攻击者真实 IP——按 `references/cloud_log_queries.md`「Web 类攻击」行用 `sls` skill 查 WAF（定位注入请求、注入点 URL 与真实 IP）；数据库审计日志若投递到 SLS 可 direct 模式查异常查询。
+主机 `access.log` 常被清除或轮转——按 `references/cloud_log_queries.md`「WebShell、SQL 注入、RCE、文件上传」优先用 `sls` 查 WAF 注入请求、URL 与来源 IP。
 
 ## 关键 IoC
 - 攻击源 IP

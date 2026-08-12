@@ -17,7 +17,7 @@
 
 ## 云端日志补充
 
-主机 `access.log` 常被清除/轮转，WAF 里才是攻击者真实 IP——按 `references/cloud_log_queries.md`「Web 类攻击」行用 `sls` skill 查 WAF（定位上传/利用请求与真实 IP）+ SAS `aegis-log-process` 还原 WebShell 子进程链。
+主机 `access.log` 常被清除或轮转，WAF 更适合确认入口看到的来源 IP——按 `references/cloud_log_queries.md`「WebShell、SQL 注入、RCE、文件上传」优先用 `sls` 定位上传/利用请求并用 SAS 遥测还原 WebShell 子进程链。
 
 ## 关键 IoC
 - Web Shell 文件路径和哈希

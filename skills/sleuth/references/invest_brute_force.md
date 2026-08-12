@@ -9,7 +9,7 @@
 
 ## 云端日志补充
 
-主机 `lastb`/`auth.log` 可能被清除或不含 RDP/数据库登录——按 `references/cloud_log_queries.md`「异常登录 / 暴力破解」行用 `sls` skill 查 SAS（`aegis-log-login` 找暴破源 IP 和「失败→成功」转折点、`sas-security-log` 查告警）。
+主机 `lastb`/`auth.log` 可能被清除或不含 RDP/数据库登录——按 `references/cloud_log_queries.md`「异常登录、暴力破解」优先用 `$sas`/`sls`，从 SAS 登录遥测找来源 IP 和「失败→成功」转折点。
 
 ## 关键 IoC
 - 攻击源 IP 地址

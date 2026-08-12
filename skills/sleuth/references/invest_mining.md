@@ -9,7 +9,7 @@
 
 ## 云端日志补充
 
-主机进程可能被隐藏/命令替换，云端遥测可旁证——按 `references/cloud_log_queries.md`「恶意进程」行用 `sls` skill 查 SAS（`aegis-log-process` 启动链/父进程、`aegis-log-network` 矿池连接）。
+主机进程可能被隐藏或命令被替换，云端遥测可旁证——按 `references/cloud_log_queries.md`「挖矿、恶意进程、勒索」优先用 `sls` 查 SAS 进程父链和矿池连接。
 
 ## 关键 IoC
 - 挖矿程序路径和哈希

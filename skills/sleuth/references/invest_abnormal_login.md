@@ -9,7 +9,7 @@
 
 ## 云端日志补充
 
-主机 `auth.log`/`secure` 可能被清除或不含 RDP/数据库登录——按 `references/cloud_log_queries.md`「异常登录 / 暴力破解」行用 `sls` skill 查 SAS（`aegis-log-login` 原始登录遥测、`sas-security-log` 异常登录告警，注意区分两者）。
+主机 `auth.log`/`secure` 可能被清除或不含 RDP/数据库登录——按 `references/cloud_log_queries.md`「异常登录、暴力破解」优先用 `$sas`/`sls`，区分 SAS 原始登录遥测与异常登录告警。
 
 ## 关键 IoC
 - 登录用户名

@@ -30,7 +30,7 @@
       "合并报告"
     ],
     "exclusions": [
-      "cloud-log-only queries (delegate to the sls skill)",
+      "cloud-log-only queries (delegate to sls) or Alibaba Cloud control-plane investigations (delegate to opencli-aliyun-ir)",
       "proactive threat hunting (TALON domain)",
       "code review or vulnerability fixing",
       "generic security advice without an incident",

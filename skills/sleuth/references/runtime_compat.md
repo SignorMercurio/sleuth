@@ -7,7 +7,7 @@
 - **读取本 skill 文件**：读取相对当前 skill 根目录的 `references/...` 或 `assets/...` 文件；Claude Code 可用 Read，Codex 可用本地文件读取工具。
 - **SIREN MCP**（主线，远程只读取证）：SLEUTH 只使用 `mcp__siren__ls`、`mcp__siren__run`。仅在运行环境实际暴露了其他名称时才使用等价的 list client、remote run 工具；不要臆造 `list_clients`、`exec`、`wait` 等未加载工具。即使运行环境自动批准了 `deploy` 或其他写操作，也不得调用。若完全不可用，告知用户缺少 SIREN MCP 并结束，不要改用本地 shell/SSH 代替。
 - **调用 `$sas` skill**：模式一只调用已安装的 `$sas` skill，不直接执行 SAS CLI；选择器、列表 / 详情分支与多告警范围按 SKILL 步骤 1.2，参数默认值、格式、分页和支持区域由 `$sas` 管理。若不可用，说明告警上下文缺口并向用户索取告警摘要；仍拿不到则按模式二继续，不要改用本地 shell、SSH 或其他云 CLI。
-- **调用其他 skill**：需要 SLS 云端日志时，按步骤 3.2（云端日志查询）调用已安装的 `sls` skill；若不可用则跳过云端查询并在报告说明。
+- **调用云侧 skill**：按步骤 3.2 保持 `$sas` 告警、`sls` 已投递日志、只读 `opencli-aliyun-ir` 控制面/专用能力的优先级。只传 UID、站点/地域、资产标识、时间窗、待验证问题和必要 IoC；前一层覆盖不了才进入下一层。全部不可用则跳过并在报告说明，不直接执行 OpenCLI、SLS CLI、本地 shell 或 SSH。
 - **联网查询**：需要查 CVE、Exploit 或修复方案时，使用运行环境提供的搜索工具、浏览器或官方/可信来源检索工具；不可联网时说明该部分未做外部验证。
 - **派生子 agent**：需要隔离大输出（步骤 3）、做独立结论核验（步骤 7）或隔离报告写作上下文（步骤 8）时，使用运行环境提供的 subagent / 委托机制（Claude Code 的 Agent 工具；Codex 的等价子 agent 机制）。调查与核验子 agent 同受只读安全护栏约束，且未必能访问 SIREN MCP——能访问就让它跑定向只读命令，不能就只处理传入的证据文本；报告 writer 不得访问 SIREN。运行时完全不提供子 agent 时按各节的内联方式降级，不要因此跳过对应步骤。
 

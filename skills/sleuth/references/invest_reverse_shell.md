@@ -9,7 +9,7 @@
 
 ## 云端日志补充
 
-按 `references/cloud_log_queries.md`「反弹 Shell / C2 外联」行用 `sls` skill 查 SAS（`aegis-log-network` 反弹连接与发起进程、`aegis-log-process` 还原父进程；域名回连配 `aegis-log-dns-query`）。
+按 `references/cloud_log_queries.md`「反弹 Shell、C2、数据外传」优先用 `sls` 关联 SAS 网络、进程和 DNS 遥测。
 
 ## 关键 IoC
 - 反弹 Shell 目标 IP 和端口

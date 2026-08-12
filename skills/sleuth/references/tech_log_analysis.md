@@ -26,7 +26,7 @@ cat urls_*.txt | sort | uniq -c | awk '$1 == 6 {print $2}'
 
 ## WAF 日志字段分析与会话反向匹配
 
-> 查 WAF 原始日志走 `sls` skill（`-product waf`）；调用方式、测试模式 vs 实际拦截、高防解读见 `references/cloud_log_queries.md` 与 `sls` 自带参考。本节是拿到日志后的分析。
+> 查 WAF 原始日志优先调用 `sls` skill。调用边界见 `references/cloud_log_queries.md`，本节只负责拿到日志后的分析。
 
 - 看分布：`request_path`、`status`、`request_length`（异常大请求）、`real_client_ip`；聚合用 `GROUP BY real_client_ip / request_path` 找高频源与扫描者。
 - **会话反向匹配**（攻击者换 IP 也能串起来）：靠会话 Cookie 唯一性——先取攻击 IP 的会话 ID，再用会话 ID 反查其所有请求。常见会话字段：`acw_tc`(WAF)、`aliyungf_tc`(阿里云)、`PHPSESSID`(PHP)、`JSESSIONID`(Java)、`ASP.NET_SessionId`(.NET)。

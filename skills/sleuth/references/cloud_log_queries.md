@@ -1,6 +1,6 @@
-# 云端日志查询路由（WAF / 云安全中心 SLS）—— 通过 `sls` skill
+# 阿里云云侧交叉验证路由——直接工具优先
 
-主机侧日志（nginx/apache `access.log`、`auth.log`、`journalctl` 等）经常被攻击者清除、被轮转丢掉，或根本定位不到。需要**交叉验证攻击者真实 IP、攻击时间窗、命中的 WAF 规则、进程启动链、登录来源**时，**调用已安装的 `sls` skill** 查询阿里云云端日志（也可直接读取已安装的 `sls` skill 指令）。
+主机侧日志（nginx/apache `access.log`、`auth.log`、`journalctl` 等）经常被攻击者清除、被轮转丢掉，或根本定位不到。需要**交叉验证攻击者真实 IP、攻击时间窗、命中的 WAF 规则、进程启动链、登录来源**时，**优先调用已安装的 `sls` skill** 查询阿里云云端日志（也可直接读取已安装的 `sls` skill 指令）。云安全中心告警列表/详情仍优先 `$sas`；只有云控制面、专用适配器、内部控制台、跨产品关联或直接工具明确覆盖不了时，才调用只读 `opencli-aliyun-ir`。
 
 ## 前提：UID
 
@@ -28,4 +28,5 @@
 - 优先用 **metadata 模式**（`-uid <UID> -product <sas|waf|actiontrail>`），不知道确切 project/logstore 时它会自己找；已知 `region + project + logstore` 时用 direct 模式（仍要带 `-uid`）。
 - query 用 `[filter] | SELECT 字段 LIMIT n` 的形式，不要 `SELECT *`（除非探 schema）；schema 不确定先 `SELECT * LIMIT 3` 探一次再收窄。
 - 云端日志是**补充证据源**，主线仍是 SIREN 在受害主机上跑只读命令；只在主机侧证据缺失/不足或需要交叉验证时才调 `sls` skill。
+- `opencli-aliyun-ir` 只补充云防火墙、ACK/DAS、OSS/RDS/ECS/VPC/SLB、内部控制台、免费 ActionTrail 事件窗或其他直接工具覆盖缺口；前一层已完整回答时不重复调用。
 - 拿到结果后，报告里必须写明：**日志源**（region/project/logstore 或 product+topic）、**查询时间窗**、**最早/最新记录**、**查询语句**、**覆盖限制**（云安全中心未安装时期查不到、SLS 有保留期）。不要把「未检出」写成「未发生」。
