@@ -228,6 +228,19 @@ body :: [ 用一个自然短段补充结论所需的关键入侵路径或根因�
 
 [ 用一个自然段收束：先写最终定性和当前状态，再写最重要的根因或控制缺口，最后指出客户下一项最高优先级工作。不要重复前文的证据细节，也不要为凑句数补话。 ]
 
+### 阿里云安全产品与服务建议 / Alibaba Cloud Security Recommendations
+
+以下建议基于本次事件暴露的安全控制缺口，按处置优先级排列。实际开通范围应结合现有订阅、资产规模和技术评估确认。
+
+<!-- 推荐 1–6 项；按优先级复制下方结构块。priority 仅用 P1/P2/P3，type 仅用 product/service。若没有与本次事件直接相关的建议，删除整个 5.2 小节。 -->
+
+::: recommendation priority=P1 type=product
+name :: [ 产品或服务名称，如云安全中心 ]
+risk :: [ 与本次事件直接相关的风险或控制缺口 ]
+reason :: [ 说明该产品或服务为何能补齐上述缺口 ]
+action :: [ 建议客户下一步开通、配置或评估的具体动作 ]
+:::
+
 ### 参考资料 / Further Reading
 
 框架 :: MITRE ATT&CK for Enterprise：用于支撑技术映射和战术分类 [https://attack.mitre.org/matrices/enterprise/](https://attack.mitre.org/matrices/enterprise/)

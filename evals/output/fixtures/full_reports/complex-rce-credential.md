@@ -241,6 +241,19 @@ body :: 访问日志、进程链、文件访问记录和 crontab 审计能够相
 
 本次事件已确认为公网 API 命令注入导致的主机入侵，当前已完成公网隔离和计划任务删除，主机重建与凭据轮转仍在进行。最高优先级是完成旧凭据吊销、可信镜像重建和接口修复验证。在这三项工作完成前，不应恢复原系统对外服务。
 
+### 阿里云安全产品与服务建议 / Alibaba Cloud Security Recommendations
+
+以下建议基于本次事件暴露的安全控制缺口，按处置优先级排列。实际开通范围应结合现有订阅、资产规模和技术评估确认。
+
+<!-- 推荐 1–6 项；按优先级复制下方结构块。priority 仅用 P1/P2/P3，type 仅用 product/service。若没有与本次事件直接相关的建议，删除整个 5.2 小节。 -->
+
+::: recommendation priority=P1 type=product
+name :: 云安全中心
+risk :: 公网命令注入已形成主机执行与云凭据暴露，主机异常行为和后续凭据风险需要持续关联检测。
+reason :: 云安全中心可补充主机侧威胁检测与资产风险管理，帮助识别重建前后的异常执行和同类暴露面。
+action :: 在可信镜像重建与凭据轮转完成后，评估为同类实例启用云安全中心防护并核验告警接入与处置责任人。
+:::
+
 ### 参考资料 / Further Reading
 
 框架 :: MITRE ATT&CK for Enterprise：用于支撑技术映射和战术分类 [https://attack.mitre.org/matrices/enterprise/](https://attack.mitre.org/matrices/enterprise/)

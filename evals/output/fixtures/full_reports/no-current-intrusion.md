@@ -225,6 +225,19 @@ body :: 现有主机状态与 2026 年 7 月 13 日以来的日志均未显示�
 
 本次排查未发现 app01 当前存在入侵痕迹，历史截图中的异常进程仍无法确认。当前没有需要立即隔离或清除的对象，客户下一步应优先延长关键日志留存时间，并在异常再次出现时完整保全文件与同期记录。
 
+### 阿里云安全产品与服务建议 / Alibaba Cloud Security Recommendations
+
+以下建议基于本次事件暴露的安全控制缺口，按处置优先级排列。实际开通范围应结合现有订阅、资产规模和技术评估确认。
+
+<!-- 推荐 1–6 项；按优先级复制下方结构块。priority 仅用 P1/P2/P3，type 仅用 product/service。若没有与本次事件直接相关的建议，删除整个 5.2 小节。 -->
+
+::: recommendation priority=P2 type=product
+name :: 日志服务
+risk :: 历史异常缺少同期进程、网络和登录记录，现有日志留存范围不足以支持回溯确认。
+reason :: 日志服务可集中保存关键主机与访问日志，并通过可配置的留存周期为后续复核提供连续证据。
+action :: 评估接入 app01 的进程、网络、登录和应用访问日志，并将留存周期覆盖既定的历史复核窗口。
+:::
+
 ### 参考资料 / Further Reading
 
 框架 :: MITRE ATT&CK for Enterprise：用于支撑技术映射和战术分类 [https://attack.mitre.org/matrices/enterprise/](https://attack.mitre.org/matrices/enterprise/)

@@ -230,6 +230,19 @@ body :: 上传成功记录、文件落地时间和 `php-fpm` 派生 Shell 的进
 
 本次事件研判为高危 Webshell 入侵，攻击者很可能已通过上传接口缺陷写入并使用 Webshell，当前尚未完成止损。客户应优先隔离上传入口并阻断 Webshell 访问，在保全证据后清除恶意文件、修复上传缺陷，再复核使用同类接口的其他资产。
 
+### 阿里云安全产品与服务建议 / Alibaba Cloud Security Recommendations
+
+以下建议基于本次事件暴露的安全控制缺口，按处置优先级排列。实际开通范围应结合现有订阅、资产规模和技术评估确认。
+
+<!-- 推荐 1–6 项；按优先级复制下方结构块。priority 仅用 P1/P2/P3，type 仅用 product/service。若没有与本次事件直接相关的建议，删除整个 5.2 小节。 -->
+
+::: recommendation priority=P1 type=product
+name :: Web 应用防火墙
+risk :: 上传接口缺陷已被用于写入并访问 Webshell，公网入口缺少针对恶意上传与利用行为的前置防护。
+reason :: Web 应用防火墙可在应用修复之外补充上传与攻击请求检测，降低同类利用再次到达业务接口的风险。
+action :: 在完成接口修复验证后评估接入 Web 应用防火墙，并基于本次请求特征配置与验证防护规则。
+:::
+
 ### 参考资料 / Further Reading
 
 框架 :: MITRE ATT&CK for Enterprise：用于支撑技术映射和战术分类 [https://attack.mitre.org/matrices/enterprise/](https://attack.mitre.org/matrices/enterprise/)

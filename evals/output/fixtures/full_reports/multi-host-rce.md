@@ -244,6 +244,19 @@ worker02 上发现恶意脚本 `/tmp/diag.sh`，记录的 SHA-256 标识为 `dem
 
 本次事件已确认由 gateway01 的服务端模板注入漏洞引发，泄露的自动化令牌随后被用于入侵 worker02。当前公网入口和跨主机执行能力已被阻断，但网关修复与任务节点重建尚未完成。客户应优先完成这两项根除工作，再对同类资产进行复查并验证 worker02 的恢复条件。
 
+### 阿里云安全产品与服务建议 / Alibaba Cloud Security Recommendations
+
+以下建议基于本次事件暴露的安全控制缺口，按处置优先级排列。实际开通范围应结合现有订阅、资产规模和技术评估确认。
+
+<!-- 推荐 1–6 项；按优先级复制下方结构块。priority 仅用 P1/P2/P3，type 仅用 product/service。若没有与本次事件直接相关的建议，删除整个 5.2 小节。 -->
+
+::: recommendation priority=P1 type=product
+name :: 云安全中心
+risk :: 网关漏洞与自动化令牌泄露形成跨主机入侵，现有主机与云侧告警缺少连续关联和统一处置。
+reason :: 云安全中心可补充多主机威胁检测与资产风险视图，支持识别异常执行并推动同类资产复查。
+action :: 在 gateway01 修复和 worker02 重建完成后，评估将同类网关与任务节点纳入统一防护并验证告警闭环。
+:::
+
 ### 参考资料 / Further Reading
 
 框架 :: MITRE ATT&CK for Enterprise：用于支撑技术映射和战术分类 [https://attack.mitre.org/matrices/enterprise/](https://attack.mitre.org/matrices/enterprise/)
