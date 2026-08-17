@@ -8,7 +8,7 @@
   "lifecycle_stage": "production",
   "context_budget_tier": "governed",
   "review_cadence": "quarterly",
-  "summary": "Read-only remote forensic incident response over SIREN, building ATT&CK attack chains and producing Chinese Markdown IR reports.",
+  "summary": "Read-only remote forensic incident response over SIREN, delivering verified ATT&CK findings with optional user-confirmed Chinese Markdown IR reports.",
   "repository": "https://github.com/SignorMercurio/sleuth",
   "target_platforms": [
     "claude",

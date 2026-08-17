@@ -3,8 +3,8 @@
 # format-neutral descriptor consumed by skill validators and cross-target packagers.
 interface:
   display_name: "SLEUTH"
-  short_description: "Security IR over SIREN with Chinese Markdown reports."
-  default_prompt: "Use $sleuth to investigate this security incident and generate a Chinese Markdown IR report."
+  short_description: "Read-only SIREN IR; reports require user confirmation."
+  default_prompt: "Use $sleuth to investigate this security incident and return verified findings. Do not generate a formal report unless I confirm it."
 
 compatibility:
   canonical_format: "agent-skills"

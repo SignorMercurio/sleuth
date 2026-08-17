@@ -1,6 +1,6 @@
 {
   "optimizer_hints": {
-    "capability": "Read-only remote forensic incident response over SIREN, building ATT&CK attack chains and Chinese IR reports",
+    "capability": "Read-only remote forensic incident response over SIREN, delivering verified ATT&CK-mapped findings and optional user-confirmed Chinese IR reports",
     "inputs": [
       "security alerts",
       "host anomalies",

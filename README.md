@@ -1,8 +1,8 @@
 # SLEUTH
 
-An agent skill for security incident response in Claude Code and Codex. It runs read-only forensic commands on compromised hosts through the SIREN MCP server, reconstructs attack chains, and produces incident reports mapped to MITRE ATT&CK.
+An agent skill for security incident response in Claude Code and Codex. It runs read-only forensic commands on compromised hosts through the SIREN MCP server, reconstructs attack chains, and delivers verified findings mapped to MITRE ATT&CK. Formal incident reports are generated only after the user explicitly requests or confirms one.
 
-Reports and supporting materials are generated in Simplified Chinese by design (the skill targets Chinese-speaking SOC teams); this README is in English for discoverability.
+Investigation outputs and optional reports are generated in Simplified Chinese by design (the skill targets Chinese-speaking SOC teams); this README is in English for discoverability.
 
 ## Features
 
@@ -10,11 +10,12 @@ Reports and supporting materials are generated in Simplified Chinese by design (
 - **Per-alarm-type investigation playbooks** (webshell, miner, reverse shell, brute force, ransomware, …) + **cross-cutting tradecraft guides** (log analysis, reverse reasoning, cloud forensics, threat intel, …) + specialized guides (cloud-log routing, OOB/DNSLog, IIS upload tracing) + **MITRE ATT&CK mapping**. See `skills/sleuth/references/playbook_index.md` for the routing table
 - **Parallel command orchestration**: independent remote commands are dispatched in a single round to cut investigation time
 - **Strictly read-only**: runs only commands that don't change system state (read files, list processes/network/services, inspect logs), never destructive or install commands; evidence integrity is preserved
-- **Adversarial verification gate**: every load-bearing claim is independently refuted before the report (sub-agent or inline) to guard against false attribution
-- **Isolated report writer**: when sub-agents are available, a fresh writer sees only the verified findings, template, and writing rules; it cannot access SIREN or the investigation transcript, and both writer and orchestrator run the same pre-delivery QA
+- **Adversarial verification gate**: every load-bearing claim is independently refuted before delivery (sub-agent or inline) to guard against false attribution
+- **Report confirmation gate**: investigations stop after verified findings by default; a formal `IR-....md` report is created only when the user explicitly requests or confirms it
+- **Isolated report writer**: after report confirmation, a fresh writer sees only the verified findings, template, and writing rules when sub-agents are available; it cannot access SIREN or the investigation transcript, and both writer and orchestrator run the same pre-delivery QA
 - **Context-isolation sub-agents**: heavy log / SLS / full-disk output is dredged by a sub-agent (or inline) that returns only conclusions, keeping the orchestrator's context lean
-- **Multi-host engagements**: hosts are investigated one by one (SIREN works per client), each landing a verified `*.findings.md` worksheet; the deliverable is always a single merged report (see *Multi-host and merge* below)
-- **Markdown incident report**: each engagement writes one named `IR-....md` from the bundled Dossier-style template, using the findings worksheets as the only source of facts
+- **Multi-host engagements**: hosts are investigated one by one (SIREN works per client), each landing a verified `*.findings.md` worksheet; if the user confirms a report, the findings are merged into one report (see *Multi-host and merge* below)
+- **Optional Markdown incident report**: after user confirmation, the engagement writes one named `IR-....md` from the bundled Dossier-style template, using the findings worksheets as the only source of facts
 - **Human writing style**: report prose follows `skills/sleuth/references/report_style.md` and bundled, sanitized IR excerpts; corpus rules live in `skills/sleuth/assets/style/README.md`
 
 ## Prerequisites
@@ -82,7 +83,7 @@ Provide:
 
 The skill passes the UID and supplied selector to `$sas`, obtains the relevant alarm context, and runs the matching playbook end to end.
 
-Asset UUID and ECS instance selectors return an alarm list. SLEUTH uses the returned alarm set as a whole, continues pagination as needed for the requested scope, and looks up individual alarm details by their numeric `Id` only when they are needed to support the investigation. Multiple alarms do not require choosing a single primary alarm and still produce one incident report. List-scoped report filenames omit `event_id`.
+Asset UUID and ECS instance selectors return an alarm list. SLEUTH uses the returned alarm set as a whole, continues pagination as needed for the requested scope, and looks up individual alarm details by their numeric `Id` only when they are needed to support the investigation. Multiple alarms do not require choosing a single primary alarm. If a report is confirmed, they still produce one incident report; list-scoped report filenames omit `event_id`.
 
 ### Free-form mode
 
@@ -90,7 +91,7 @@ When there is no alarm, asset, or instance selector, provide the Client ID plus 
 
 ### Multi-host and merge
 
-Name several hosts / Client IDs (or point at an alarm affecting multiple assets) and the skill investigates them sequentially, writes one `*.findings.md` worksheet per host, and merges everything into a single report (`IR-{date}-{primary-host}-multiN-{type}.md`). Handing it several existing `IR-*.md` reports triggers merge-only mode: no investigation, just one consolidated report.
+Name several hosts / Client IDs (or point at an alarm affecting multiple assets) and the skill investigates them sequentially, writes one `*.findings.md` worksheet per host, and returns verified findings without creating a formal report by default. After confirmation, it merges everything into a single report (`IR-{date}-{primary-host}-multiN-{type}.md`). Handing it several existing `IR-*.md` reports and explicitly asking to merge them counts as report confirmation and triggers merge-only mode: no investigation, just one consolidated report.
 
 ## Layout
 
@@ -121,7 +122,7 @@ Name several hosts / Client IDs (or point at an alarm affecting multiple assets)
 │           ├── oob_dnslog_investigation.md # dnslog.cn / interact.sh / OOB callbacks
 │           ├── ssh_login_attribution_sas.md # SSH login source attribution via SAS telemetry
 │           ├── recon_residual.md           # Residual-risk follow-ups after the 6-axis sweep
-│           ├── verification_checklist.md   # Adversarial verification gate run before the report
+│           ├── verification_checklist.md   # Adversarial verification gate run before delivery
 │           └── aspnet_webshell_upload_tracing.md # ASP.NET webshell upload tracing
 ├── scripts/
 │   └── validate.py                         # Repo consistency checks (frontmatter, links, orphans; run in CI)
@@ -131,9 +132,9 @@ Name several hosts / Client IDs (or point at an alarm affecting multiple assets)
 
 Files under `skills/sleuth/references/` are loaded on demand. The skill reads only the entries relevant to the current alarm or scenario, keeping the context window from being flooded on the first turn.
 
-## Output examples
+## Optional report output examples
 
-The skill writes a Markdown report into the cwd:
+By default, the skill returns a concise verified investigation result and does not create a formal report. After the user explicitly requests or confirms a report, the skill writes one Markdown report into the cwd:
 
 - `IR-20260417-web01-webshell-123456.md`: alarm-driven, alarm `Id` `123456`
 - `IR-20260417-web01-webshell.md`: asset- or instance-scoped alarm set
