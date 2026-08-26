@@ -1,6 +1,6 @@
 # SLEUTH 信任报告（Trust Report）
 
-生成时间：`2026-08-26T04:17:26Z`
+生成时间：`2026-08-26T05:47:06Z`
 
 总体结论：**通过**
 
@@ -9,7 +9,7 @@
 
 ## 1. 密钥与凭据扫描（secret scan）
 
-- 扫描文件数：116（跳过二进制/不可解码文件 10 个）
+- 扫描文件数：117（跳过二进制/不可解码文件 10 个）
 - 规则：
   - `aliyun_ak_sk`：Aliyun AccessKeyId: LTAI prefix followed by 12-30 alnum chars
   - `private_key_block`：PEM private key BEGIN marker (RSA/EC/DSA/OPENSSH/ENCRYPTED)
