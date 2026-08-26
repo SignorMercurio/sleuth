@@ -7,6 +7,7 @@ Investigation outputs and optional reports are generated in Simplified Chinese b
 ## Features
 
 - **Two investigation modes**: alarm-, asset-, or instance-scoped investigation, plus free-form host triage
+- **Capability preflight**: checks which host, cloud, sub-agent, and web evidence sources are available before investigation; missing coverage sets an upper bound on conclusion confidence
 - **Per-alarm-type investigation playbooks** (webshell, miner, reverse shell, brute force, ransomware, …) + **cross-cutting tradecraft guides** (log analysis, reverse reasoning, cloud forensics, threat intel, …) + specialized guides (cloud-log routing, OOB/DNSLog, IIS upload tracing) + **MITRE ATT&CK mapping**. See `skills/sleuth/references/playbook_index.md` for the routing table
 - **Parallel command orchestration**: independent remote commands are dispatched in a single round to cut investigation time
 - **Strictly read-only**: runs only commands that don't change system state (read files, list processes/network/services, inspect logs), never destructive or install commands; evidence integrity is preserved
@@ -91,13 +92,15 @@ When there is no alarm, asset, or instance selector, provide the Client ID plus 
 
 ### Multi-host and merge
 
-Name several hosts / Client IDs (or point at an alarm affecting multiple assets) and the skill investigates them sequentially, writes one `*.findings.md` worksheet per host, and returns verified findings without creating a formal report by default. After confirmation, it merges everything into a single report (`IR-{date}-{primary-host}-multiN-{type}.md`). Handing it several existing `IR-*.md` reports and explicitly asking to merge them counts as report confirmation and triggers merge-only mode: no investigation, just one consolidated report.
+Name several hosts / Client IDs (or point at an alarm affecting multiple assets) and the skill investigates them sequentially, writes one `*.findings.md` worksheet per host, and returns verified findings without creating a formal report by default. After confirmation, it merges everything into a single report (`IR-{date}-{primary-host}-multiN-{type}.md`). Handing it several existing `IR-*.md` reports and explicitly asking to merge them counts as report confirmation and triggers merge-only mode. The skill skips evidence collection steps 1-6, treats the reports as findings input, runs step 7 verification for any new cross-report claim, then produces one consolidated report.
 
 ## Layout
 
 ```
 .
+├── CHANGELOG.md                            # Visible workflow and safety-guardrail changes
 ├── manifest.json                           # Package metadata: owner, maturity, review cadence, budget tier
+├── requirements.txt                        # Exact Python dependency pins for repository checks
 ├── skills/
 │   └── sleuth/
 │       ├── SKILL.md                        # Resident layer: safety rails, mode routing, 8-step skeleton, report gate
@@ -129,12 +132,16 @@ Name several hosts / Client IDs (or point at an alarm affecting multiple assets)
 │           ├── verification_checklist.md   # Adversarial verification gate run before delivery
 │           └── aspnet_webshell_upload_tracing.md # ASP.NET webshell upload tracing
 ├── scripts/
-│   └── validate.py                         # Repo consistency checks (frontmatter, links, orphans; run in CI)
-├── evals/                                  # Trigger evals plus synthetic findings and complete-report fixtures
-└── reports/                                # Generated evidence: complete-report gate, scorecards, blind review, waivers
+│   ├── validate.py                         # Frontmatter, link, and orphan checks
+│   ├── permission_probe.py                 # Runtime trust and read-only guardrail anchors
+│   └── gen_trust_report.py                 # Secret, script-surface, dependency, and package-hash evidence
+├── evals/
+│   ├── output/                             # Synthetic complete-report contract fixtures
+│   └── runtime/                            # Mock SIREN, scenarios, transcript compliance, and fault tests
+└── reports/                                # Generated trust evidence, scorecards, blind review, and waivers
 ```
 
-Loading is two-phase. `SKILL.md` is the only resident layer: safety rails, investigation-mode routing, the 8-step skeleton, and the report confirmation gate. Everything else under `skills/sleuth/references/` is loaded on demand — the per-phase workflow detail (`workflow_*.md`) when that step starts, and the playbooks, tradecraft guides, and writing rules only when the current alarm or scenario needs them — keeping the context window from being flooded on the first turn.
+Loading is two-phase. `SKILL.md` is the only resident layer: safety rails, investigation-mode routing, the 8-step skeleton, and the report confirmation gate. Everything else under `skills/sleuth/references/` is loaded on demand. The skill reads the relevant `workflow_*.md` file when a phase starts and loads playbooks, tradecraft guides, and writing rules only when the current alarm or scenario needs them. This keeps the initial context small.
 
 ## Optional report output examples
 
@@ -151,15 +158,21 @@ Event-type slugs (e.g. `webshell`, `rce`, `unknown`) are documented in `skills/s
 
 ## Validation
 
-Run the repository consistency check and complete-report regression from the repository root:
+Install the pinned repository-check dependency, then run the full baseline from the repository root:
 
 ```bash
+python3 -m pip install -r requirements.txt
 python3 scripts/validate.py
+python3 scripts/permission_probe.py
+python3 scripts/gen_trust_report.py --check
 python3 evals/output/validate_full_reports.py
+python3 evals/runtime/run_mock_siren_tests.py
 git diff --check
 ```
 
-`scripts/validate.py` requires PyYAML. The complete-report fixtures are synthetic forward tests: they verify structure, severity, action status, IoC display, internal-language leakage, repetition, and broad length bands. They do not replace blind human review or prove improvement against a no-skill baseline.
+`scripts/gen_trust_report.py --check` is read-only. If it reports stale evidence after a package, script, dependency, or tracked-file change, run `python3 scripts/gen_trust_report.py` once and commit the refreshed `reports/trust_report.json` and `reports/trust_report.md`.
+
+The complete-report fixtures and mock SIREN suite are contract regressions. They verify report structure, runtime policy, scenario evidence, fault handling, transcript compliance, and concurrency, but they do not prove that an agent reaches the right conclusion. Use the manual drill in `evals/runtime/README.md` for model-behavior review, and keep blind human report review as a separate gate.
 
 ## Contributing
 
