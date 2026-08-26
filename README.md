@@ -100,7 +100,7 @@ Name several hosts / Client IDs (or point at an alarm affecting multiple assets)
 ├── manifest.json                           # Package metadata: owner, maturity, review cadence, budget tier
 ├── skills/
 │   └── sleuth/
-│       ├── SKILL.md                        # Skill definition and workflow
+│       ├── SKILL.md                        # Resident layer: safety rails, mode routing, 8-step skeleton, report gate
 │       ├── agents/
 │       │   ├── interface.yaml              # Canonical cross-target interface contract
 │       │   └── openai.yaml                 # Codex app metadata and SIREN MCP dependency hint
@@ -108,6 +108,10 @@ Name several hosts / Client IDs (or point at an alarm affecting multiple assets)
 │       │   ├── report.md                   # Markdown report template copied from dossier/report.md
 │       │   └── style/                      # Tracked, sanitized writing samples; curated-ir-excerpts.md is preferred
 │       └── references/
+│           ├── preflight_probe.md          # Pre-flight capability probe: gaps → confidence ceilings
+│           ├── workflow_recon.md           # Step 1-2 detail: mode routing, client/host list, first sweep
+│           ├── workflow_tracing.md         # Step 3-6 detail: playbook routing, cloud cross-validation, ATT&CK, residual risk
+│           ├── workflow_delivery.md        # Step 7-8 detail: verification gate handoff, findings, report generation
 │           ├── playbook_index.md           # Step-3 routing table into the guides below
 │           ├── invest_*.md                 # Investigation playbooks, one per alarm type
 │           ├── tech_*.md                   # Cross-cutting tradecraft guides
@@ -130,7 +134,7 @@ Name several hosts / Client IDs (or point at an alarm affecting multiple assets)
 └── reports/                                # Generated evidence: complete-report gate, scorecards, blind review, waivers
 ```
 
-Files under `skills/sleuth/references/` are loaded on demand. The skill reads only the entries relevant to the current alarm or scenario, keeping the context window from being flooded on the first turn.
+Loading is two-phase. `SKILL.md` is the only resident layer: safety rails, investigation-mode routing, the 8-step skeleton, and the report confirmation gate. Everything else under `skills/sleuth/references/` is loaded on demand — the per-phase workflow detail (`workflow_*.md`) when that step starts, and the playbooks, tradecraft guides, and writing rules only when the current alarm or scenario needs them — keeping the context window from being flooded on the first turn.
 
 ## Optional report output examples
 
