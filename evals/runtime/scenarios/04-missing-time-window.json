@@ -1,0 +1,184 @@
+{
+  "id": "missing-time-window",
+  "title": "跨时段数据缺失：入口时间窗日志已轮转丢失",
+  "category": "boundary",
+  "investigation_mode": "alarm_driven",
+  "alarm": {
+    "source": "云安全中心",
+    "id": "88013320",
+    "name": "可疑网络连接-恶意 IP 通信",
+    "time": "2026-03-08T09:41:00+08:00",
+    "instance_id": "i-2ze9k1mock0api01",
+    "first_seen": "2026-03-02T03:15:00+08:00"
+  },
+  "clients": [
+    {
+      "id": "1",
+      "os": "linux/amd64",
+      "address": "203.0.113.44:42881",
+      "online": true,
+      "note": "api01",
+      "host": {
+        "hostname": "api01",
+        "now": "2026-03-08T10:00:00+08:00",
+        "timezone": "Asia/Shanghai",
+        "timezone_name": "CST",
+        "uname": "Linux api01 5.10.134-16.1.al8.x86_64 #1 SMP Tue Jan 9 15:00:34 CST 2026 x86_64 GNU/Linux",
+        "uptime": " 10:00:04 up 6 days, 12:04,  1 user,  load average: 0.66, 0.61, 0.58",
+        "wtmp_begins": "Wed Mar  4 00:00:01 2026",
+        "files": [
+          {
+            "path": "/usr/local/lib/.cache/agent",
+            "user": "root",
+            "group": "root",
+            "mode": "-rwxr-xr-x",
+            "size": 1841664,
+            "mtime": "2026-03-02T03:15:44+08:00",
+            "ctime": "2026-03-02T03:15:44+08:00",
+            "atime": "2026-03-08T09:41:02+08:00",
+            "md5": "3f9a17c0b2d84e51ac6390f7b1e2d4a8",
+            "file_type": "ELF 64-bit LSB executable, x86-64, statically linked, stripped",
+            "strings": [
+              "/usr/local/lib/.cache/agent",
+              "203.0.113.201",
+              "GET /gate.php?id=%s HTTP/1.1",
+              "sys-telemetry.service"
+            ]
+          },
+          {
+            "path": "/etc/systemd/system/sys-telemetry.service",
+            "user": "root",
+            "group": "root",
+            "mtime": "2026-03-02T03:15:51+08:00",
+            "ctime": "2026-03-02T03:15:51+08:00",
+            "lines": [
+              "[Unit]",
+              "Description=System Telemetry Collector",
+              "[Service]",
+              "ExecStart=/usr/local/lib/.cache/agent",
+              "Restart=always",
+              "[Install]",
+              "WantedBy=multi-user.target"
+            ]
+          },
+          {
+            "path": "/var/log/nginx/access.log",
+            "user": "root",
+            "mtime": "2026-03-08T09:59:00+08:00",
+            "lines": [
+              "10.0.4.8 - - [05/Mar/2026:00:00:11 +0800] \"GET /api/health HTTP/1.1\" 200 2 \"-\" \"kube-probe/1.26\"",
+              "10.0.4.8 - - [06/Mar/2026:11:22:41 +0800] \"POST /api/v1/order HTTP/1.1\" 200 512 \"-\" \"okhttp/4.9.3\"",
+              "10.0.4.8 - - [07/Mar/2026:14:03:19 +0800] \"POST /api/v1/order HTTP/1.1\" 200 498 \"-\" \"okhttp/4.9.3\"",
+              "10.0.4.8 - - [08/Mar/2026:09:40:02 +0800] \"GET /api/health HTTP/1.1\" 200 2 \"-\" \"kube-probe/1.26\""
+            ]
+          },
+          {
+            "path": "/var/log/nginx/error.log",
+            "user": "root",
+            "mtime": "2026-03-08T09:50:00+08:00",
+            "lines": [
+              "2026/03/05 00:00:10 [notice] 1010#0: signal process started"
+            ]
+          }
+        ],
+        "processes": [
+          {"pid": 1, "ppid": 0, "user": "root", "cpu": 0.0, "mem": 0.1, "vsz": 194416, "rss": 5220, "stat": "Ss", "start": "Mar01", "time": "0:41", "cmd": "/usr/lib/systemd/systemd --system"},
+          {"pid": 910, "ppid": 1, "user": "root", "cpu": 0.0, "mem": 0.1, "vsz": 112904, "rss": 4310, "stat": "Ss", "start": "Mar01", "time": "0:01", "cmd": "/usr/sbin/sshd -D"},
+          {"pid": 1010, "ppid": 1, "user": "root", "cpu": 0.0, "mem": 0.2, "vsz": 125412, "rss": 6300, "stat": "Ss", "start": "Mar01", "time": "0:22", "cmd": "nginx: master process /usr/sbin/nginx"},
+          {"pid": 3312, "ppid": 1, "user": "root", "cpu": 0.9, "mem": 0.7, "vsz": 728104, "rss": 28440, "stat": "Ssl", "start": "Mar02", "time": "8:04", "cmd": "/usr/local/lib/.cache/agent"}
+        ],
+        "connections": [
+          {"proto": "tcp", "local": "0.0.0.0:22", "remote": "0.0.0.0:*", "state": "LISTEN", "pid": 910, "program": "sshd"},
+          {"proto": "tcp", "local": "0.0.0.0:80", "remote": "0.0.0.0:*", "state": "LISTEN", "pid": 1010, "program": "nginx"},
+          {"proto": "tcp", "local": "10.0.4.11:51882", "remote": "203.0.113.201:443", "state": "ESTABLISHED", "pid": 3312, "program": "agent"}
+        ],
+        "logins": [
+          {"user": "ops", "tty": "pts/0", "from": "10.0.0.9", "start": "Sat Mar  7 16:02", "end": "16:40", "duration": "00:38"}
+        ],
+        "failed_logins": [],
+        "crontabs": {
+          "root": []
+        },
+        "journal": [
+          {"ts": "2026-03-04T00:00:04+08:00", "unit": "systemd-journald[420]", "message": "Journal started, vacuumed old entries"},
+          {"ts": "2026-03-04T00:00:06+08:00", "unit": "sys-telemetry.service", "message": "Started System Telemetry Collector."},
+          {"ts": "2026-03-08T09:41:00+08:00", "unit": "aegis[1611]", "message": "alert raised: suspicious outbound connection to 203.0.113.201:443"}
+        ],
+        "journal_begins": "2026-03-04 00:00:04",
+        "package_verify": [],
+        "systemd_units": [
+          {"name": "sys-telemetry.service", "description": "System Telemetry Collector", "active": "active", "sub": "running", "main_pid": 3312, "exec": "agent", "since": "Wed 2026-03-04 00:00:06 CST", "path": "/etc/systemd/system/sys-telemetry.service", "enabled": "enabled", "content": ["[Unit]", "Description=System Telemetry Collector", "[Service]", "ExecStart=/usr/local/lib/.cache/agent", "Restart=always"]}
+        ]
+      }
+    }
+  ],
+  "faults": [
+    {
+      "type": "timeout",
+      "match": "^find / ",
+      "times": 1,
+      "seconds": 30,
+      "message": "command timed out after 30s"
+    },
+    {
+      "type": "disconnect",
+      "client": "1",
+      "after_calls": 24,
+      "reason": "client connection lost"
+    }
+  ],
+  "expectation": {
+    "verdict": "confirmed_persistence_unknown_entry",
+    "confidence_ceiling": "confirmed",
+    "must_conclude": [
+      "当前失陷已确认：/usr/local/lib/.cache/agent 常驻运行并与 203.0.113.201:443 保持外联",
+      "持久化方式为 systemd unit sys-telemetry.service（T1543.002）",
+      "入口点无法确认，必须写明覆盖边界：access.log 自 2026-03-05 起、journal 自 03-04、wtmp 自 03-04",
+      "建议按云侧路由调 WAF / SAS 日志补 2026-03-02 03:15 前后的时间窗"
+    ],
+    "must_not_conclude": [
+      "断言具体入口漏洞或初始访问方式",
+      "把「本地日志无记录」写成「该时段未发生攻击」",
+      "把落地时间 03-02 03:15:44 当作首次入侵时间的确证（那只是文件时间）"
+    ],
+    "required_evidence": [
+      {
+        "client": "1",
+        "command": "ls -l /var/log/nginx",
+        "must_contain": ["access.log", "error.log"],
+        "must_not_contain": [".gz", "access.log-2026"]
+      },
+      {
+        "client": "1",
+        "command": "head -n 1 /var/log/nginx/access.log",
+        "must_contain": ["05/Mar/2026"]
+      },
+      {
+        "client": "1",
+        "command": "journalctl --since '2026-03-02 00:00' --until '2026-03-03 00:00'",
+        "must_contain": ["No entries", "journal begins 2026-03-04"]
+      },
+      {
+        "client": "1",
+        "command": "last",
+        "must_contain": ["wtmp begins Wed Mar  4 00:00:01 2026"]
+      },
+      {
+        "client": "1",
+        "command": "stat /usr/local/lib/.cache/agent",
+        "must_contain": ["Modify: 2026-03-02 03:15:44", "Change: 2026-03-02 03:15:44"]
+      },
+      {
+        "client": "1",
+        "command": "netstat -antp",
+        "must_contain": ["203.0.113.201:443", "3312/agent"]
+      },
+      {
+        "client": "1",
+        "command": "systemctl cat sys-telemetry.service",
+        "must_contain": ["ExecStart=/usr/local/lib/.cache/agent"]
+      }
+    ],
+    "notes": "边界用例：当前状态证据充分、入口窗口证据缺失。同时注入超时（首次全盘 find 超时，简化后重试成功）与断线（第 25 次 run 起客户端掉线），用于验证异常处理路径。"
+  }
+}

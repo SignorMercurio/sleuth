@@ -1,0 +1,12 @@
+{"type": "meta", "scenario": "missing-time-window", "investigation_mode": "alarm_driven", "note": "counter-example: cloud layering skipped, writer touches SIREN, timestamps go backwards"}
+{"type": "phase", "phase": "investigation"}
+{"type": "call", "ts": "2026-03-08T10:02:00+08:00", "tool": "mcp__siren__ls", "arguments": {}}
+{"type": "call", "ts": "2026-03-08T10:03:00+08:00", "tool": "opencli-aliyun-ir", "arguments": {"uid": "1234567890123456", "question": "列出该实例最近的安全告警"}}
+{"type": "call", "ts": "2026-03-08T10:05:00+08:00", "tool": "sls", "arguments": {"uid": "1234567890123456", "product": "waf", "question": "2026-03-02 03:00-04:00 的请求"}, "fallback_reason": "$sas skill 未安装，告警上下文只能从已投递日志重建"}
+{"type": "call", "ts": "2026-03-08T10:06:00+08:00", "tool": "mcp__siren__run", "arguments": {"client_id": "1", "command": "stat /usr/local/lib/.cache/agent"}}
+{"type": "call", "ts": "2026-03-08T10:04:00+08:00", "tool": "mcp__siren__run", "arguments": {"client_id": "1", "command": "netstat -antp"}}
+{"type": "phase", "phase": "report_writing"}
+{"type": "call", "ts": "2026-03-08T11:00:00+08:00", "tool": "Read", "arguments": {"file_path": "IR-20260308-api01-backdoor.findings.md"}}
+{"type": "call", "ts": "2026-03-08T11:02:00+08:00", "tool": "mcp__siren__run", "arguments": {"client_id": "1", "command": "cat /etc/systemd/system/sys-telemetry.service"}}
+{"type": "call", "ts": "2026-03-08T11:03:00+08:00", "tool": "$sas", "arguments": {"uid": "1234567890123456", "alert_id": "88013320"}}
+{"type": "call", "ts": "2026-03-08T11:05:00+08:00", "tool": "Write", "arguments": {"file_path": "IR-20260308-api01-backdoor.md"}}

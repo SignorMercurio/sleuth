@@ -1,0 +1,3 @@
+# Running the suite imports these packages, which writes bytecode caches here.
+__pycache__/
+*.pyc

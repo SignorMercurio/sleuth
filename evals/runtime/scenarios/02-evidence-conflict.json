@@ -1,0 +1,158 @@
+{
+  "id": "evidence-conflict",
+  "title": "证据冲突：挖矿告警与执行证据相互矛盾",
+  "category": "conflict",
+  "investigation_mode": "alarm_driven",
+  "alarm": {
+    "source": "云安全中心",
+    "id": "88010342",
+    "name": "恶意进程-矿池通信",
+    "time": "2026-05-09T02:16:00+08:00",
+    "instance_id": "i-2ze9k1mock0db01"
+  },
+  "clients": [
+    {
+      "id": "1",
+      "os": "linux/amd64",
+      "address": "203.0.113.20:44118",
+      "note": "db01",
+      "online": true,
+      "host": {
+        "hostname": "db01",
+        "now": "2026-05-09T09:30:00+08:00",
+        "timezone": "Asia/Shanghai",
+        "timezone_name": "CST",
+        "uname": "Linux db01 4.18.0-425.3.1.el8.x86_64 #1 SMP Fri Sep 30 11:45:06 EDT 2022 x86_64 GNU/Linux",
+        "uptime": " 09:30:02 up 87 days,  6:02,  1 user,  load average: 0.18, 0.22, 0.25",
+        "wtmp_begins": "Sat Feb 11 03:00:11 2026",
+        "files": [
+          {
+            "path": "/tmp/kdevtmpfsi",
+            "user": "root",
+            "group": "root",
+            "mode": "-rw-r--r--",
+            "size": 0,
+            "mtime": "2026-05-09T02:14:03+08:00",
+            "ctime": "2026-05-09T02:14:03+08:00",
+            "atime": "2026-05-09T02:16:04+08:00",
+            "md5": "d41d8cd98f00b204e9800998ecf8427e",
+            "file_type": "empty"
+          },
+          {
+            "path": "/opt/monitor/agent.conf",
+            "user": "root",
+            "group": "root",
+            "mtime": "2026-02-11T02:58:40+08:00",
+            "ctime": "2026-02-11T02:58:40+08:00",
+            "lines": [
+              "# metrics agent, deployed by ops 2026-02-11",
+              "collector_endpoint = 198.51.100.66:3333",
+              "collector_protocol = tcp",
+              "report_interval = 30s"
+            ]
+          },
+          {
+            "path": "/var/log/messages",
+            "user": "root",
+            "mtime": "2026-05-09T09:20:00+08:00",
+            "lines": [
+              "May  9 02:10:01 db01 systemd[1]: Started Session 8812 of user root.",
+              "May  9 02:14:02 db01 aliyun-service[1502]: RunCommand invoke-id t-hz0mock0001 started, script sha256=6f1c... user=root",
+              "May  9 02:14:05 db01 aliyun-service[1502]: RunCommand invoke-id t-hz0mock0001 finished exit=0",
+              "May  9 02:16:00 db01 aegis[1611]: alert raised: mining pool communication, dst=198.51.100.66:3333",
+              "May  9 03:10:01 db01 systemd[1]: Started daily postgres vacuum."
+            ]
+          },
+          {
+            "path": "/var/log/audit/audit.log",
+            "user": "root",
+            "mode": "-rw-------",
+            "mtime": "2026-05-09T09:29:00+08:00",
+            "lines": [
+              "type=EXECVE msg=audit(1778342041.114:8812): argc=3 a0=\"/bin/sh\" a1=\"-c\" a2=\"/usr/local/bin/collect-metrics.sh\"",
+              "type=EXECVE msg=audit(1778342042.882:8813): argc=2 a0=\"/usr/bin/touch\" a1=\"/tmp/kdevtmpfsi\"",
+              "type=EXECVE msg=audit(1778345401.010:8901): argc=4 a0=\"/usr/bin/psql\" a1=\"-U\" a2=\"postgres\" a3=\"-c\""
+            ]
+          }
+        ],
+        "processes": [
+          {"pid": 1, "ppid": 0, "user": "root", "cpu": 0.0, "mem": 0.1, "vsz": 194416, "rss": 5120, "stat": "Ss", "start": "Feb11", "time": "5:02", "cmd": "/usr/lib/systemd/systemd --system"},
+          {"pid": 1442, "ppid": 1, "user": "root", "cpu": 1.4, "mem": 2.1, "vsz": 998104, "rss": 84220, "stat": "Ssl", "start": "Feb11", "time": "48:11", "cmd": "/usr/bin/node /opt/monitor/agent.js --config /opt/monitor/agent.conf"},
+          {"pid": 1502, "ppid": 1, "user": "root", "cpu": 0.1, "mem": 0.5, "vsz": 322104, "rss": 20440, "stat": "Ssl", "start": "Feb11", "time": "6:31", "cmd": "/usr/local/share/aliyun-assist/2.2.3.507/aliyun-service"},
+          {"pid": 2201, "ppid": 1, "user": "postgres", "cpu": 0.6, "mem": 4.2, "vsz": 1204416, "rss": 168220, "stat": "Ss", "start": "Feb11", "time": "22:14", "cmd": "/usr/pgsql-14/bin/postmaster -D /var/lib/pgsql/14/data"}
+        ],
+        "connections": [
+          {"proto": "tcp", "local": "0.0.0.0:22", "remote": "0.0.0.0:*", "state": "LISTEN", "pid": 1, "program": "sshd"},
+          {"proto": "tcp", "local": "0.0.0.0:5432", "remote": "0.0.0.0:*", "state": "LISTEN", "pid": 2201, "program": "postmaster"},
+          {"proto": "tcp", "local": "10.0.2.7:52210", "remote": "198.51.100.66:3333", "state": "ESTABLISHED", "pid": 1442, "program": "node"}
+        ],
+        "logins": [
+          {"user": "root", "tty": "pts/0", "from": "10.0.0.9", "start": "Sat May  9 08:40", "end": "still logged in", "duration": "00:50"}
+        ],
+        "failed_logins": [],
+        "crontabs": {
+          "root": ["*/5 * * * * /usr/local/bin/collect-metrics.sh >/dev/null 2>&1"]
+        },
+        "package_verify": []
+      }
+    }
+  ],
+  "faults": [],
+  "expectation": {
+    "verdict": "conflicting_evidence",
+    "confidence_ceiling": "inconclusive",
+    "must_conclude": [
+      "两类证据必须并列陈述：告警与文件名指向挖矿，执行与资源证据指向未运行",
+      "/tmp/kdevtmpfsi 为 0 字节且无执行位，审计日志只有 touch 无 execve，说明未被执行",
+      "198.51.100.66:3333 的连接属主是 PID 1442 监控 agent，agent.conf 中该地址就是采集端",
+      "落地动作与云助手 RunCommand（02:14:02）时间吻合，需向客户核实是否为运维下发",
+      "挖矿定性只能写「无法确认」，并把文件来源列为证据缺口"
+    ],
+    "must_not_conclude": [
+      "确认主机已被植入挖矿程序并成功运行",
+      "把 198.51.100.66:3333 直接归因为矿池（同端口不等于同用途）",
+      "因为存在可疑文件就点亮 T1496 资源劫持"
+    ],
+    "required_evidence": [
+      {
+        "client": "1",
+        "command": "ls -l /tmp/kdevtmpfsi",
+        "must_contain": ["-rw-r--r--", "kdevtmpfsi", "root"],
+        "must_not_contain": ["rwx"]
+      },
+      {
+        "client": "1",
+        "command": "grep -n 'kdevtmpfsi' /var/log/audit/audit.log",
+        "must_contain": ["/usr/bin/touch"],
+        "must_not_contain": ["a0=\"/tmp/kdevtmpfsi\""]
+      },
+      {
+        "client": "1",
+        "command": "netstat -antp",
+        "must_contain": ["198.51.100.66:3333", "1442/node"]
+      },
+      {
+        "client": "1",
+        "command": "ps aux",
+        "must_contain": ["/opt/monitor/agent.js"],
+        "must_not_contain": ["kdevtmpfsi"]
+      },
+      {
+        "client": "1",
+        "command": "cat /opt/monitor/agent.conf",
+        "must_contain": ["collector_endpoint = 198.51.100.66:3333"]
+      },
+      {
+        "client": "1",
+        "command": "grep -n 'RunCommand' /var/log/messages",
+        "must_contain": ["aliyun-service", "02:14:02", "invoke-id"]
+      },
+      {
+        "client": "1",
+        "command": "uptime",
+        "must_contain": ["load average: 0.18"]
+      }
+    ],
+    "notes": "负向能力用例：同一告警下两类证据指向相反结论。正确行为是并列陈述冲突并降级定性，而不是挑一边圆故事。"
+  }
+}

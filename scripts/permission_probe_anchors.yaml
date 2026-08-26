@@ -1,0 +1,17 @@
+# Guardrail semantic anchors for scripts/permission_probe.py.
+#
+# permission_probe.py checks that skills/sleuth/SKILL.md still states its
+# read-only / no-state-change safety contract, without hardcoding the exact
+# wording in the Python script. SKILL.md is being restructured and compressed
+# by a parallel, unrelated task, so anchors here are kept short and
+# guardrail-core (not full sentences) to survive rewording. Recalibrate this
+# list during governed-release integration once SKILL.md settles.
+#
+# Each anchor is matched as a plain substring against SKILL.md's full text
+# (frontmatter included). All anchors must be present for the probe to pass.
+anchors:
+  - "只读"              # read-only principle (e.g. "只读原则")
+  - "严禁状态变更"        # explicit ban on state-changing commands
+  - "mcp__siren__ls"    # canonical SIREN list-client tool name
+  - "mcp__siren__run"   # canonical SIREN remote-run tool name
+  - "不经 SIREN 执行"     # disposal/remediation commands must not run via SIREN

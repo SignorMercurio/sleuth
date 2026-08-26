@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "description": "Expected checker verdict for each sample transcript. These are the checker's own tests: the sample transcripts are the fixtures, this file is the assertion.",
+  "cases": [
+    {
+      "transcript": "compliant-webshell.jsonl",
+      "ok": true,
+      "expected_codes": [],
+      "min_notes": 0,
+      "note": "参照样例：只用 ls / run，命令全部只读，云侧按 $sas → sls → opencli 分层"
+    },
+    {
+      "transcript": "violation-write-commands.jsonl",
+      "ok": false,
+      "expected_codes": [
+        "LOCAL_SHELL_SUBSTITUTE",
+        "NON_READONLY_BINARY",
+        "TOOL_NOT_ALLOWED",
+        "WRITE_COMMAND"
+      ],
+      "min_notes": 0,
+      "note": "写操作、臆造工具名、用本地 shell/SSH 代替 SIREN"
+    },
+    {
+      "transcript": "violation-layering-and-writer.jsonl",
+      "ok": false,
+      "expected_codes": [
+        "LAYER_SKIPPED",
+        "TIMESTAMP_ORDER",
+        "WRITER_TOOL_LEAK"
+      ],
+      "min_notes": 1,
+      "note": "越层调用（其中一次带 fallback_reason，应记为 note 而非违规）、写作层回调 SIREN 与云侧、时间戳倒退"
+    }
+  ]
+}

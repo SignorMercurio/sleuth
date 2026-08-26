@@ -1,0 +1,412 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-26T04:17:26Z",
+  "ok": true,
+  "notes": [
+    "Generated for the governed-release trust-report gate (reports/review_waivers.json, gate_key=trust-report).",
+    "package_hash reflects skills/sleuth/ at generation time; regenerate before closing the waiver if that package changed since."
+  ],
+  "sections": {
+    "secret_scan": {
+      "ok": true,
+      "files_scanned": 116,
+      "files_skipped_binary": 10,
+      "rules": [
+        {
+          "name": "aliyun_ak_sk",
+          "description": "Aliyun AccessKeyId: LTAI prefix followed by 12-30 alnum chars"
+        },
+        {
+          "name": "private_key_block",
+          "description": "PEM private key BEGIN marker (RSA/EC/DSA/OPENSSH/ENCRYPTED)"
+        },
+        {
+          "name": "credential_assignment",
+          "description": "token/password/passwd/api_key/access_key/secret_key assigned a quoted literal of 6+ chars; obvious placeholders are excluded"
+        },
+        {
+          "name": "high_entropy_string",
+          "description": "plain alnum run of 24+ chars containing a digit, not a pure-hex digest, Shannon entropy >= 4.0 bits/char; skips ssh-rsa/ssh-ed25519/ssh-dss/ecdsa-sha2-* public-key lines (public by design, not a credential)"
+        }
+      ],
+      "self_exclusions": [
+        {
+          "path": "scripts/gen_trust_report.py",
+          "excluded_rules": [
+            "credential_assignment",
+            "private_key_block"
+          ],
+          "reason": "this scanner's own source embeds the literal rule markers it uses to detect them"
+        }
+      ],
+      "findings": []
+    },
+    "script_surface": {
+      "ok": true,
+      "script_count": 15,
+      "scripts": [
+        {
+          "path": "scripts/gen_trust_report.py",
+          "entry_point": "python3 scripts/gen_trust_report.py",
+          "network_access": false,
+          "network_indicators_matched": [],
+          "subprocess_execution": false,
+          "subprocess_patterns_matched": [],
+          "file_write_scopes": [
+            "reports"
+          ],
+          "write_summary": "write call present; resolves to reports/ (static)",
+          "ok": true
+        },
+        {
+          "path": "scripts/permission_probe.py",
+          "entry_point": "python3 scripts/permission_probe.py",
+          "network_access": false,
+          "network_indicators_matched": [],
+          "subprocess_execution": false,
+          "subprocess_patterns_matched": [],
+          "file_write_scopes": [],
+          "write_summary": "no file-write call detected (static)",
+          "ok": true
+        },
+        {
+          "path": "scripts/validate.py",
+          "entry_point": "python3 scripts/validate.py (flat script, executes at import time, no __main__ guard)",
+          "network_access": false,
+          "network_indicators_matched": [],
+          "subprocess_execution": false,
+          "subprocess_patterns_matched": [],
+          "file_write_scopes": [],
+          "write_summary": "no file-write call detected (static)",
+          "ok": true
+        },
+        {
+          "path": "evals/output/validate_full_reports.py",
+          "entry_point": "python3 evals/output/validate_full_reports.py",
+          "network_access": false,
+          "network_indicators_matched": [],
+          "subprocess_execution": false,
+          "subprocess_patterns_matched": [],
+          "file_write_scopes": [
+            "reports"
+          ],
+          "write_summary": "write call present; resolves to reports/ (static)",
+          "ok": true
+        },
+        {
+          "path": "evals/runtime/compliance/__init__.py",
+          "entry_point": "evals/runtime/compliance/__init__.py (imported module, no CLI entry point found)",
+          "network_access": false,
+          "network_indicators_matched": [],
+          "subprocess_execution": false,
+          "subprocess_patterns_matched": [],
+          "file_write_scopes": [],
+          "write_summary": "no file-write call detected (static)",
+          "ok": true
+        },
+        {
+          "path": "evals/runtime/compliance/check_transcript.py",
+          "entry_point": "python3 evals/runtime/compliance/check_transcript.py",
+          "network_access": false,
+          "network_indicators_matched": [],
+          "subprocess_execution": false,
+          "subprocess_patterns_matched": [],
+          "file_write_scopes": [],
+          "write_summary": "no file-write call detected (static)",
+          "ok": true
+        },
+        {
+          "path": "evals/runtime/compliance/rules.py",
+          "entry_point": "evals/runtime/compliance/rules.py (imported module, no CLI entry point found)",
+          "network_access": false,
+          "network_indicators_matched": [],
+          "subprocess_execution": false,
+          "subprocess_patterns_matched": [],
+          "file_write_scopes": [],
+          "write_summary": "no file-write call detected (static)",
+          "ok": true
+        },
+        {
+          "path": "evals/runtime/mock_siren/__init__.py",
+          "entry_point": "evals/runtime/mock_siren/__init__.py (imported module, no CLI entry point found)",
+          "network_access": false,
+          "network_indicators_matched": [],
+          "subprocess_execution": false,
+          "subprocess_patterns_matched": [],
+          "file_write_scopes": [],
+          "write_summary": "no file-write call detected (static)",
+          "ok": true
+        },
+        {
+          "path": "evals/runtime/mock_siren/api.py",
+          "entry_point": "evals/runtime/mock_siren/api.py (imported module, no CLI entry point found)",
+          "network_access": false,
+          "network_indicators_matched": [],
+          "subprocess_execution": false,
+          "subprocess_patterns_matched": [],
+          "file_write_scopes": [],
+          "write_summary": "no file-write call detected (static)",
+          "ok": true
+        },
+        {
+          "path": "evals/runtime/mock_siren/faults.py",
+          "entry_point": "evals/runtime/mock_siren/faults.py (imported module, no CLI entry point found)",
+          "network_access": false,
+          "network_indicators_matched": [],
+          "subprocess_execution": false,
+          "subprocess_patterns_matched": [],
+          "file_write_scopes": [],
+          "write_summary": "no file-write call detected (static)",
+          "ok": true
+        },
+        {
+          "path": "evals/runtime/mock_siren/policy.py",
+          "entry_point": "evals/runtime/mock_siren/policy.py (imported module, no CLI entry point found)",
+          "network_access": false,
+          "network_indicators_matched": [],
+          "subprocess_execution": false,
+          "subprocess_patterns_matched": [],
+          "file_write_scopes": [],
+          "write_summary": "no file-write call detected (static)",
+          "ok": true
+        },
+        {
+          "path": "evals/runtime/mock_siren/scenario.py",
+          "entry_point": "evals/runtime/mock_siren/scenario.py (imported module, no CLI entry point found)",
+          "network_access": false,
+          "network_indicators_matched": [],
+          "subprocess_execution": false,
+          "subprocess_patterns_matched": [],
+          "file_write_scopes": [],
+          "write_summary": "no file-write call detected (static)",
+          "ok": true
+        },
+        {
+          "path": "evals/runtime/mock_siren/server.py",
+          "entry_point": "python3 evals/runtime/mock_siren/server.py",
+          "network_access": false,
+          "network_indicators_matched": [],
+          "subprocess_execution": false,
+          "subprocess_patterns_matched": [],
+          "file_write_scopes": [],
+          "write_summary": "no file-write call detected (static)",
+          "ok": true
+        },
+        {
+          "path": "evals/runtime/mock_siren/shell.py",
+          "entry_point": "evals/runtime/mock_siren/shell.py (imported module, no CLI entry point found)",
+          "network_access": false,
+          "network_indicators_matched": [],
+          "subprocess_execution": false,
+          "subprocess_patterns_matched": [],
+          "file_write_scopes": [],
+          "write_summary": "no file-write call detected (static)",
+          "ok": true
+        },
+        {
+          "path": "evals/runtime/run_mock_siren_tests.py",
+          "entry_point": "python3 evals/runtime/run_mock_siren_tests.py",
+          "network_access": false,
+          "network_indicators_matched": [],
+          "subprocess_execution": true,
+          "subprocess_patterns_matched": [
+            "\\bsubprocess\\."
+          ],
+          "file_write_scopes": [
+            "temp-dir"
+          ],
+          "write_summary": "write call present; resolves to a Python-managed temp directory (tempfile.*, ephemeral, deleted at context exit) -- not a persistent write outside reports/ or evals/ (static)",
+          "ok": true
+        }
+      ],
+      "conclusion": "No script under scripts/ or evals/ initiates network egress; file writes are confined to reports/ and/or evals/ output artifacts (static analysis).",
+      "method_note": "Static heuristic scan, not a full data-flow or taint analysis. Network access: real Python networking modules are matched on an actual import/connect statement anywhere in the file; command-line network tools (curl/wget/ssh/scp/rsync/netcat) count only when they appear as an argument inside an actual subprocess/os.system/os.popen/os.exec* call (.py) or as a shell-script line (.sh) -- a policy table or test-fixture string that merely names one of these tools is not a call site. File writes: a best-effort constant-propagation pass resolves a write call's target through named constants, one argparse-default hop, and tempfile.*/`with ... as` bindings (tagged as an ephemeral temp-dir, not a persistent write)."
+    },
+    "dependency_pinning": {
+      "ok": true,
+      "requirements_file": "requirements.txt",
+      "pins": [
+        {
+          "package": "pyyaml",
+          "pinned_version": "6.0.3",
+          "exact_pin": true
+        }
+      ],
+      "detail": "requirements.txt exists, pyyaml is present, and every dependency is exactly pinned with =="
+    },
+    "package_hash": {
+      "ok": true,
+      "package_root": "skills/sleuth",
+      "file_count": 41,
+      "files": [
+        {
+          "path": "skills/sleuth/SKILL.md",
+          "sha256": "ac7b62492f174c7c9a1aa90c970385b0f362e60d8cd0aeb26ec24890d8fd2625"
+        },
+        {
+          "path": "skills/sleuth/agents/interface.yaml",
+          "sha256": "b04dc0978dfa924d113c191a802de55822d3b75f67c21b8b19ce32b69e550aaa"
+        },
+        {
+          "path": "skills/sleuth/agents/openai.yaml",
+          "sha256": "a9d2f6be9deaa73fc772bf77e1389288e61a73229dbc8e58b9b3403cc07bec12"
+        },
+        {
+          "path": "skills/sleuth/assets/report.md",
+          "sha256": "95f1f340c3a75b8dbbca8935fbd11eba2a835160cab7c8a9ae447664a07f2bd5"
+        },
+        {
+          "path": "skills/sleuth/assets/style/README.md",
+          "sha256": "c37e74abb973e6ea70b424331e8c6924edc26b8f45cbac9930c849545a6a7ad8"
+        },
+        {
+          "path": "skills/sleuth/assets/style/curated-ir-excerpts.md",
+          "sha256": "2aaadfbe99f493e3e3b629f67226211a9b1907fb0c71e226331d15d118afcc15"
+        },
+        {
+          "path": "skills/sleuth/references/aspnet_webshell_upload_tracing.md",
+          "sha256": "0fd6aaef5b6bed2d298f6ce61d34d30478c7b1eb8ad1d2c8e1247c4196bdbcdb"
+        },
+        {
+          "path": "skills/sleuth/references/attack_framework.md",
+          "sha256": "b8be769a89f399a104108c3ab8df605491828598f730ec3e92db139a01ca8003"
+        },
+        {
+          "path": "skills/sleuth/references/cloud_log_queries.md",
+          "sha256": "eefed25127f9eca22cc9e698266c2b7b2f4b6629dcb64574ae7c9142e48d54e4"
+        },
+        {
+          "path": "skills/sleuth/references/findings_spec.md",
+          "sha256": "ba11774be6c6cd8ff59a4d4558ef477926efb8d5cc2bf81e80ef34b1260432cb"
+        },
+        {
+          "path": "skills/sleuth/references/invest_abnormal_login.md",
+          "sha256": "a1a8133c5300dcf2c296991a1fcf456d5026a670ce96d371f0e8bca736380886"
+        },
+        {
+          "path": "skills/sleuth/references/invest_brute_force.md",
+          "sha256": "1ee00aa6730635f3df60dfff41ee3d3eff860a32700555e5e1aa46c9269fcc48"
+        },
+        {
+          "path": "skills/sleuth/references/invest_data_exfiltration.md",
+          "sha256": "18c99bc489d188af7903253894002c73b43691e2f08f5f4024b4b1146bd0b7df"
+        },
+        {
+          "path": "skills/sleuth/references/invest_mining.md",
+          "sha256": "b2de04ba1b084d6a88d0f77a05c483152156f76db17c3b32afdf40f8e4ded6f1"
+        },
+        {
+          "path": "skills/sleuth/references/invest_persistence.md",
+          "sha256": "5f7b311bf2f8d79545d0fc8f874e8b70d7e93744140d3bcf644a5ec88c9f3f15"
+        },
+        {
+          "path": "skills/sleuth/references/invest_privilege_escalation.md",
+          "sha256": "e3bba9ee2799cf3bdbec33c97b3cbd538096a8635edb97189706ee9ceeaaa85c"
+        },
+        {
+          "path": "skills/sleuth/references/invest_ransomware.md",
+          "sha256": "e519df2c3844d9e4396ec6e271c900513c29f995302381eb11483413c5201831"
+        },
+        {
+          "path": "skills/sleuth/references/invest_rce.md",
+          "sha256": "9ea8895028770e7661b53fbe6e64519bd1b4c2962980868a124b2d78767b2f6c"
+        },
+        {
+          "path": "skills/sleuth/references/invest_reverse_shell.md",
+          "sha256": "41c065d4cbfc270d4bed216f23e2237fe20b81d90cd198ecb7cdffd981fa542c"
+        },
+        {
+          "path": "skills/sleuth/references/invest_sql_injection.md",
+          "sha256": "ccfd3e5e1a4bc9f57db9ada5dd9d29baf9f8123908b44b2bbaa8ee8bfc401d12"
+        },
+        {
+          "path": "skills/sleuth/references/invest_webshell.md",
+          "sha256": "f9ea5022a0024fb34b61b307e7195e149cdc08ee6defe2930b135243bd50c502"
+        },
+        {
+          "path": "skills/sleuth/references/oob_dnslog_investigation.md",
+          "sha256": "ee9b06c50bde731a0db23f6862ece94d27470008db0babfc711788822050d16e"
+        },
+        {
+          "path": "skills/sleuth/references/playbook_index.md",
+          "sha256": "ec2b5a4283593fd245ecf72be1f18f84392db7a77e74256f7645320090ca6c4b"
+        },
+        {
+          "path": "skills/sleuth/references/preflight_probe.md",
+          "sha256": "a84daa296ee9ab84bdbdcba6b1a8cb1f37262c5bdf86bac10af47b61f1771ef7"
+        },
+        {
+          "path": "skills/sleuth/references/recon_residual.md",
+          "sha256": "488bb5b6e1f05151511a9a6651a86b516fcd83b1008a6866690c06cf30f61c89"
+        },
+        {
+          "path": "skills/sleuth/references/report_naming.md",
+          "sha256": "e263faae1822202b6f2dad4837754b01a8e7382ff4fab52dab7dc53d1748e822"
+        },
+        {
+          "path": "skills/sleuth/references/report_style.md",
+          "sha256": "daa29ecb46440bdd37e0909d6ffd06d26104dea49ce5721bd438861a161cb018"
+        },
+        {
+          "path": "skills/sleuth/references/report_writing_rules.md",
+          "sha256": "c4510dc0c189835670602319028db94da488a2cdb6c05fe38da1d5b1b6b40dd6"
+        },
+        {
+          "path": "skills/sleuth/references/runtime_compat.md",
+          "sha256": "a682e5c39d2e2700698788f2c12744269626d32cc7f7893879804ebab889196d"
+        },
+        {
+          "path": "skills/sleuth/references/sas_sls_host_telemetry.md",
+          "sha256": "8d0e9ab1fb543a77af7437448c56eb3bb995c1feb06f940c9db06a8ac56c301a"
+        },
+        {
+          "path": "skills/sleuth/references/ssh_login_attribution_sas.md",
+          "sha256": "6e61a060c82515db42e6dd377107337859d4911969a96e8341dfc179532f2d64"
+        },
+        {
+          "path": "skills/sleuth/references/tech_attack_countermeasures.md",
+          "sha256": "653de67cdba9bf26c5f854fea0411fdaf4826894b15d71478ee989e856673920"
+        },
+        {
+          "path": "skills/sleuth/references/tech_cloud.md",
+          "sha256": "d5b29beeddc3c4a313665f7b8a3b5859d159185a90e887ad7d83c398010dce9b"
+        },
+        {
+          "path": "skills/sleuth/references/tech_log_analysis.md",
+          "sha256": "042e1694dc32ac221df64f6ac41c907ad93dfa6dbdb39a1e74b22345d0fe2b5c"
+        },
+        {
+          "path": "skills/sleuth/references/tech_process_file.md",
+          "sha256": "1ea4b62d0172bdfc2c454cbd1c85c2c520fbd9dd777146b5794c403ceb8223db"
+        },
+        {
+          "path": "skills/sleuth/references/tech_reverse_reasoning.md",
+          "sha256": "1ab276d6eb1c07a526a17716a3c9acd643e6f6e9ef1422de2a79a3f409bde2e3"
+        },
+        {
+          "path": "skills/sleuth/references/tech_threat_intel.md",
+          "sha256": "bd86bfed9f979e46690eb6ecb99615b82bfcfb334f66aed65e05fe0c9be8181b"
+        },
+        {
+          "path": "skills/sleuth/references/verification_checklist.md",
+          "sha256": "e36845be8ca197ba9c8c29a148be3688e6919f45e4721319473b8395e15fd102"
+        },
+        {
+          "path": "skills/sleuth/references/workflow_delivery.md",
+          "sha256": "b3bf9d2f174183b704d6a11201b82659971ab9d4260635a5ff6a43585f01bb58"
+        },
+        {
+          "path": "skills/sleuth/references/workflow_recon.md",
+          "sha256": "e13ea6232f5d8427a639312f2bbb823f83a03e51ce635940a35142fab04e3638"
+        },
+        {
+          "path": "skills/sleuth/references/workflow_tracing.md",
+          "sha256": "20e33a474d37c19a52970ec05c7f3494708b6e2ffb2dd7705f31ad6e9322c020"
+        }
+      ],
+      "aggregate_sha256": "5b48d6afe13f086367d25ca2163f9c5f81eeb15e6a63460f261b65f6e0b999d5",
+      "aggregate_method": "sha256 of the concatenation of 'relpath:filehash\\n' for each file, sorted by relpath",
+      "snapshot_note": "skills/sleuth/ may be modified by a parallel, unrelated task. This is a snapshot taken at generation time -- regenerate this report (without --check) as the final step before the trust-report waiver is closed, so the recorded hash matches the package actually being shipped."
+    }
+  }
+}

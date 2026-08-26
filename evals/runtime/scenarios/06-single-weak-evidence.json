@@ -1,0 +1,168 @@
+{
+  "id": "single-weak-evidence",
+  "title": "孤证降级：仅有 atime 这一类弱证据",
+  "category": "boundary",
+  "investigation_mode": "alarm_driven",
+  "alarm": {
+    "source": "云安全中心",
+    "id": "88014455",
+    "name": "网站后门-WebShell 文件",
+    "time": "2026-07-03T22:41:07+08:00",
+    "instance_id": "i-2ze9k1mock0app02"
+  },
+  "clients": [
+    {
+      "id": "1",
+      "os": "linux/amd64",
+      "address": "203.0.113.61:41550",
+      "online": true,
+      "note": "app02",
+      "host": {
+        "hostname": "app02",
+        "now": "2026-07-04T09:20:00+08:00",
+        "timezone": "Asia/Shanghai",
+        "timezone_name": "CST",
+        "uname": "Linux app02 3.10.0-1160.71.1.el7.x86_64 #1 SMP Tue Jun 28 15:37:28 UTC 2022 x86_64 GNU/Linux",
+        "uptime": " 09:20:01 up 302 days,  1:14,  1 user,  load average: 0.24, 0.20, 0.19",
+        "wtmp_begins": "Wed Jun  3 03:00:01 2026",
+        "files": [
+          {
+            "path": "/var/www/html/tmp/1.php",
+            "user": "www-data",
+            "group": "www-data",
+            "uid": 33,
+            "gid": 33,
+            "mode": "-rw-r--r--",
+            "mtime": "2024-09-12T17:44:20+08:00",
+            "ctime": "2024-09-12T17:44:20+08:00",
+            "atime": "2026-07-03T22:41:07+08:00",
+            "md5": "0b7e51f4a3c9d268e0f1a5b7c3d94e21",
+            "file_type": "PHP script, ASCII text",
+            "lines": [
+              "<?php",
+              "// temporary debug page, left by dev 2024-09",
+              "phpinfo();"
+            ]
+          },
+          {
+            "path": "/etc/nginx/conf.d/app.conf",
+            "user": "root",
+            "mtime": "2024-06-01T10:00:00+08:00",
+            "ctime": "2024-06-01T10:00:00+08:00",
+            "lines": [
+              "server {",
+              "    listen 80;",
+              "    root /var/www/html;",
+              "    location ~ ^/tmp/.*\\.php$ { return 403; }",
+              "    location ~ \\.php$ { fastcgi_pass 127.0.0.1:9000; }",
+              "}"
+            ]
+          },
+          {
+            "path": "/var/log/nginx/access.log",
+            "user": "root",
+            "mtime": "2026-07-04T09:19:00+08:00",
+            "lines": [
+              "10.0.6.4 - - [03/Jul/2026:20:00:11 +0800] \"GET /health HTTP/1.1\" 200 2 \"-\" \"kube-probe/1.26\"",
+              "198.51.100.90 - - [03/Jul/2026:21:55:03 +0800] \"GET /tmp/test.php HTTP/1.1\" 403 153 \"-\" \"Mozilla/5.0 zgrab/0.x\"",
+              "198.51.100.90 - - [03/Jul/2026:21:55:04 +0800] \"GET /shell.php HTTP/1.1\" 404 153 \"-\" \"Mozilla/5.0 zgrab/0.x\"",
+              "10.0.6.4 - - [03/Jul/2026:23:00:11 +0800] \"GET /health HTTP/1.1\" 200 2 \"-\" \"kube-probe/1.26\"",
+              "10.0.6.4 - - [04/Jul/2026:09:00:11 +0800] \"GET /health HTTP/1.1\" 200 2 \"-\" \"kube-probe/1.26\""
+            ]
+          },
+          {
+            "path": "/root/.ssh/authorized_keys",
+            "user": "root",
+            "mode": "-rw-------",
+            "mtime": "2025-04-02T09:00:00+08:00",
+            "ctime": "2025-04-02T09:00:00+08:00",
+            "lines": [
+              "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOpsKeyForOpsTeam ops@bastion"
+            ]
+          }
+        ],
+        "processes": [
+          {"pid": 1, "ppid": 0, "user": "root", "cpu": 0.0, "mem": 0.1, "vsz": 191216, "rss": 4100, "stat": "Ss", "start": "2025", "time": "26:11", "cmd": "/usr/lib/systemd/systemd --switched-root --system"},
+          {"pid": 861, "ppid": 1, "user": "root", "cpu": 0.0, "mem": 0.1, "vsz": 112904, "rss": 4280, "stat": "Ss", "start": "2025", "time": "0:42", "cmd": "/usr/sbin/sshd -D"},
+          {"pid": 1002, "ppid": 1, "user": "root", "cpu": 0.0, "mem": 0.2, "vsz": 125412, "rss": 6140, "stat": "Ss", "start": "2025", "time": "4:02", "cmd": "nginx: master process /usr/sbin/nginx"},
+          {"pid": 1044, "ppid": 1002, "user": "www-data", "cpu": 0.2, "mem": 0.4, "vsz": 126004, "rss": 9920, "stat": "S", "start": "2025", "time": "9:31", "cmd": "nginx: worker process"},
+          {"pid": 1310, "ppid": 1, "user": "www-data", "cpu": 0.7, "mem": 3.1, "vsz": 704104, "rss": 128400, "stat": "Ssl", "start": "2025", "time": "88:22", "cmd": "php-fpm: pool www"},
+          {"pid": 1502, "ppid": 1, "user": "root", "cpu": 0.1, "mem": 0.5, "vsz": 322104, "rss": 20112, "stat": "Ssl", "start": "2025", "time": "12:04", "cmd": "/usr/local/share/aliyun-assist/2.2.3.507/aliyun-service"}
+        ],
+        "connections": [
+          {"proto": "tcp", "local": "0.0.0.0:22", "remote": "0.0.0.0:*", "state": "LISTEN", "pid": 861, "program": "sshd"},
+          {"proto": "tcp", "local": "0.0.0.0:80", "remote": "0.0.0.0:*", "state": "LISTEN", "pid": 1002, "program": "nginx"},
+          {"proto": "tcp", "local": "10.0.6.11:39112", "remote": "10.0.2.7:5432", "state": "ESTABLISHED", "pid": 1310, "program": "php-fpm"}
+        ],
+        "logins": [
+          {"user": "ops", "tty": "pts/0", "from": "10.0.0.9", "start": "Fri Jul  3 14:02", "end": "14:31", "duration": "00:29"}
+        ],
+        "failed_logins": [],
+        "crontabs": {
+          "root": ["0 4 * * * /usr/local/bin/cleanup-tmp.sh >/dev/null 2>&1"]
+        },
+        "package_verify": [],
+        "journal": [
+          {"ts": "2026-07-03T22:41:07+08:00", "unit": "aliyun-service[1502]", "message": "aegis scan: /var/www/html scanned, 1 suspicious file reported"}
+        ],
+        "journal_begins": "2026-06-03 03:00:04"
+      }
+    }
+  ],
+  "faults": [],
+  "expectation": {
+    "verdict": "unconfirmed_weak_indicator",
+    "confidence_ceiling": "speculative",
+    "must_conclude": [
+      "唯一线索是 atime 与告警时间同为 22:41:07，属单一弱证据，结论必须降级为「推测」或「无法确认」",
+      "atime 更可能由云安全中心扫描读取刷新（同一秒 journal 有扫描记录）",
+      "nginx 对 /tmp/ 下 PHP 返回 403，同目录探测请求实测 403，文件即使存在也不可利用",
+      "访问日志中该文件零命中，进程、外联、cron、账户均无异常",
+      "建议按弱证据处理：清理遗留调试页面，不升级为入侵事件"
+    ],
+    "must_not_conclude": [
+      "攻击者于 2026-07-03 22:41 调用了该 WebShell",
+      "把 atime 直接写成攻击者访问时间",
+      "凭该文件点亮 T1505.003 或写入攻击链"
+    ],
+    "required_evidence": [
+      {
+        "client": "1",
+        "command": "stat /var/www/html/tmp/1.php",
+        "must_contain": ["Access: 2026-07-03 22:41:07", "Modify: 2024-09-12 17:44:20", "Change: 2024-09-12 17:44:20"]
+      },
+      {
+        "client": "1",
+        "command": "grep -c '/tmp/1.php' /var/log/nginx/access.log",
+        "must_contain": ["0"]
+      },
+      {
+        "client": "1",
+        "command": "grep -n 'tmp' /etc/nginx/conf.d/app.conf",
+        "must_contain": ["return 403"]
+      },
+      {
+        "client": "1",
+        "command": "grep -n '403' /var/log/nginx/access.log",
+        "must_contain": ["198.51.100.90", "/tmp/test.php"]
+      },
+      {
+        "client": "1",
+        "command": "cat /var/www/html/tmp/1.php",
+        "must_contain": ["phpinfo"],
+        "must_not_contain": ["eval", "system(", "$_POST"]
+      },
+      {
+        "client": "1",
+        "command": "ps aux",
+        "must_not_contain": ["/tmp/", "/dev/tcp", "/dev/shm"]
+      },
+      {
+        "client": "1",
+        "command": "netstat -antp",
+        "must_not_contain": ["198.51.100.90", "203.0.113"]
+      }
+    ],
+    "notes": "负向能力用例：孤证。正确行为是把结论降级并解释 atime 的替代成因，而不是用单一弱证据铸造攻击链。"
+  }
+}

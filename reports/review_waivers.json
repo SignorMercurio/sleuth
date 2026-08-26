@@ -9,7 +9,10 @@
       "created_at": "2026-07-03",
       "expires_at": "2026-09-22",
       "evidence": "manifest.json notes (context_budget_tier: governed); references/ on-demand layering; commit e3103ea and the step-8 dedup change",
-      "scope": "current-release"
+      "scope": "current-release",
+      "status": "resolved",
+      "resolved_at": "2026-08-26",
+      "resolution": "SKILL.md split into a two-phase load: the resident layer (safety rails, mode routing, 8-step skeleton, report gate) is now 4495 bytes (~1284 tokens), inside the governed 1300-token tier; per-step detail moved to references/workflow_recon.md, references/workflow_tracing.md, and references/workflow_delivery.md, loaded on demand."
     },
     {
       "gate_key": "trust-report",
@@ -19,7 +22,10 @@
       "created_at": "2026-07-03",
       "expires_at": "2026-09-22",
       "evidence": "manifest.json notes",
-      "scope": "current-release"
+      "scope": "current-release",
+      "status": "resolved",
+      "resolved_at": "2026-08-26",
+      "resolution": "scripts/gen_trust_report.py generates the governed-release trust report (secret scan, script surface, dependency pinning, package hash) into reports/trust_report.json and reports/trust_report.md; `python3 scripts/gen_trust_report.py --check` runs in CI (.github/workflows/validate.yml) and currently passes."
     },
     {
       "gate_key": "permission-runtime",
@@ -29,7 +35,10 @@
       "created_at": "2026-07-03",
       "expires_at": "2026-09-22",
       "evidence": "manifest.json notes; agents/interface.yaml trust block (remote_inline_execution: forbid)",
-      "scope": "current-release"
+      "scope": "current-release",
+      "status": "resolved",
+      "resolved_at": "2026-08-26",
+      "resolution": "scripts/permission_probe.py statically verifies interface.yaml's trust block (execution.context=inline, trust.source_tier=local, trust.remote_inline_execution=forbid), that openai.yaml declares no extra execution capability, and that SKILL.md's guardrail anchors are intact; it runs in CI (.github/workflows/validate.yml) and currently passes."
     }
   ]
 }

@@ -1,0 +1,26 @@
+{"type": "meta", "scenario": "webshell-typical", "investigation_mode": "alarm_driven", "note": "reference transcript: read-only, two SIREN tools only, $sas -> sls -> opencli layering"}
+{"type": "phase", "phase": "investigation"}
+{"type": "call", "ts": "2026-04-17T15:02:10+08:00", "tool": "mcp__siren__ls", "arguments": {}}
+{"type": "call", "ts": "2026-04-17T15:02:31+08:00", "tool": "$sas", "arguments": {"uid": "1234567890123456", "alert_id": "88010001"}}
+{"type": "call", "ts": "2026-04-17T15:03:02+08:00", "tool": "mcp__siren__run", "arguments": {"client_id": "1", "command": "hostname; uname -a; date"}}
+{"type": "call", "ts": "2026-04-17T15:03:03+08:00", "tool": "mcp__siren__run", "arguments": {"client_id": "1", "command": "ps aux --sort=-%cpu | head -20"}}
+{"type": "call", "ts": "2026-04-17T15:03:04+08:00", "tool": "mcp__siren__run", "arguments": {"client_id": "1", "command": "netstat -antp | grep ESTABLISHED"}}
+{"type": "call", "ts": "2026-04-17T15:03:05+08:00", "tool": "mcp__siren__run", "arguments": {"client_id": "1", "command": "last -n 20"}}
+{"type": "call", "ts": "2026-04-17T15:03:06+08:00", "tool": "mcp__siren__run", "arguments": {"client_id": "1", "command": "crontab -l"}}
+{"type": "call", "ts": "2026-04-17T15:03:07+08:00", "tool": "mcp__siren__run", "arguments": {"client_id": "1", "command": "ls -alt /tmp /var/tmp /dev/shm 2>/dev/null"}}
+{"type": "call", "ts": "2026-04-17T15:04:11+08:00", "tool": "mcp__siren__run", "arguments": {"client_id": "1", "command": "find /var/www/html -type f -name '*.php' -newermt '2026-04-17 00:00'"}}
+{"type": "call", "ts": "2026-04-17T15:04:12+08:00", "tool": "mcp__siren__run", "arguments": {"client_id": "1", "command": "stat /var/www/html/uploads/s.php"}}
+{"type": "call", "ts": "2026-04-17T15:04:13+08:00", "tool": "mcp__siren__run", "arguments": {"client_id": "1", "command": "md5sum /var/www/html/uploads/s.php"}}
+{"type": "call", "ts": "2026-04-17T15:04:40+08:00", "tool": "mcp__siren__run", "arguments": {"client_id": "1", "command": "wc -l /var/log/nginx/access.log && tail -n 50 /var/log/nginx/access.log"}}
+{"type": "call", "ts": "2026-04-17T15:04:41+08:00", "tool": "mcp__siren__run", "arguments": {"client_id": "1", "command": "grep -n 'POST /upload.php' /var/log/nginx/access.log"}}
+{"type": "call", "ts": "2026-04-17T15:05:20+08:00", "tool": "mcp__siren__run", "arguments": {"client_id": "1", "command": "journalctl -u php-fpm --since '2026-04-17 13:00' --no-pager | tail -n 40"}}
+{"type": "call", "ts": "2026-04-17T15:06:02+08:00", "tool": "sls", "arguments": {"uid": "1234567890123456", "product": "waf", "question": "203.0.113.45 对 /upload.php 的请求与真实来源 IP"}}
+{"type": "call", "ts": "2026-04-17T15:08:44+08:00", "tool": "mcp__siren__run", "arguments": {"client_id": "1", "command": "systemctl list-units --type=service"}}
+{"type": "call", "ts": "2026-04-17T15:08:45+08:00", "tool": "mcp__siren__run", "arguments": {"client_id": "1", "command": "rpm -Va | head -40"}}
+{"type": "call", "ts": "2026-04-17T15:08:46+08:00", "tool": "mcp__siren__run", "arguments": {"client_id": "1", "command": "cat /root/.ssh/authorized_keys /etc/passwd"}}
+{"type": "call", "ts": "2026-04-17T15:10:00+08:00", "tool": "opencli-aliyun-ir", "arguments": {"uid": "1234567890123456", "question": "云防火墙是否记录到 203.0.113.45 的出方向连接"}}
+{"type": "phase", "phase": "verification"}
+{"type": "call", "ts": "2026-04-17T15:20:00+08:00", "tool": "Agent", "arguments": {"prompt": "对抗式核验：入侵路径每一步的承重断言"}}
+{"type": "phase", "phase": "report_writing"}
+{"type": "call", "ts": "2026-04-17T15:40:00+08:00", "tool": "Read", "arguments": {"file_path": "IR-20260417-web01-webshell-88010001.findings.md"}}
+{"type": "call", "ts": "2026-04-17T15:41:00+08:00", "tool": "Write", "arguments": {"file_path": "IR-20260417-web01-webshell-88010001.md"}}

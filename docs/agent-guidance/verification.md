@@ -6,7 +6,10 @@ Run for every repository change:
 
 ```sh
 python3 scripts/validate.py
+python3 scripts/permission_probe.py
+python3 scripts/gen_trust_report.py --check
 python3 evals/output/validate_full_reports.py
+python3 evals/runtime/run_mock_siren_tests.py
 git diff --check
 ```
 

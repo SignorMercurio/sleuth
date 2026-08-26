@@ -4,11 +4,7 @@ Human-readable surface for `reports/review_waivers.json`. Waivers cover warning-
 
 ## Active waivers
 
-| Gate | Decision | Reviewer | Created | Expires | Reason (summary) |
-| --- | --- | --- | --- | --- | --- |
-| `context-budget` | accepted-risk | Mercurio | 2026-07-03 | 2026-09-22 | Initial load exceeds the governed 1300-token tier; safety contract and execution skeleton stay inline by design, references stay on-demand. Accepted 2026-06-22; step-8 dedup (2026-07-03) trimmed the overage. |
-| `trust-report` | temporary-exception | Mercurio | 2026-07-03 | 2026-09-22 | Governed-release trust report deferred; maturity deliberately declared production until the evidence is generated (manifest notes, 2026-06-22). |
-| `permission-runtime` | temporary-exception | Mercurio | 2026-07-03 | 2026-09-22 | Runtime permission probes deferred under the same decision; SIREN execution stays read-only per the in-skill safety contract and interface trust block. |
+None currently. All three waivers below were resolved on 2026-08-26; see "Closed since last review" for the closing evidence. Their original decision records are kept in `reports/review_waivers.json` (disclosure style — resolved waivers are marked, not deleted).
 
 ## Open warnings — visible, not waived
 
@@ -19,6 +15,9 @@ These stay warnings until fixed or explicitly accepted here:
 
 ## Closed since last review
 
+- **`context-budget` — resolved.** SKILL.md now loads in two phases: the resident layer (safety rails, mode routing, 8-step skeleton, report gate) is 4495 bytes (~1284 tokens), inside the governed 1300-token tier. Per-step detail moved to `references/workflow_recon.md`, `references/workflow_tracing.md`, and `references/workflow_delivery.md`, loaded on demand.
+- **`trust-report` — resolved.** `scripts/gen_trust_report.py` generates the governed-release trust report (secret scan, script surface, dependency pinning, package hash) into `reports/trust_report.json` / `reports/trust_report.md`; `python3 scripts/gen_trust_report.py --check` runs in CI.
+- **`permission-runtime` — resolved.** `scripts/permission_probe.py` statically verifies the interface.yaml trust block, the openai.yaml adapter's lack of extra execution capability, and SKILL.md's guardrail anchors; it runs in CI.
 - **`output-lab` — complete-report regression (was: absent).** Four synthetic findings bundles and four reports generated through isolated step-8 writers now cover a simple Webshell, a historical alert with no current intrusion, a complex RCE with credential exposure, and a multi-host chain. `python3 evals/output/validate_full_reports.py` checks structure, severity, action status, IoC display, internal-language leakage, repetition, and broad case-specific length bands.
 - **`output-lab` — unnatural wording follow-up (was: open).** The current style rules reject 「进程遥测」「大概率得手」 and process-meta tails, prefer customer-facing evidence terms, and forbid semicolon-compressed action chains. The refreshed micro scorecard passes all five skill-side cases; human naturalness review remains pending as recorded above.
 - **`governance` — score now backed by an artifact.** `reports/governance_scorecard.json` records score 95/100 (governed band), replacing the prior manifest-notes-only claim.
