@@ -46,6 +46,31 @@
       "应急响应报告"
     ]
   },
+  "frontmatter_contract": {
+    "required_exclusion_markers": [
+      "排除主动威胁狩猎",
+      "只查云侧数据",
+      "代码审计/漏洞修复",
+      "无事件的通用加固/合规",
+      "仅翻译或总结"
+    ]
+  },
+  "workflow_contract": {
+    "skills/sleuth/references/workflow_recon.md": [
+      "待证问题",
+      "最短必要证据",
+      "不要为了“多取证”无目标扩张范围"
+    ],
+    "skills/sleuth/references/workflow_tracing.md": [
+      "调查闭环与停止条件",
+      "不得为了凑满攻击链、CVE 或 ATT&CK 技术继续扩张调查",
+      "不得为了字段完整或告警名称强行匹配 CVE"
+    ],
+    "skills/sleuth/references/findings_spec.md": [
+      "未发现需要绑定的漏洞",
+      "不得为完整度强行匹配 CVE"
+    ]
+  },
   "fallback_positive_concepts": [
     "incident_response",
     "host_or_alert",

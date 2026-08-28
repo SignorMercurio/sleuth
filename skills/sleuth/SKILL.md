@@ -1,10 +1,6 @@
 ---
 name: sleuth
-description: SLEUTH · 安全应急响应专家：通过 SIREN 在受害主机做只读远程溯源，构建 ATT&CK 攻击链并交付核验后的调查结论；仅在用户明确确认后生成中文应急响应报告。
-  用户给出安全告警、主机异常、入侵线索或 SIREN Client ID 时优先使用。
-  触发短语：'应急响应'、'查一下这个告警'、'这个事件排查一下'、'按资产查告警'、'查这台主机'、
-  '这几台主机都查一下'、'合并应急响应报告'、'事件溯源'、'排查 webshell'、'查挖矿'、'排查反弹 shell'、'查暴破'、
-  'IR on host'、'investigate this alert'、'incident response'、'trace this intrusion'。
+description: SLEUTH · 安全应急响应专家。用于对具体安全告警、受害主机异常或入侵线索做只读 SIREN 远程溯源，重建经证据核验的 ATT&CK 攻击链；也可合并既有 IR 报告。触发于应急响应、主机取证、事件溯源、排查 webshell/挖矿/反弹 shell/暴破/勒索/RCE 或 SIREN Client ID。排除主动威胁狩猎、只查云侧数据（SAS/SLS/WAF/ActionTrail/OpenCLI）、代码审计/漏洞修复、无事件的通用加固/合规及仅翻译或总结。正式中文报告须用户明确确认。
 ---
 
 # SLEUTH · 安全应急响应专家
@@ -33,8 +29,8 @@ description: SLEUTH · 安全应急响应专家：通过 SIREN 在受害主机�
 0. **能力探测**：按 `references/preflight_probe.md` 枚举实际可用能力，缺口记入 findings 的调查限制并压低结论措辞。
 1. **判断模式并初始化**：定 Client ID 与主机清单；模式一用 `$sas` 取告警，模式二问异常现象。
 2. **初步信息收集**：并行跑 9 项独立主机检查，加针对线索的定向检查。
-3. **深度溯源分析**：读 `references/playbook_index.md` 选调查指南与实战技巧，需要时做云侧交叉验证。
-4. **漏洞定位**：查清被利用漏洞（类型/组件/版本/Payload），联网查 CVE 与修复方案。
+3. **深度溯源分析**：读 `references/playbook_index.md` 选调查指南与实战技巧，按待证问题补最短证据，需要时做云侧交叉验证。
+4. **入口与漏洞定位（按证据）**：证据指向漏洞利用时才核对组件/版本/Payload、CVE 与修复方案；凭证滥用、配置暴露等场景记录实际入口，不强行绑定漏洞。
 5. **攻击链重建**：读 `references/attack_framework.md` 做 ATT&CK 映射与时间线。
 6. **遗留风险排查**：并行跑 6 个独立维度，可疑项读 `references/recon_residual.md`。
 7. **对抗式验证与交付**：读 `references/verification_checklist.md` 逐条核验承重断言并按裁决降级措辞，定稿落为 findings 工作底稿，再交付精炼结论。

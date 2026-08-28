@@ -3,7 +3,8 @@
 
 Checks:
   1. skills/sleuth/SKILL.md frontmatter parses as YAML, name is `sleuth`,
-     description <= 1024 chars.
+     description <= 1024 chars, and the routing/workflow semantic contracts
+     declared by evals/semantic_config.json remain present.
   2. skills/sleuth/agents/openai.yaml, skills/sleuth/agents/interface.yaml,
      and manifest.json parse; the shared
      display fields and activation posture agree between the canonical interface and
@@ -29,6 +30,14 @@ SKILL_PATH = SKILL_ROOT / "SKILL.md"
 
 errors = []
 
+try:
+    semantic_config = json.loads(
+        pathlib.Path("evals/semantic_config.json").read_text(encoding="utf-8")
+    )
+except (FileNotFoundError, json.JSONDecodeError) as e:
+    errors.append(f"evals/semantic_config.json: cannot load semantic contracts: {e}")
+    semantic_config = {}
+
 skill = SKILL_PATH.read_text(encoding="utf-8")
 m = re.match(r"^---\n(.*?)\n---\n", skill, re.S)
 if not m:
@@ -43,6 +52,25 @@ else:
             errors.append(f"{SKILL_PATH}: frontmatter description missing")
         elif len(desc) > DESCRIPTION_LIMIT:
             errors.append(f"{SKILL_PATH}: description is {len(desc)} chars (limit {DESCRIPTION_LIMIT})")
+        else:
+            exclusion_markers = (
+                semantic_config.get("frontmatter_contract", {})
+                .get("required_exclusion_markers", [])
+            )
+            if not exclusion_markers or not all(
+                isinstance(marker, str) and marker for marker in exclusion_markers
+            ):
+                errors.append(
+                    "evals/semantic_config.json: frontmatter_contract."
+                    "required_exclusion_markers must be a non-empty string list"
+                )
+                exclusion_markers = []
+            missing_markers = [marker for marker in exclusion_markers if marker not in desc]
+            if missing_markers:
+                errors.append(
+                    f"{SKILL_PATH}: description missing routing exclusion markers "
+                    f"{missing_markers!r}"
+                )
     except yaml.YAMLError as e:
         errors.append(f"{SKILL_PATH}: frontmatter YAML parse failed: {e}")
 
@@ -97,6 +125,24 @@ md_paths = (
 md_files = [str(p) for p in md_paths]
 bodies = {f: pathlib.Path(f).read_text(encoding="utf-8") for f in md_files}
 
+workflow_contract = semantic_config.get("workflow_contract", {})
+if not isinstance(workflow_contract, dict) or not workflow_contract:
+    errors.append("evals/semantic_config.json: workflow_contract must be a non-empty object")
+else:
+    for path, markers in workflow_contract.items():
+        if not isinstance(markers, list) or not markers or not all(
+            isinstance(marker, str) and marker for marker in markers
+        ):
+            errors.append(f"evals/semantic_config.json: invalid workflow markers for {path}")
+            continue
+        contract_body = bodies.get(path)
+        if contract_body is None:
+            errors.append(f"evals/semantic_config.json: workflow contract file missing: {path}")
+            continue
+        missing_markers = [marker for marker in markers if marker not in contract_body]
+        if missing_markers:
+            errors.append(f"{path}: missing workflow contract markers {missing_markers!r}")
+
 ref_pattern = re.compile(
     r"(?:skills/sleuth/)?(?:references|assets)/[A-Za-z0-9_\-/]+\.md"
 )
@@ -131,4 +177,7 @@ if errors:
         print(f" - {e}")
     sys.exit(1)
 
-print(f"OK: frontmatter valid, {len(md_files)} markdown files checked, no broken or orphan references")
+print(
+    f"OK: frontmatter and semantic contracts valid, {len(md_files)} markdown files "
+    "checked, no broken or orphan references"
+)

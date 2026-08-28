@@ -4,7 +4,7 @@
 interface:
   display_name: "SLEUTH"
   short_description: "Read-only SIREN IR; reports require user confirmation."
-  default_prompt: "Use $sleuth to investigate this security incident and return verified findings. Do not generate a formal report unless I confirm it."
+  default_prompt: "Use $sleuth to investigate this specific host incident through SIREN and return evidence-bounded verified findings. Do not generate a formal report unless I explicitly confirm it."
 
 compatibility:
   canonical_format: "agent-skills"
