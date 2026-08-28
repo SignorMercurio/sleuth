@@ -37,7 +37,7 @@ writer 完成后先自检，编排者再按相同边界复核：
 
 1. 按 `references/findings_spec.md` 检查事实边界、措辞等级、严重等级与处置进展
 2. 按模板 HTML 注释检查原有标题、`:::` 指令块、占位符和各块内容
-3. 按 `references/report_writing_rules.md` 检查跨章节分工、内部标识、IoC、样本串案与重复
+3. 按 `references/report_writing_rules.md` 检查跨章节分工、证据实体下限、内部标识、IoC、样本串案与重复
 4. 按 `references/report_style.md` 通读中文，清理不自然或机械化表达
 
 QA 结果只返回编排者。全部通过才交付报告；失败就修报告，事实或必填字段缺失则回到步骤 2–7。运行时不支持子 agent 时，编排者重新读取上述文件后内联写作，仍执行相同自检，不凭会话记忆补事实。

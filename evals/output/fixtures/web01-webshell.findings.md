@@ -23,8 +23,8 @@
 - 日志覆盖：access 日志自 2026-04-10 起；更早区间已轮转，无法确认
 
 ## 4. 入侵路径（已验证步骤）
-1. 入口：上传点过滤缺陷写入 `/var/www/upload/x.php`（证据：access POST 200 + 文件 mtime 一致）
-2. 执行：经 webshell 执行 `id`、`whoami`（证据：SAS 进程遥测子进程链）
+1. 入口：上传点过滤缺陷写入 `/var/www/upload/x.php`（证据：access 原始行 `203.0.113.45 - - [17/Apr/2026:18:18:12 +0800] "POST /upload/x.php HTTP/1.1" 200`；文件 mtime `2026-04-17 18:18:12` 与之一致）
+2. 执行：经 webshell 执行 `id`、`whoami`（证据：SAS 进程遥测 18:19:40 子进程链 `php-fpm -> sh -c "id"`、`sh -c "whoami"`）
 3. 外联：未观察到稳定 C2 外联（进程遥测覆盖期内无可疑 ESTABLISHED）
 
 ## 5. ATT&CK 映射（仅列过验证门的）
