@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-29T06:59:53Z",
+  "generated_at": "2026-08-29T07:44:40Z",
   "ok": true,
   "notes": [
     "Generated for the governed-release trust-report gate (reports/review_waivers.json, gate_key=trust-report).",
@@ -9,7 +9,7 @@
   "sections": {
     "secret_scan": {
       "ok": true,
-      "files_scanned": 116,
+      "files_scanned": 117,
       "files_skipped_binary": 0,
       "rules": [
         {
