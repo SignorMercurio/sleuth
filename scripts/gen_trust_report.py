@@ -21,10 +21,12 @@ hash matches the package actually being shipped.
 from __future__ import annotations
 
 import argparse
+import functools
 import hashlib
 import json
 import math
 import re
+import subprocess
 import sys
 from collections import Counter
 from datetime import datetime, timezone
@@ -38,9 +40,27 @@ PACKAGE_ROOT = ROOT / "skills/sleuth"
 
 SCHEMA_VERSION = 1
 
-# Only VCS internals are out of scope; every other tracked or untracked file
-# in the tree is a candidate for the secret scan.
-EXCLUDED_DIR_NAMES = {".git"}
+# All scan surfaces enumerate git-tracked files only. The report attests the
+# committed tree (what is actually shipped and what CI checks out); untracked
+# local artifacts (__pycache__, editor exports, ignored files) would make
+# --check environment-dependent and are not part of the release.
+
+
+@functools.cache
+def tracked_files() -> tuple[Path, ...]:
+    out = subprocess.run(
+        ["git", "-C", str(ROOT), "ls-files", "-z"],
+        check=True,
+        capture_output=True,
+    ).stdout
+    return tuple(
+        sorted(
+            path
+            for name in out.split(b"\0")
+            if name
+            if (path := ROOT / name.decode("utf-8")).is_file()
+        )
+    )
 
 # ---------------------------------------------------------------------------
 # Section 1: secret scan
@@ -128,12 +148,7 @@ def redact(value: str) -> str:
 
 
 def iter_repo_files():
-    for path in sorted(ROOT.rglob("*")):
-        if not path.is_file():
-            continue
-        if any(part in EXCLUDED_DIR_NAMES for part in path.relative_to(ROOT).parts):
-            continue
-        yield path
+    yield from tracked_files()
 
 
 def scan_secrets() -> dict:
@@ -471,14 +486,10 @@ def analyze_script(path: Path) -> dict:
 
 def scan_scripts() -> dict:
     scripts = []
-    for d in SCRIPT_DIRS:
-        base = ROOT / d
-        if not base.exists():
-            continue
-        for suffix in SCRIPT_SUFFIXES:
-            for path in sorted(base.rglob(f"*{suffix}")):
-                if path.is_file():
-                    scripts.append(analyze_script(path))
+    for path in tracked_files():
+        rel = path.relative_to(ROOT)
+        if rel.parts[0] in SCRIPT_DIRS and path.suffix in SCRIPT_SUFFIXES:
+            scripts.append(analyze_script(path))
 
     overall_ok = bool(scripts) and all(s["ok"] for s in scripts)
     return {
@@ -562,7 +573,7 @@ def hash_package() -> dict:
         }
 
     files = []
-    for path in sorted(p for p in PACKAGE_ROOT.rglob("*") if p.is_file()):
+    for path in sorted(p for p in tracked_files() if p.is_relative_to(PACKAGE_ROOT)):
         rel = path.relative_to(ROOT).as_posix()
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
         files.append({"path": rel, "sha256": digest})
