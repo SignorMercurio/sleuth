@@ -1,5 +1,7 @@
 # SLEUTH
 
+English | [中文](README.zh-CN.md)
+
 An agent skill for security incident response in Claude Code and Codex. It runs read-only forensic commands on compromised hosts through the SIREN MCP server, reconstructs attack chains, and delivers verified findings mapped to MITRE ATT&CK. Formal incident reports are generated only after the user explicitly requests or confirms one.
 
 Investigation outputs and optional reports are generated in Simplified Chinese by design (the skill targets Chinese-speaking SOC teams); this README is in English for discoverability.
@@ -8,7 +10,7 @@ Investigation outputs and optional reports are generated in Simplified Chinese b
 
 - **Two investigation modes**: alarm-, asset-, or instance-scoped investigation, plus free-form host triage
 - **Capability preflight**: checks which host, cloud, sub-agent, and web evidence sources are available before investigation; missing coverage sets an upper bound on conclusion confidence
-- **Per-alarm-type investigation playbooks** (webshell, miner, reverse shell, brute force, ransomware, …) + **cross-cutting tradecraft guides** (log analysis, reverse reasoning, cloud forensics, threat intel, …) + specialized guides (cloud-log routing, OOB/DNSLog, IIS upload tracing) + **MITRE ATT&CK mapping**. See `skills/sleuth/references/playbook_index.md` for the routing table
+- **Per-alarm-type investigation playbooks** (webshell, miner, reverse shell, brute force, ransomware, RCE, SQL injection, abnormal login, data exfiltration, persistence, privilege escalation) + **cross-cutting tradecraft guides** (log analysis, reverse reasoning, cloud forensics, threat intel, process/file analysis, attack countermeasures) + specialized guides (cloud-log routing, SAS/SLS host telemetry, OOB/DNSLog, SSH login attribution, ASP.NET upload tracing) + **MITRE ATT&CK mapping**. See `skills/sleuth/references/playbook_index.md` for the routing table
 - **Parallel command orchestration**: independent remote commands are dispatched in a single round to cut investigation time
 - **Question-driven evidence loop**: after a bounded baseline, each follow-up must answer a named question that can change classification, scope, or response; branches stop when they add no decision-relevant evidence
 - **Strictly read-only**: runs only commands that don't change system state (read files, list processes/network/services, inspect logs), never destructive or install commands; evidence integrity is preserved
@@ -100,9 +102,13 @@ Name several hosts / Client IDs (or point at an alarm affecting multiple assets)
 
 ```
 .
+├── AGENTS.md                               # Agent project instructions (Claude Code / Codex)
 ├── CHANGELOG.md                            # Visible workflow and safety-guardrail changes
 ├── manifest.json                           # Package metadata: owner, maturity, review cadence, budget tier
 ├── requirements.txt                        # Exact Python dependency pins for repository checks
+├── docs/
+│   ├── agent-guidance/                     # Task-specific guidance for AI agents working on this repo
+│   └── sleuth-design-principles.*          # Design principles (HTML + PDF)
 ├── skills/
 │   └── sleuth/
 │       ├── SKILL.md                        # Resident layer: safety rails, mode routing, 8-step skeleton, report gate
@@ -118,9 +124,9 @@ Name several hosts / Client IDs (or point at an alarm affecting multiple assets)
 │           ├── workflow_tracing.md         # Step 3-6 detail: playbook routing, cloud cross-validation, ATT&CK, residual risk
 │           ├── workflow_delivery.md        # Step 7-8 detail: verification gate handoff, findings, report generation
 │           ├── playbook_index.md           # Step-3 routing table into the guides below
-│           ├── invest_*.md                 # Investigation playbooks, one per alarm type
-│           ├── tech_*.md                   # Cross-cutting tradecraft guides
-│           ├── attack_framework.md         # ATT&CK tactic/technique reference
+│           ├── invest_*.md                 # 11 investigation playbooks, one per alarm type
+│           ├── tech_*.md                   # 6 cross-cutting tradecraft guides
+│           ├── attack_framework.md         # ATT&CK tactic/technique reference (v18 baseline)
 │           ├── runtime_compat.md           # Cross-client tool mapping, sub-agents, SIREN failure handling
 │           ├── report_naming.md            # IR-….md filename format, event_type slugs, multi-host rule
 │           ├── findings_spec.md            # Per-host findings worksheet: the investigation→report handoff
@@ -136,9 +142,14 @@ Name several hosts / Client IDs (or point at an alarm affecting multiple assets)
 ├── scripts/
 │   ├── validate.py                         # Frontmatter, link, and orphan checks
 │   ├── permission_probe.py                 # Runtime trust and read-only guardrail anchors
+│   ├── permission_probe_anchors.yaml       # Expected trust anchors for permission_probe.py
 │   └── gen_trust_report.py                 # Secret, script-surface, dependency, and package-hash evidence
 ├── evals/
-│   ├── output/                             # Synthetic complete-report contract fixtures
+│   ├── semantic_config.json                # Semantic eval configuration
+│   ├── blind_holdout/                      # Blind holdout trigger cases for human review
+│   ├── dev/                                # Development trigger cases
+│   ├── output/                             # Report contract fixtures and structure validator
+│   │   └── fixtures/                       # Findings worksheets and full report fixtures
 │   └── runtime/                            # Mock SIREN, scenarios, transcript compliance, and fault tests
 └── reports/                                # Generated trust evidence, scorecards, blind review, and waivers
 ```
