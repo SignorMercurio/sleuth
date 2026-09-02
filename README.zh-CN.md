@@ -18,7 +18,7 @@
 - **隔离写手**：确认报告后，子 agent 可用时由一个全新写手只看 findings、模板和写作规则；写手无法访问 SIREN 或调查上下文，写手与主调度均执行同一套交付前检查
 - **上下文隔离子 agent**：大量日志 / SLS / 全盘输出由子 agent（或内联）处理后只回传结论，保持主调度上下文精简
 - **多主机委托**：逐台调查（SIREN 按 client 工作），每台产出一份已验证的 `*.findings.md`；确认报告后合并为一份（见下文*多主机与合并*）
-- **可选 Markdown 事件报告**：确认后从内置 Dossier 风格模板生成一份命名的 `IR-....md`，以 findings 工作表为唯一事实来源
+- **可选 Markdown 事件报告**：确认后从内置 Dossier 风格模板生成一份命名的 `IR-....md`，以 findings 工作表为唯一事实来源；已验证的云侧事实可由 `opencli-aliyun-ir` 只读截取控制台截图，报告按路径引用
 - **自然写作风格**：报告行文遵循 `skills/sleuth/references/report_style.md` 和内置的脱敏写作样本
 
 ## 前置条件

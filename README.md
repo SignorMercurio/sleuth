@@ -20,7 +20,7 @@ Investigation outputs and optional reports are generated in Simplified Chinese b
 - **Isolated report writer**: after report confirmation, a fresh writer sees only the verified findings, template, and writing rules when sub-agents are available; it cannot access SIREN or the investigation transcript, and both writer and orchestrator run the same pre-delivery QA
 - **Context-isolation sub-agents**: heavy log / SLS / full-disk output is dredged by a sub-agent (or inline) that returns only conclusions, keeping the orchestrator's context lean
 - **Multi-host engagements**: hosts are investigated one by one (SIREN works per client), each landing a verified `*.findings.md` worksheet; if the user confirms a report, the findings are merged into one report (see *Multi-host and merge* below)
-- **Optional Markdown incident report**: after user confirmation, the engagement writes one named `IR-....md` from the bundled Dossier-style template, using the findings worksheets as the only source of facts
+- **Optional Markdown incident report**: after user confirmation, the engagement writes one named `IR-....md` from the bundled Dossier-style template, using the findings worksheets as the only source of facts; verified cloud-side facts can carry console screenshots captured read-only through `opencli-aliyun-ir` and referenced from the report
 - **Human writing style**: report prose follows `skills/sleuth/references/report_style.md` and bundled, sanitized IR excerpts; corpus rules live in `skills/sleuth/assets/style/README.md`
 
 ## Prerequisites

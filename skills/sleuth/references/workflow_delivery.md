@@ -7,6 +7,7 @@ SKILL.md 进入步骤 7 时加载本文件。报告确认门的判定以 SKILL.m
 交付结论前的质检门，系统化防止误归因（本领域头号交付风险）。**读取 `references/verification_checklist.md`** 并按其执行：承重断言范围、独立核验方式（子 agent 或内联怀疑视角）、裁决与措辞降级规则都以该清单为准，本文不重述；子 agent 派生与降级映射见 `references/runtime_compat.md`。
 
 - 每台主机过完验证门后，把定稿结论写成 findings 工作底稿（结构与命名见 `references/findings_spec.md`）。
+- **控制台截图**（可选）：`opencli-aliyun-ir` 可用且事件含云侧承重事实时，在定稿前把「已确认事实 → 待截对象」清单委派给它的控制台截图流程（输入输出契约由它定义），回传的路径按 `references/findings_spec.md`「证据截图」挂到对应证据记录下；截图不改变任何裁决，多主机在全部主机过完验证门后一次委派。
 - 多主机委托时回到步骤 2 调查下一台；全部完成后再统一交付。
 - 交付形式是对话中的精炼调查结论，至少包含事件定性、关键证据与边界、影响 / 残留风险、处置进展和建议动作；能力缺口按 `references/preflight_probe.md` 一并说明。
 - **跨主机关联断言**（同源攻击、横向移动、同一攻击者）在合并阶段基于多份 findings 提出，同样要过本验证门，不因属于「合并层」而免检。
@@ -28,7 +29,7 @@ SKILL.md 进入步骤 7 时加载本文件。报告确认门的判定以 SKILL.m
 3. **拷贝模板**：将 `<skill_root>/assets/report.md`（来源于 `dossier/report.md`）复制为该输出文件
 4. **填充报告副本**：只编辑该输出文件，按 `references/report_writing_rules.md` 的逐块细则替换占位内容
 5. **交稿前 QA**：按 `references/runtime_compat.md`「报告写作隔离」的清单复核事实边界、必填字段、章节、占位符、内部术语、IoC、样本串案、重复与文风；问题回报编排者，不写进客户报告
-6. **只交付 Markdown**：不要创建报告目录、`index.html`、CSS/JS、字体资源或 dev server
+6. **只交付 Markdown**：不要创建报告目录、`index.html`、CSS/JS、字体资源或 dev server；`<报告名>.assets/` 由编排者在步骤 7 产出，写手不碰
 
 ### 8.2 多主机合并规则（多主机委托与合并模式）
 

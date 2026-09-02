@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-02T04:47:16Z",
+  "generated_at": "2026-09-02T06:56:18Z",
   "ok": true,
   "notes": [
     "Generated for the governed-release trust-report gate (reports/review_waivers.json, gate_key=trust-report).",
@@ -255,7 +255,7 @@
         },
         {
           "path": "skills/sleuth/assets/report.md",
-          "sha256": "95f1f340c3a75b8dbbca8935fbd11eba2a835160cab7c8a9ae447664a07f2bd5"
+          "sha256": "5273c057e7a982f629bde87b3cb2d2b4c1d2d1311035663f4511977016012a11"
         },
         {
           "path": "skills/sleuth/assets/style/README.md",
@@ -279,7 +279,7 @@
         },
         {
           "path": "skills/sleuth/references/findings_spec.md",
-          "sha256": "fe7171a15892378981a9dc3f00ba3c2bc228fe913f90f99325bb2776d12e3cc8"
+          "sha256": "ff22c3fbcba07af90ac4a7b8b5b4c46cdc64ddb506167a33e7188ab214dfc559"
         },
         {
           "path": "skills/sleuth/references/invest_abnormal_login.md",
@@ -335,7 +335,7 @@
         },
         {
           "path": "skills/sleuth/references/preflight_probe.md",
-          "sha256": "a84daa296ee9ab84bdbdcba6b1a8cb1f37262c5bdf86bac10af47b61f1771ef7"
+          "sha256": "8b3e3fcdfdc7d187c201259099134d5bb8b37706e36f5af8f9c1cddd73b51a24"
         },
         {
           "path": "skills/sleuth/references/recon_residual.md",
@@ -351,11 +351,11 @@
         },
         {
           "path": "skills/sleuth/references/report_writing_rules.md",
-          "sha256": "d1fde44ed6d4b28bbb4d1f7e8550c92dad6ee90e1b9a91b5b6ed80dd2d66f3a6"
+          "sha256": "bad5f2158df653fe927bb54272f32a9c600063be916c80a23a61910f9ad9e644"
         },
         {
           "path": "skills/sleuth/references/runtime_compat.md",
-          "sha256": "8b973dbe26545fd8246804ae2da16b666226f4bb827dd8a952c6958c4dddb97d"
+          "sha256": "11c5be1750108a04de8faec503d6eba7f8548ab9b48c833e94ea43f2e586ee94"
         },
         {
           "path": "skills/sleuth/references/sas_sls_host_telemetry.md",
@@ -391,11 +391,11 @@
         },
         {
           "path": "skills/sleuth/references/verification_checklist.md",
-          "sha256": "e36845be8ca197ba9c8c29a148be3688e6919f45e4721319473b8395e15fd102"
+          "sha256": "b6f759deec65c0e79fae8fcd32f9bef63e58142cfe8ac3b5affe053ae9a119b9"
         },
         {
           "path": "skills/sleuth/references/workflow_delivery.md",
-          "sha256": "b3bf9d2f174183b704d6a11201b82659971ab9d4260635a5ff6a43585f01bb58"
+          "sha256": "26cf5ce6fb84fb98e077fac914b669f74fcb3e32528695b143934749121e21be"
         },
         {
           "path": "skills/sleuth/references/workflow_recon.md",
@@ -403,10 +403,10 @@
         },
         {
           "path": "skills/sleuth/references/workflow_tracing.md",
-          "sha256": "00c0c0ec4b15bfb7f2951bec2d1b1778858ee1c7168b55ee8d41502e587b9622"
+          "sha256": "a84e01ad671f6f5fc71f37e1ee9c747f1c78e8aee63efb803b67b63e4a583093"
         }
       ],
-      "aggregate_sha256": "4cde98015562355a79921221f95ed214cffc2e07e8a35afb2c30eaea8b716633",
+      "aggregate_sha256": "0adf57c489ea421c02c7d820f40000a78ff6b02e9926827063c8c51b31d728a8",
       "aggregate_method": "sha256 of the concatenation of 'relpath:filehash\\n' for each file, sorted by relpath",
       "snapshot_note": "skills/sleuth/ may be modified by a parallel, unrelated task. This is a snapshot taken at generation time -- regenerate this report (without --check) as the final step before the trust-report waiver is closed, so the recorded hash matches the package actually being shipped."
     }

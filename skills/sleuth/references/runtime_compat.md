@@ -31,12 +31,12 @@ SKILL.md 只常驻安全护栏、调查模式判别、8 步骨架和报告确认
 - `references/report_style.md`
 - `references/report_writing_rules.md`
 
-writer 只读取这些文件，只创建最终一份 `IR-….md` 报告，不调用 SIREN、SAS、SLS 或联网工具。发现严重等级、当前状态、处置进展等必填内容缺失时停止定稿，把缺口返回编排者。
+writer 只读取这些文件，只创建最终一份 `IR-….md` 报告，不调用 SIREN、SAS、SLS、OpenCLI 或联网工具。发现严重等级、当前状态、处置进展等必填内容缺失时停止定稿，把缺口返回编排者。
 
 writer 完成后先自检，编排者再按相同边界复核：
 
 1. 按 `references/findings_spec.md` 检查事实边界、措辞等级、严重等级与处置进展
-2. 按模板 HTML 注释检查原有标题、`:::` 指令块、占位符和各块内容
+2. 按模板 HTML 注释检查原有标题、`:::` 指令块、占位符和各块内容；图片引用逐条核对路径出现在 findings 且文件存在
 3. 按 `references/report_writing_rules.md` 检查跨章节分工、证据实体下限、内部标识、IoC、样本串案与重复
 4. 按 `references/report_style.md` 通读中文，清理不自然或机械化表达
 
