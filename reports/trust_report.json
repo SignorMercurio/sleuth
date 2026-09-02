@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-29T07:44:40Z",
+  "generated_at": "2026-09-02T04:47:16Z",
   "ok": true,
   "notes": [
     "Generated for the governed-release trust-report gate (reports/review_waivers.json, gate_key=trust-report).",
@@ -243,7 +243,7 @@
       "files": [
         {
           "path": "skills/sleuth/SKILL.md",
-          "sha256": "5a131623892e127e2ade1a29cbb1a950793cc7a915e7a99e73cce914ce6be919"
+          "sha256": "f91eb8df228633ce2296d02782a5b67a5f870336e2db3ddb1cab9224b39cb287"
         },
         {
           "path": "skills/sleuth/agents/interface.yaml",
@@ -351,7 +351,7 @@
         },
         {
           "path": "skills/sleuth/references/report_writing_rules.md",
-          "sha256": "3a008dba84c1d7048878e26be01866bc41fbc4ba24b3760cdd3a7361138b2083"
+          "sha256": "d1fde44ed6d4b28bbb4d1f7e8550c92dad6ee90e1b9a91b5b6ed80dd2d66f3a6"
         },
         {
           "path": "skills/sleuth/references/runtime_compat.md",
@@ -406,7 +406,7 @@
           "sha256": "00c0c0ec4b15bfb7f2951bec2d1b1778858ee1c7168b55ee8d41502e587b9622"
         }
       ],
-      "aggregate_sha256": "166e3efd63b175ac9715e5e57ba17d1fc55ee676896d2a12d543daa831e5d228",
+      "aggregate_sha256": "4cde98015562355a79921221f95ed214cffc2e07e8a35afb2c30eaea8b716633",
       "aggregate_method": "sha256 of the concatenation of 'relpath:filehash\\n' for each file, sorted by relpath",
       "snapshot_note": "skills/sleuth/ may be modified by a parallel, unrelated task. This is a snapshot taken at generation time -- regenerate this report (without --check) as the final step before the trust-report waiver is closed, so the recorded hash matches the package actually being shipped."
     }
