@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-02T06:56:18Z",
+  "generated_at": "2026-09-04T13:03:30Z",
   "ok": true,
   "notes": [
     "Generated for the governed-release trust-report gate (reports/review_waivers.json, gate_key=trust-report).",
@@ -255,7 +255,7 @@
         },
         {
           "path": "skills/sleuth/assets/report.md",
-          "sha256": "5273c057e7a982f629bde87b3cb2d2b4c1d2d1311035663f4511977016012a11"
+          "sha256": "0e08c036081627af732af2f2b570837e6df527fe757b7a769a09ccceef407aac"
         },
         {
           "path": "skills/sleuth/assets/style/README.md",
@@ -263,7 +263,7 @@
         },
         {
           "path": "skills/sleuth/assets/style/curated-ir-excerpts.md",
-          "sha256": "2aaadfbe99f493e3e3b629f67226211a9b1907fb0c71e226331d15d118afcc15"
+          "sha256": "1ef331fec23d206949b87d839e7ddd27e78f7a3db4e4d1327a7c6a7c1730511d"
         },
         {
           "path": "skills/sleuth/references/aspnet_webshell_upload_tracing.md",
@@ -347,11 +347,11 @@
         },
         {
           "path": "skills/sleuth/references/report_style.md",
-          "sha256": "daa29ecb46440bdd37e0909d6ffd06d26104dea49ce5721bd438861a161cb018"
+          "sha256": "e06ef1e82ffe5f5660dfbfd66ac8f41d778650e1dc52d5c34b90a3734e936641"
         },
         {
           "path": "skills/sleuth/references/report_writing_rules.md",
-          "sha256": "bad5f2158df653fe927bb54272f32a9c600063be916c80a23a61910f9ad9e644"
+          "sha256": "1a4c9f5fe70d75ff7c176384f70a5b045f975cd79b78ff6087be76a681e0ee18"
         },
         {
           "path": "skills/sleuth/references/runtime_compat.md",
@@ -406,7 +406,7 @@
           "sha256": "a84e01ad671f6f5fc71f37e1ee9c747f1c78e8aee63efb803b67b63e4a583093"
         }
       ],
-      "aggregate_sha256": "0adf57c489ea421c02c7d820f40000a78ff6b02e9926827063c8c51b31d728a8",
+      "aggregate_sha256": "84bd08943845b8c44ff05c5d015b756f27c63caed6d7eb97682bd1c9b0a48bbd",
       "aggregate_method": "sha256 of the concatenation of 'relpath:filehash\\n' for each file, sorted by relpath",
       "snapshot_note": "skills/sleuth/ may be modified by a parallel, unrelated task. This is a snapshot taken at generation time -- regenerate this report (without --check) as the final step before the trust-report waiver is closed, so the recorded hash matches the package actually being shipped."
     }

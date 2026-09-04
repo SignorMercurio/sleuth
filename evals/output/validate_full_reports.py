@@ -33,6 +33,9 @@ COMMON_FORBIDDEN = (
     "总而言之",
 )
 
+# Directives whose block count may differ from the template: (min, max or None), per template comments.
+DIRECTIVE_RANGES = {"asset": (1, None), "recommendation": (1, 3)}
+
 def strip_comments(text: str) -> str:
     return re.sub(r"<!--.*?-->", "", text, flags=re.S)
 
@@ -127,9 +130,11 @@ def validate_case(case: dict[str, Any], base: Path, template: str) -> dict[str, 
         failures.append(f"directive blocks are unbalanced: {starts} starts, {ends} ends")
     for name, expected in directive_counts(template).items():
         actual = directive_count(report, name)
-        if name == "asset":
-            if actual < 1:
-                failures.append("no asset block")
+        if name in DIRECTIVE_RANGES:
+            low, high = DIRECTIVE_RANGES[name]
+            if actual < low or (high is not None and actual > high):
+                bound = f"{low}+" if high is None else f"{low}-{high}"
+                failures.append(f"directive {name} count is {actual}, expected {bound}")
             continue
         if actual != expected:
             failures.append(f"directive {name} count is {actual}, expected {expected}")

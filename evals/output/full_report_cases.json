@@ -27,7 +27,7 @@
       "action_min": 5,
       "action_max": 8,
       "visible_han_min": 900,
-      "visible_han_max": 2400
+      "visible_han_max": 2700
     },
     {
       "id": "no-current-intrusion",
@@ -52,7 +52,7 @@
       "action_min": 1,
       "action_max": 4,
       "visible_han_min": 700,
-      "visible_han_max": 1900
+      "visible_han_max": 2200
     },
     {
       "id": "complex-rce-credential",
