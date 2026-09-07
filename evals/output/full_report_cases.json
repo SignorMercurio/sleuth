@@ -18,9 +18,7 @@
       ],
       "forbidden": [
         "- [x]",
-        "- [/]",
-        "SIP Flood",
-        "loader.exe"
+        "- [/]"
       ],
       "timeline_min": 4,
       "timeline_max": 6,
@@ -43,8 +41,6 @@
       ],
       "forbidden": [
         "已确认入侵",
-        "SIP Flood",
-        "loader.exe",
         "203.0.113[.]45"
       ],
       "timeline_min": 4,
@@ -71,8 +67,6 @@
         "云凭据"
       ],
       "forbidden": [
-        "SIP Flood",
-        "loader.exe",
         "203.0.113[.]45"
       ],
       "timeline_min": 4,
@@ -102,8 +96,6 @@
         "- [ ]"
       ],
       "forbidden": [
-        "SIP Flood",
-        "loader.exe",
         "203.0.113[.]45"
       ],
       "timeline_min": 4,

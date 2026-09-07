@@ -185,7 +185,7 @@ git diff --check
 
 `scripts/gen_trust_report.py --check` is read-only. If it reports stale evidence after a package, script, dependency, or tracked-file change, run `python3 scripts/gen_trust_report.py` once and commit the refreshed `reports/trust_report.json` and `reports/trust_report.md`.
 
-The complete-report fixtures and mock SIREN suite are contract regressions. They verify report structure, runtime policy, scenario evidence, fault handling, transcript compliance, and concurrency, but they do not prove that an agent reaches the right conclusion. Use the manual drill in `evals/runtime/README.md` for model-behavior review, and keep blind human report review as a separate gate.
+The complete-report fixtures and mock SIREN suite are contract regressions. They verify report structure, style-sample text leakage, runtime policy, scenario evidence, fault handling, transcript compliance, and concurrency, but they do not prove that an agent reaches the right conclusion. Use the manual drill in `evals/runtime/README.md` for model-behavior review, and keep blind human report review as a separate gate.
 
 ## Contributing
 

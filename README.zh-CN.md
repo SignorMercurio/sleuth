@@ -183,7 +183,7 @@ git diff --check
 
 `scripts/gen_trust_report.py --check` 为只读模式。如果在包、脚本、依赖或跟踪文件变更后报告证据过时，运行一次 `python3 scripts/gen_trust_report.py` 并提交刷新的 `reports/trust_report.json` 和 `reports/trust_report.md`。
 
-完整报告 fixture 与 mock SIREN 套件是契约回归测试，验证报告结构、运行时策略、场景证据、故障处理、转录合规和并发，但不证明 agent 能得出正确结论。模型行为审查使用 `evals/runtime/README.md` 中的手动演练，人工盲审报告作为独立门控。
+完整报告 fixture 与 mock SIREN 套件是契约回归测试，验证报告结构、样本文字泄漏、运行时策略、场景证据、故障处理、转录合规和并发，但不证明 agent 能得出正确结论。模型行为审查使用 `evals/runtime/README.md` 中的手动演练，人工盲审报告作为独立门控。
 
 ## 贡献
 

@@ -14,6 +14,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_MANIFEST = ROOT / "evals" / "output" / "full_report_cases.json"
 DEFAULT_TEMPLATE = ROOT / "skills" / "sleuth" / "assets" / "report.md"
+DEFAULT_SAMPLE = ROOT / "skills" / "sleuth" / "assets" / "style" / "curated-ir-excerpts.md"
 DEFAULT_JSON = ROOT / "reports" / "full_report_eval.json"
 DEFAULT_MD = ROOT / "reports" / "full_report_eval.md"
 
@@ -31,6 +32,9 @@ COMMON_FORBIDDEN = (
     "不难发现",
     "综上所述",
     "总而言之",
+    # Non-CJK tokens from the style sample; the CJK complement is sample_overlaps().
+    "sip flood",
+    "loader.exe",
 )
 
 # Directives whose block count may differ from the template: (min, max or None), per template comments.
@@ -75,6 +79,29 @@ def action_count(text: str) -> int:
     return sum(len(re.findall(r"^- \[[x/ ]\] ", phase, flags=re.M)) for phase in phases)
 
 
+SAMPLE_GRAM = 9
+
+
+def sample_ngrams(sample: str) -> set[str]:
+    corpus = re.sub(r"\s+", "", sample)
+    return {corpus[i : i + SAMPLE_GRAM] for i in range(len(corpus) - SAMPLE_GRAM + 1)}
+
+
+def sample_overlaps(visible: str, sample_grams: set[str]) -> list[str]:
+    """Return runs of SAMPLE_GRAM consecutive CJK characters copied from the style sample."""
+    text = re.sub(r"\s+", "", strip_attack_matrix(visible))
+    hits: list[str] = []
+    i = 0
+    while i <= len(text) - SAMPLE_GRAM:
+        gram = text[i : i + SAMPLE_GRAM]
+        if gram in sample_grams and re.fullmatch(r"[\u4e00-\u9fff，、；：]+", gram):
+            hits.append(gram)
+            i += SAMPLE_GRAM
+        else:
+            i += 1
+    return hits
+
+
 def duplicate_sentences(visible: str) -> list[str]:
     cleaned = strip_attack_matrix(visible)
     candidates: list[str] = []
@@ -89,7 +116,7 @@ def duplicate_sentences(visible: str) -> list[str]:
     return [sentence for sentence, count in counts.items() if count > 1]
 
 
-def validate_case(case: dict[str, Any], base: Path, template: str) -> dict[str, Any]:
+def validate_case(case: dict[str, Any], base: Path, template: str, sample_grams: set[str]) -> dict[str, Any]:
     report_path = (base / str(case["report"])).resolve()
     failures: list[str] = []
     metrics: dict[str, Any] = {}
@@ -204,6 +231,11 @@ def validate_case(case: dict[str, Any], base: Path, template: str) -> dict[str, 
     if duplicates:
         failures.append("duplicate customer-facing sentence detected")
 
+    copied = sample_overlaps(visible, sample_grams)
+    metrics["sample_overlap_count"] = len(copied)
+    for gram in copied:
+        failures.append(f"style sample text reused: {gram}")
+
     return {
         "id": case["id"],
         "report": str(report_path.relative_to(ROOT)),
@@ -260,6 +292,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--manifest", default=str(DEFAULT_MANIFEST))
     parser.add_argument("--template", default=str(DEFAULT_TEMPLATE))
+    parser.add_argument("--sample", default=str(DEFAULT_SAMPLE))
     parser.add_argument("--output-json", default=str(DEFAULT_JSON))
     parser.add_argument("--output-md", default=str(DEFAULT_MD))
     args = parser.parse_args()
@@ -268,8 +301,9 @@ def main() -> None:
     template_path = Path(args.template).resolve()
     payload = json.loads(manifest_path.read_text(encoding="utf-8"))
     template = template_path.read_text(encoding="utf-8")
+    sample_grams = sample_ngrams(Path(args.sample).read_text(encoding="utf-8"))
     results = [
-        validate_case(case, manifest_path.parent, template)
+        validate_case(case, manifest_path.parent, template, sample_grams)
         for case in payload.get("cases", [])
     ]
     passed = sum(1 for result in results if result["passed"])
