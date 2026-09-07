@@ -13,4 +13,4 @@ Read only the guides relevant to the task:
 - [Verification](docs/agent-guidance/verification.md): baseline and change-specific checks.
 - [Release operations](docs/agent-guidance/release-operations.md): remote deployment and dual-remote pushes.
 
-For every repository change, run the baseline checks in the verification guide.
+Select checks by the changed surface using the verification guide.
