@@ -1,6 +1,6 @@
 # 阿里云云侧交叉验证路由——直接工具优先
 
-主机侧日志（nginx/apache `access.log`、`auth.log`、`journalctl` 等）经常被攻击者清除、被轮转丢掉，或根本定位不到。需要**交叉验证攻击者真实 IP、攻击时间窗、命中的 WAF 规则、进程启动链、登录来源**时，**优先调用已安装的 `sls` skill** 查询阿里云云端日志（也可直接读取已安装的 `sls` skill 指令）。云安全中心告警列表/详情仍优先 `$sas`；只有云控制面、专用适配器、内部控制台、跨产品关联或直接工具明确覆盖不了时，才调用只读 `opencli-aliyun-ir`。
+本文件只负责选择云端日志源。调用顺序与委派边界见 SKILL.md「云侧分层」和 `references/workflow_tracing.md` 步骤 3.2；查询语法、schema 探测与字段解读由 `sls` skill 管理，按需让它加载自己的参考文件，不硬编码上游内部路径。
 
 ## 前提：UID
 
@@ -10,23 +10,20 @@
 
 ## 什么场景查什么 —— 路由表
 
-| 攻击 / 告警类型 | 调用 `sls` skill 查 | 关注点 / query 思路 |
+| 攻击 / 告警类型 | `sls` 产品 / topic | 待证问题与判读入口 |
 |---|---|---|
-| **Web 类攻击**：WebShell、SQL 注入、RCE / 命令注入、文件上传、面向公网应用的利用 | `-product waf` | 按 `host` + `request_path` / `request_uri` + `real_client_ip` + `final_action` / `final_rule_id` + `time` 过滤，定位上传/利用请求和**攻击者真实 IP**（WAF 看到的才是真实 IP，不是 SLB / Nginx 后面的内网 IP）。⚠️ 解读坑：`waf_action='block'` ≠ 实际拦截，必须结合 `waf_test`、`final_action`、`final_plugin`、`upstream_status`、`status` 一起判断；`waf_test='true'` 且 `final_action` 空、`upstream_status` 是正常码（如 200）时，是核心防护测试/观察模式命中，不是真拦截。详见 `sls` skill 自带的 WAF 测试模式/高防解读参考（让它自行加载） |
-| **恶意进程**：挖矿、可疑二进制、RCE 后续命令执行 | `-product sas`，topic `aegis-log-process`（必要时配 `aegis-log-network`） | 按 `instance_id` + `proc_name` / `proc_path` / `cmdline` / `pcmdline` / `parent_proc_name` 过滤，还原进程启动链和**父进程**（确认是 Web 进程拉起、cron 拉起、还是登录后手动执行）。⚠️ 时间字段如 `start_time` 是字符串，要 `from_unixtime(CAST(start_time AS bigint))`；`proc_start_time` 可能是 `N/A` 或空，先 `WHERE proc_start_time != 'N/A' AND proc_start_time != ''` |
-| **反弹 Shell / C2 外联 / 数据外传** | `-product sas`，topic `aegis-log-network`（DNS 类配 `aegis-log-dns-query`） | 按 `instance_id` + `dst_ip` / `dst_port` / `proc_name` / `cmdline` 过滤，提取外联目标和发起进程。涉及 DNSLog/带外域名见下一行 |
-| **DNSLog / 带外域名请求**（dnslog.cn、interact.sh、oast、burpcollaborator 等） | `-product sas`，topic `aegis-log-dns-query` | 见 `references/oob_dnslog_investigation.md`；提取 `domain`、`host_ip`、`pid` / `ppid`、`proc_path`、`cmdline`、`cmd_chain` |
-| **异常登录 / 暴力破解** | `-product sas`，topic `aegis-log-login` + `sas-security-log` | `aegis-log-login` 是原始登录遥测（含 SSH / RDP / 数据库登录），`sas-security-log` 是云安全中心告警（如 `异常登录-ECS非常用时间登录`，含 RDP 源 IP、用户、协议、客户端 IP）。按 `instance_id` / `src_ip` / `host_ip` 过滤；暴力破解关注失败→成功的转折点和源 IP |
-| **AK 泄露 / 云助手滥用 / API 调用溯源** | `-product actiontrail` | 见 `references/tech_cloud.md`；按 `"event.eventName"`、`"event.userIdentity.*"` 等过滤；`RunCommand` / `InvokeCommand` / `CreateUser` / `AttachPolicyToUser` 是重点 API |
-| **应用防护 / RASP（表达式注入等）** | `-product sas`，topic `sas-rasp-log` | 让 `sls` skill 自行加载它的 RASP 表达式注入参考 |
+| **WebShell / SQL 注入 / RCE / 文件上传** | WAF | 定位上传或利用请求、来源与实际处置结果。规则命中不等于拦截，须让 `sls` 核对测试模式、最终动作与回源结果；来源归因见 `references/tech_log_analysis.md`，上传链见 `references/aspnet_webshell_upload_tracing.md` |
+| **挖矿 / 可疑进程 / RCE 后续执行** | SAS：`aegis-log-process`，必要时配 `aegis-log-network` | 用命令行、父进程和启动时间还原启动链，区分 Web、定时任务与登录后执行；时间字段与关联陷阱见 `references/sas_sls_host_telemetry.md` |
+| **反弹 Shell / C2 / 数据外传** | SAS：`aegis-log-network`，DNS 配 `aegis-log-dns-query` | 关联外联目标、端口与发起进程 |
+| **DNSLog / 带外域名请求** | SAS：`aegis-log-dns-query` | 核对域名、进程链及请求来源，见 `references/oob_dnslog_investigation.md` |
+| **异常登录 / 暴力破解** | SAS：`aegis-log-login` + `sas-security-log` | 前者是 SSH / RDP / 数据库等原始登录遥测，后者是告警；核对源 IP、用户、协议和失败到成功的转折 |
+| **AK 泄露 / 云助手滥用 / API 溯源** | ActionTrail | 关联调用身份、任务与资源行为，见 `references/tech_cloud.md` |
+| **应用防护 / RASP** | SAS：`sas-rasp-log` | 委派 `sls` 加载其 RASP 判读参考 |
 
-> WebShell 的上传源 IP 溯源还可参考本目录的 `aspnet_webshell_upload_tracing.md`；SAS 主机遥测的覆盖时间窗算法、`w3wp.exe` 子进程解读、报告措辞要求见本目录的 `sas_sls_host_telemetry.md`。
+SAS 遥测的覆盖时间窗、`w3wp.exe` 子进程判读与措辞要求统一见 `references/sas_sls_host_telemetry.md`。
 
 ## 调用要点
 
-- **不要在本 skill 里重抄 `sls` 的用法细节**。`sls` skill 自带 query 语法、现成示例、WAF 测试模式/高防解读、Log Audit 中心项目等参考文件 —— 需要时让它自己加载，不要在本 skill 里硬编码它的内部文件名（会随上游改名静默失效）。本文件只负责「什么场景该去查什么」。
-- 优先用 **metadata 模式**（`-uid <UID> -product <sas|waf|actiontrail>`），不知道确切 project/logstore 时它会自己找；已知 `region + project + logstore` 时用 direct 模式（仍要带 `-uid`）。
-- query 用 `[filter] | SELECT 字段 LIMIT n` 的形式，不要 `SELECT *`（除非探 schema）；schema 不确定先 `SELECT * LIMIT 3` 探一次再收窄。
-- 云端日志是**补充证据源**，主线仍是 SIREN 在受害主机上跑只读命令；只在主机侧证据缺失/不足或需要交叉验证时才调 `sls` skill。
+- 目标主机查询必须绑定已核对的实例/资产标识，结果保留该标识；PID、用户名、私网 IP 和进程名不单独作为跨记录关联键。跨资产扩展与单机取证分开，超出授权清单先确认。
 - `opencli-aliyun-ir` 只补充云防火墙、ACK/DAS、OSS/RDS/ECS/VPC/SLB、内部控制台、免费 ActionTrail 事件窗或其他直接工具覆盖缺口；前一层已完整回答时不重复调用。
-- 拿到结果后，findings 必须写明：**日志源**（region/project/logstore 或 product+topic）、**查询时间窗**、**最早/最新记录**、**查询语句**、**覆盖限制**（云安全中心未安装时期查不到、SLS 有保留期）。不要把「未检出」写成「未发生」。
+- 拿到结果后，按 `references/findings_spec.md` 记录查询身份、范围、原始证据与完整性；云端覆盖另记最早/最新记录与保留期。不要把「未检出」写成「未发生」。

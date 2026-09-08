@@ -1,6 +1,7 @@
 {
   "id": "cross-host-lookalike",
   "title": "跨主机同源误判：两台主机表面相似但入侵源不同",
+  "prompt": "Client 1 和 Client 2 均有 /var/www/html/uploads/x.php。请逐台核实，并判断是否能确认同源攻击或横向移动。",
   "category": "conflict",
   "investigation_mode": "free_form",
   "clients": [

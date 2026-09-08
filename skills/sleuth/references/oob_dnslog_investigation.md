@@ -38,11 +38,11 @@ sls -uid <UID> -product sas \
   -from '<FROM>' -to '<TO>'
 ```
 
-4. Hunt for follow-on execution from the flagged process/PID and common payload tools:
+4. Look for follow-on execution on the same asset, then correlate the flagged process/PID and common payload tools. Bind the verified instance ID (or its equivalent asset field); retain it in every returned row. A PID or process name alone is not a host/session identity. Keep cross-asset searches separate and within the authorized scope:
 
 ```bash
 sls -uid <UID> -product sas \
-  -query '__topic__: aegis-log-process AND (ppid: <PID> OR pcmdline: <proc-name-or-path> OR parent_proc_name: <proc-name> OR cmdline: <domain> OR cmdline: dnslog.cn OR cmdline: curl OR cmdline: wget OR cmdline: nc OR cmdline: bash OR cmdline: sh OR cmdline: python OR cmdline: perl OR cmdline: /tmp) | SELECT proc_start_time, pid, ppid, proc_name, proc_path, username, cmdline, parent_proc_name, pcmdline ORDER BY start_time ASC LIMIT 100' \
+  -query '__topic__: aegis-log-process AND instance_id: <INSTANCE_ID> AND (ppid: <PID> OR pcmdline: <proc-name-or-path> OR parent_proc_name: <proc-name> OR cmdline: <domain> OR cmdline: dnslog.cn OR cmdline: curl OR cmdline: wget OR cmdline: nc OR cmdline: bash OR cmdline: sh OR cmdline: python OR cmdline: perl OR cmdline: /tmp) | SELECT instance_id, proc_start_time, pid, ppid, proc_name, proc_path, username, cmdline, parent_proc_name, pcmdline ORDER BY start_time ASC LIMIT 100' \
   -from '<FROM>' -to '<TO>'
 ```
 

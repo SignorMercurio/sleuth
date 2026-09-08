@@ -18,3 +18,4 @@ jobs:
       - run: python3 scripts/permission_probe.py
       - run: python3 scripts/gen_trust_report.py --check
       - run: python3 evals/runtime/run_mock_siren_tests.py
+      - run: python3 evals/output/validate_full_reports.py --output-json "$RUNNER_TEMP/full_report_eval.json" --output-md "$RUNNER_TEMP/full_report_eval.md"

@@ -1,6 +1,6 @@
 # SLEUTH 信任报告（Trust Report）
 
-生成时间：`2026-09-07T07:48:34Z`
+生成时间：`2026-09-08T01:06:42Z`
 
 总体结论：**通过**
 
@@ -9,7 +9,7 @@
 
 ## 1. 密钥与凭据扫描（secret scan）
 
-- 扫描文件数：117（跳过二进制/不可解码文件 0 个）
+- 扫描文件数：120（跳过二进制/不可解码文件 0 个）
 - 规则：
   - `aliyun_ak_sk`：Aliyun AccessKeyId: LTAI prefix followed by 12-30 alnum chars
   - `private_key_block`：PEM private key BEGIN marker (RSA/EC/DSA/OPENSSH/ENCRYPTED)
@@ -34,13 +34,14 @@
 | `evals/runtime/mock_siren/scenario.py` | `evals/runtime/mock_siren/scenario.py (imported module, no CLI entry point found)` | 否 | 否 | no file-write call detected (static) |
 | `evals/runtime/mock_siren/server.py` | `python3 evals/runtime/mock_siren/server.py` | 否 | 否 | no file-write call detected (static) |
 | `evals/runtime/mock_siren/shell.py` | `evals/runtime/mock_siren/shell.py (imported module, no CLI entry point found)` | 否 | 否 | no file-write call detected (static) |
+| `evals/runtime/run_agent_drill.py` | `python3 evals/runtime/run_agent_drill.py` | 是 | 是 | Opt-in model drill: copies synthetic inputs and writes raw events, timing, findings and metrics in a new caller-selected directory outside the repo. Reads configured model/auth, refuses ambient file grants and extra directories; disables hooks/plugins and live MCP. Model access is restricted to mock SIREN and scoped local file tools. |
 | `evals/runtime/run_mock_siren_tests.py` | `python3 evals/runtime/run_mock_siren_tests.py` | 否 | 是 | write call present; resolves to a Python-managed temp directory (tempfile.*, ephemeral, deleted at context exit) -- not a persistent write outside reports/ or evals/ (static) |
 | `scripts/gen_trust_report.py` | `python3 scripts/gen_trust_report.py` | 否 | 是 | write call present; resolves to reports/ (static) |
 | `scripts/permission_probe.py` | `python3 scripts/permission_probe.py` | 否 | 否 | no file-write call detected (static) |
 | `scripts/validate.py` | `python3 scripts/validate.py (flat script, executes at import time, no __main__ guard)` | 否 | 否 | no file-write call detected (static) |
 
-- 结论：No script under scripts/ or evals/ initiates network egress; file writes are confined to reports/ and/or evals/ output artifacts (static analysis).
-- 方法说明：Static heuristic scan, not a full data-flow or taint analysis. Network access: real Python networking modules are matched on an actual import/connect statement anywhere in the file; command-line network tools (curl/wget/ssh/scp/rsync/netcat) count only when they appear as an argument inside an actual subprocess/os.system/os.popen/os.exec* call (.py) or as a shell-script line (.sh) -- a policy table or test-fixture string that merely names one of these tools is not a call site. File writes: a best-effort constant-propagation pass resolves a write call's target through named constants, one argparse-default hop, and tempfile.*/`with ... as` bindings (tagged as an ephemeral temp-dir, not a persistent write).
+- 结论：Offline check scripts show no network egress; writes resolve to reports/, evals/ or temporary artifacts (static heuristic). Exception: the digest-reviewed, opt-in run_agent_drill.py invokes the configured model service and writes a new explicit output directory outside the repo. It is not part of CI or the installed Skill.
+- 方法说明：Static heuristic scan plus an exact-source-digest review of the opt-in model runner; not a sandbox or full data-flow analysis. Network access: real Python networking modules are matched on an actual import/connect statement anywhere in the file; command-line network tools (curl/wget/ssh/scp/rsync/netcat) count only when they appear as an argument inside an actual subprocess/os.system/os.popen/os.exec* call (.py) or as a shell-script line (.sh) -- a policy table or test-fixture string that merely names one of these tools is not a call site. File writes: a best-effort constant-propagation pass resolves a write call's target through named constants, one argparse-default hop, and tempfile.*/`with ... as` bindings (tagged as an ephemeral temp-dir, not a persistent write).
 
 ## 3. 依赖锁定（dependency pinning）
 
@@ -51,8 +52,8 @@
 ## 4. 安装包哈希（package hash）
 
 - 包目录：`skills/sleuth`
-- 文件数：41
-- 聚合 SHA-256：`9424c5b09879b828ffbe13de29150ef83ea7d5817af476f6c12178166b7a847e`
+- 文件数：40
+- 聚合 SHA-256：`92a5d7ea9ab51232d6fdbcbb34afa0274c6c070f83392841de989062c0e25320`
 - 聚合算法：sha256 of the concatenation of 'relpath:filehash\n' for each file, sorted by relpath
 - 说明：skills/sleuth/ may be modified by a parallel, unrelated task. This is a snapshot taken at generation time -- regenerate this report (without --check) as the final step before the trust-report waiver is closed, so the recorded hash matches the package actually being shipped.
 - 逐文件清单见 `reports/trust_report.json` 的 `sections.package_hash.files`。

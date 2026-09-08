@@ -6,7 +6,7 @@
 
 ### 主机侧痕迹（SIREN 可直接捞 — Linux）
 
-**进程父链启发式（单点最决定性的信号）**：任何被 `aliyun-service` / `aliyun_assist_main` 直接或间接 parent 的命令链都是云侧下发。任意 RCE/挖矿/反弹 shell 调查里见到这条父链，立即按云助手 RunCommand 处理。
+**进程父链只作路由线索**：祖先含 `aliyun-service` / `aliyun_assist_main` 时，核对 task/invocation、命令、实例和执行时间，再关联云侧事件。合法云助手任务启动的长期服务后来被利用，也会保留该祖先；不能仅凭父链确认本次攻击由 RunCommand 下发，更不能直接推定 AK 泄露。
 
 ```bash
 # agent 主进程：aliyun-service 是常驻 daemon，aliyun_assist_main 是执行任务时短暂派生的工作进程
@@ -53,7 +53,7 @@ systemctl status aliyun.service                          # systemd 单元
 
 ### 主机侧痕迹（SIREN 可直接捞 — Windows）
 
-进程：`AliyunService.exe`；日志：`C:\ProgramData\aliyun\assist\<ver>\log\`；脚本暂存：`C:\ProgramData\aliyun\assist\work\script\`。判定逻辑与 Linux 一致——父链命中 `AliyunService.exe` 的命令即云侧下发。
+进程：`AliyunService.exe`；日志：`C:\ProgramData\aliyun\assist\<ver>\log\`；脚本暂存：`C:\ProgramData\aliyun\assist\work\script\`。父链判读与 Linux 一致，须继续对齐任务与事件。
 
 ### 云侧入口（交叉验证）
 
@@ -62,7 +62,7 @@ systemctl status aliyun.service                          # systemd 单元
 ECS 控制台 -> 运维与监控 -> 云助手 -> 命令执行结果
 ```
 
-拿到主机侧 task id / 时间戳后，回查 ActionTrail 的 `RunCommand` / `InvokeCommand` / `CreateCommand` 事件，对齐 `sourceIpAddress` 与 `userIdentity`（AK 或 RAM 用户），定位泄露的 AK。
+拿到主机侧 task/invocation ID、实例与时间戳后，回查 ActionTrail 的 `RunCommand` / `InvokeCommand` / `CreateCommand` 事件，核对命令与成功状态，再识别 `sourceIpAddress`、`userIdentity` 及凭据类型（长期 AK、角色/临时会话等）。将任务关联、API 调用身份、非预期使用和凭据泄露分别裁决；查不到任务对应关系就保留缺口，不把长期服务的祖先链当成当前任务证据。
 
 云安全中心侧有"云助手异常命令"和"CreateCommand 可疑命令"告警可作触发线索；批量主机感染时优先翻这块日志。
 

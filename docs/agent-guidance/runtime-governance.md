@@ -2,8 +2,15 @@
 
 - Treat `evals/runtime/` as deterministic regression for the mock SIREN engine,
   scenario data, fault handling, and transcript checker. Passing it does not
-  prove that an agent reaches the correct conclusion; use the manual drill in
+  prove that an agent reaches the correct conclusion; use the model drill and semantic review in
   `evals/runtime/README.md` for model-behavior review.
+- `evals/runtime/run_agent_drill.py` is an opt-in exception to offline checks:
+  it invokes the user's configured Claude Code model service and writes a new,
+  explicitly selected directory outside the repository. It exposes only mock
+  SIREN and scoped local file tools to the model; it is not run by CI or shipped
+  in the Skill. The trust generator records these capabilities and pins the
+  reviewed runner digest. After editing it, review the capabilities and update
+  that digest; do not describe the runner as offline.
 - `evals/runtime/mock_siren/policy.py` and the mock server tool definitions are
   snapshots of the real SIREN contract. When that contract changes, compare the
   upstream behavior and update the snapshot and its tests together.

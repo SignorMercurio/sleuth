@@ -1,6 +1,7 @@
 {
   "id": "missing-time-window",
   "title": "跨时段数据缺失：入口时间窗日志已轮转丢失",
+  "prompt": "api01 出现 /usr/local/lib/.cache/agent 的恶意外联告警，告警最早见于 2026-03-02。请确认现状和初始入口。",
   "category": "boundary",
   "investigation_mode": "alarm_driven",
   "alarm": {

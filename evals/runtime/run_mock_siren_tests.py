@@ -3,7 +3,9 @@
 
     python3 evals/runtime/run_mock_siren_tests.py [--json] [--suite NAME]
 
-Seven suites run in order:
+Eight suites run in order:
+
+  drill_summary       offline model-run bookkeeping and failure handling
 
   mcp_protocol        MCP stdio handshake, tools/list, tools/call, error paths
   scenario_schema     every scenario file parses and satisfies the schema
@@ -15,7 +17,7 @@ Seven suites run in order:
 
 What this proves: the mock, the scenario data, and the checker behave as
 specified. What it does NOT prove: that a SLEUTH agent reaches the right
-conclusions -- that needs the manual end-to-end drill described in README.md.
+conclusions -- that needs the model drill and semantic review in README.md.
 
 Exit code 0 when everything passes, 1 otherwise.
 """
@@ -167,6 +169,10 @@ def suite_mcp_protocol() -> Suite:
                 "returned_bytes", "preview_strategy", "created_at", "expires_at"):
         suite.check(key in structured, f"run structured content carries {key}")
     suite.equal(structured.get("outcome"), "success", "run outcome")
+    suite.equal(structured.get("text"), "web01",
+                "structured-only clients receive the same command text")
+    suite.check("text" in run_tool.get("outputSchema", {}).get("required", []),
+                "run output schema requires readable text")
 
     missing_client = by_id.get(5, {}).get("result", {})
     suite.equal(missing_client.get("isError"), True, "unknown client is a tool error")
@@ -177,6 +183,9 @@ def suite_mcp_protocol() -> Suite:
     suite.equal(blocked.get("isError"), True, "blacklisted command is a tool error")
     suite.contains(blocked.get("content", [{}])[0].get("text", ""), "blocked by policy",
                    "blacklist message")
+    suite.equal(blocked.get("structuredContent", {}).get("text"),
+                blocked.get("content", [{}])[0].get("text"),
+                "structured-only clients receive policy errors too")
 
     unknown_tool = by_id.get(7, {})
     suite.check("error" in unknown_tool, "an invented tool name fails hard")
@@ -496,7 +505,102 @@ def suite_concurrency() -> Suite:
     return suite
 
 
+def suite_drill_summary() -> Suite:
+    # Exercise bookkeeping only; never launch a model from the offline suite.
+    from run_agent_drill import summarize
+
+    suite = Suite("drill_summary")
+    call = {"type": "assistant", "message": {"content": [
+        {"type": "tool_use", "id": "one", "name": "mcp__siren__run",
+         "input": {"client_id": "1", "command": "hostname"}}]}}
+    result = {"type": "result", "subtype": "success", "is_error": False,
+              "result": "investigation conclusion", "total_cost_usd": 0.1}
+    events = [{"type": "system", "subtype": "init", "model": "fixture-model"},
+              {"message": "diagnostic, not a content object"}, call, call,
+              {"type": "user", "message": {"content": [
+                  {"type": "tool_result", "tool_use_id": "one", "content": "web01"}]}}, result]
+    summary = summarize(events)
+    suite.equal(summary["siren_run_calls"], 1, "stream repetition does not double count a tool id")
+    suite.equal(summary["quality_verdict"], "pending_review", "successful execution is not quality proof")
+    suite.equal(summary["completed"], True, "successful observed run completes")
+    suite.equal(summary["model"], "fixture-model", "actual model is recorded")
+    suite.equal(summary["cost_usd"], 0.1, "observed cost is recorded")
+    suite.equal(summarize([])["completed"], False, "empty stream is incomplete")
+    suite.equal(summarize([result])["completed"], False, "no SIREN calls is incomplete")
+    suite.equal(summarize([call])["completed"], False, "interrupted stream is incomplete")
+    suite.equal(summarize([call, {**result, "is_error": True}])["completed"], False,
+                "error result is incomplete")
+    suite.equal(summarize([call, {**result, "result": ""}])["completed"], False,
+                "empty conclusion is incomplete")
+    repeated = {"type": "assistant", "message": {"content": [
+        {**call["message"]["content"][0], "id": "two"}]}}
+    suite.equal(summarize([call, repeated, result])["exact_repeat_calls"], 1,
+                "a new tool id with identical arguments counts as a repeated call")
+    from run_agent_drill import check_user_permissions
+    for unsafe in [
+        {"permissions": {"allow": ["Read"]}},
+        {"permissions": {"allow": ["Edit(//tmp/**)"]}},
+        {"permissions": {"allow": ["Write(//tmp/**)"]}},
+        {"permissions": {"allow": ["*"]}},
+        {"permissions": {"additionalDirectories": ["/tmp"]}},
+        {"additionalDirectories": ["/tmp"]},
+    ]:
+        try:
+            check_user_permissions(unsafe)
+        except ValueError:
+            suite.check(True, "ambient file grants are rejected before starting the CLI")
+        else:
+            suite.check(False, "ambient file grants must be rejected")
+    check_user_permissions({"permissions": {"allow": ["Bash(git status)"]}})
+    suite.check(True, "grants for unavailable tools cannot expand the exposed file tools")
+
+    # No provider or live MCP calls: exercise output isolation and timeout cleanup
+    # with an in-memory CLI stand-in, inside a Python-managed temporary directory.
+    import io
+    from unittest.mock import Mock, patch
+    import run_agent_drill as drill
+
+    with tempfile.TemporaryDirectory() as directory, \
+         patch.dict(drill.os.environ, {"CLAUDE_CONFIG_DIR": directory}):
+        output = Path(directory) / "run"
+        process = Mock(pid=123456789, returncode=0)
+        process.stdout = io.StringIO("\n".join(json.dumps(e) for e in events) + "\n")
+        process.stdin = io.StringIO()
+        with patch.object(drill.shutil, "which", return_value="fixture-cli"), \
+             patch.object(drill.subprocess, "Popen", return_value=process):
+            captured = drill.run(scenario_paths()[0], None, output, 1)
+        suite.equal(captured["completed"], False, "missing findings cannot count as completed")
+        suite.check((output / "event_timings.jsonl").read_text().strip() != "",
+                    "events retain arrival times without changing raw content")
+        try:
+            drill.run(scenario_paths()[0], None, drill.ROOT / "forbidden-run", 1)
+        except ValueError:
+            suite.check(True, "repository output is rejected by the API too")
+        else:
+            suite.check(False, "repository output must be rejected before execution")
+        with patch.object(drill.shutil, "which", return_value="fixture-cli"):
+            try:
+                drill.run(scenario_paths()[0], None, output, 1)
+            except FileExistsError:
+                suite.check(True, "existing run directory is not overwritten")
+            else:
+                suite.check(False, "existing run directory must be refused")
+        process = Mock(pid=123456789, returncode=-15)
+        process.stdout = io.StringIO("")
+        process.stdin = io.StringIO()
+        process.wait.side_effect = [subprocess.TimeoutExpired("fixture-cli", 1), -15]
+        with patch.object(drill.shutil, "which", return_value="fixture-cli"), \
+             patch.object(drill.subprocess, "Popen", return_value=process), \
+             patch.object(drill.os, "killpg") as kill:
+            captured = drill.run(scenario_paths()[0], None, Path(directory) / "timeout", 1)
+        suite.equal(captured["timed_out"], True, "timeout is retained in summary")
+        suite.equal(captured["completed"], False, "timeout never counts as completed")
+        suite.equal(kill.call_count, 1, "timeout signals the CLI process group")
+    return suite
+
+
 SUITES: dict[str, Callable[[], Suite]] = {
+    "drill_summary": suite_drill_summary,
     "mcp_protocol": suite_mcp_protocol,
     "scenario_schema": suite_scenario_schema,
     "scenario_evidence": suite_scenario_evidence,
@@ -536,7 +640,7 @@ def main() -> int:
               f"{total_failures} failures, {len(results)} suites")
         if ok:
             print("Scope: mock, scenarios, and checker only. Agent behaviour on these "
-                  "scenarios still needs the manual drill in evals/runtime/README.md.")
+                  "scenarios still needs a model drill and semantic review; see evals/runtime/README.md.")
     return 0 if ok else 1
 
 

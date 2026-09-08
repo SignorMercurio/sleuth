@@ -1,5 +1,7 @@
 # Output Review Adjudication
 
+> 历史静态评测快照：下文 Commands 引用的旧脚本已不在本仓库。当前复核入口见 [输出事实复核](../evals/output/review.md)；原判断与 pending 状态保留，不代表本轮模型评测。
+
 This report adjudicates reviewer choices from the blind A/B output review pack against the separate answer key.
 
 - Pairs: `5`

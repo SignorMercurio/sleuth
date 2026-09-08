@@ -24,7 +24,7 @@ IR-{YYYYMMDD}-{hostname}-{event_type}[-{event_id}].md
 
 一次委托覆盖多台主机时合并报告的 `{hostname}` 字段替换为 `{首要主机}-multi{N}`，其中首要主机指首发告警或影响最严重的主机，N 为主机总数；`{event_type}` 用主事件类型，各主机类型不一致时取首要主机的类型。
 
-每台主机另落一份 findings 工作底稿，命名与结构见 `references/findings_spec.md`。
+每台主机另落一份 findings 工作底稿，其 Client 标识、轮次冲突处理与结构见 `references/findings_spec.md`；不要直接由正式报告名推导 findings 路径。
 
 ## 事件类型 slug 对照表
 

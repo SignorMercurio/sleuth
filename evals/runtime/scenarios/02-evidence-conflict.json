@@ -1,6 +1,7 @@
 {
   "id": "evidence-conflict",
   "title": "证据冲突：挖矿告警与执行证据相互矛盾",
+  "prompt": "db01 报矿池通信，线索包括 /tmp/kdevtmpfsi 和目标 198.51.100.66:3333。请确认是不是挖矿，并说明证据。",
   "category": "conflict",
   "investigation_mode": "alarm_driven",
   "alarm": {

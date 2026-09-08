@@ -9,7 +9,7 @@ Investigation outputs and optional reports are generated in Simplified Chinese b
 ## Features
 
 - **Two investigation modes**: alarm-, asset-, or instance-scoped investigation, plus free-form host triage
-- **Capability preflight**: checks which host, cloud, sub-agent, and web evidence sources are available before investigation; missing coverage sets an upper bound on conclusion confidence
+- **Capability preflight**: checks which host, cloud, sub-agent, and web evidence sources are available before investigation; missing coverage constrains the specific claims that depend on it
 - **Per-alarm-type investigation playbooks** (webshell, miner, reverse shell, brute force, ransomware, RCE, SQL injection, abnormal login, data exfiltration, persistence, privilege escalation) + **cross-cutting tradecraft guides** (log analysis, reverse reasoning, cloud forensics, threat intel, process/file analysis, attack countermeasures) + specialized guides (cloud-log routing, SAS/SLS host telemetry, OOB/DNSLog, SSH login attribution, ASP.NET upload tracing) + **MITRE ATT&CK mapping**. See `skills/sleuth/references/playbook_index.md` for the routing table
 - **Parallel command orchestration**: independent remote commands are dispatched in a single round to cut investigation time
 - **Question-driven evidence loop**: after a bounded baseline, each follow-up must answer a named question that can change classification, scope, or response; branches stop when they add no decision-relevant evidence
@@ -18,8 +18,8 @@ Investigation outputs and optional reports are generated in Simplified Chinese b
 - **Evidence-gated vulnerability attribution**: CVEs are investigated only when evidence points to vulnerability exploitation; credential abuse, exposed configuration, and other non-vulnerability entry paths are reported as such instead of being forced into a CVE
 - **Report confirmation gate**: investigations stop after verified findings by default; a formal `IR-....md` report is created only when the user explicitly requests or confirms it
 - **Isolated report writer**: after report confirmation, a fresh writer sees only the verified findings, template, and writing rules when sub-agents are available; it cannot access SIREN or the investigation transcript, and both writer and orchestrator run the same pre-delivery QA
-- **Context-isolation sub-agents**: heavy log / SLS / full-disk output is dredged by a sub-agent (or inline) that returns only conclusions, keeping the orchestrator's context lean
-- **Multi-host engagements**: hosts are investigated one by one (SIREN works per client), each landing a verified `*.findings.md` worksheet; if the user confirms a report, the findings are merged into one report (see *Multi-host and merge* below)
+- **Context-isolation sub-agents**: large outputs are narrowed by a sub-agent (or inline), returning decisive evidence with scope and truncation metadata, keeping the orchestrator's context lean
+- **Multi-host engagements**: authorized hosts receive minimal volatile-evidence snapshots first, followed by per-host investigation; each worksheet is updated throughout and verified before delivery; if the user confirms a report, the findings are merged into one report (see *Multi-host and merge* below)
 - **Optional Markdown incident report**: after user confirmation, the engagement writes one named `IR-....md` from the bundled Dossier-style template, using the findings worksheets as the only source of facts; verified cloud-side facts can carry console screenshots captured read-only through `opencli-aliyun-ir` and referenced from the report
 - **Human writing style**: report prose follows `skills/sleuth/references/report_style.md` and bundled, sanitized IR excerpts; corpus rules live in `skills/sleuth/assets/style/README.md`
 
@@ -96,7 +96,7 @@ When there is no alarm, asset, or instance selector, provide the Client ID plus 
 
 ### Multi-host and merge
 
-Name several hosts / Client IDs (or point at an alarm affecting multiple assets) and the skill investigates them sequentially, writes one `*.findings.md` worksheet per host, and returns verified findings without creating a formal report by default. After confirmation, it merges everything into a single report (`IR-{date}-{primary-host}-multiN-{type}.md`). Handing it several existing `IR-*.md` reports and explicitly asking to merge them counts as report confirmation and triggers merge-only mode. The skill skips evidence collection steps 1-6, treats the reports as findings input, runs step 7 verification for any new cross-report claim, then produces one consolidated report.
+Name several hosts / Client IDs (or point at an alarm affecting multiple assets) and the skill captures a minimal snapshot on each authorized host before investigating in depth. It maintains one `*.findings.md` worksheet per Client, preserves separate reruns, and returns verified findings without creating a formal report by default. After confirmation, it merges everything into a single report (`IR-{date}-{primary-host}-multiN-{type}.md`). Handing it several existing `IR-*.md` reports and explicitly asking to merge them counts as report confirmation and triggers merge-only mode. The skill skips evidence collection steps 1-6, treats the reports as findings input, runs step 7 verification for any new cross-report claim, then produces one consolidated report.
 
 ## Layout
 
@@ -119,8 +119,7 @@ Name several hosts / Client IDs (or point at an alarm affecting multiple assets)
 │       │   ├── report.md                   # Markdown report template copied from dossier/report.md
 │       │   └── style/                      # Tracked, sanitized writing samples; curated-ir-excerpts.md is preferred
 │       └── references/
-│           ├── preflight_probe.md          # Pre-flight capability probe: gaps → confidence ceilings
-│           ├── workflow_recon.md           # Step 1-2 detail: mode routing, client/host list, first sweep
+│           ├── workflow_recon.md           # Step 1-2: capabilities, mode routing, client/host list, first sweep
 │           ├── workflow_tracing.md         # Step 3-6 detail: playbook routing, cloud cross-validation, ATT&CK, residual risk
 │           ├── workflow_delivery.md        # Step 7-8 detail: verification gate handoff, findings, report generation
 │           ├── playbook_index.md           # Step-3 routing table into the guides below
@@ -185,7 +184,7 @@ git diff --check
 
 `scripts/gen_trust_report.py --check` is read-only. If it reports stale evidence after a package, script, dependency, or tracked-file change, run `python3 scripts/gen_trust_report.py` once and commit the refreshed `reports/trust_report.json` and `reports/trust_report.md`.
 
-The complete-report fixtures and mock SIREN suite are contract regressions. They verify report structure, style-sample text leakage, runtime policy, scenario evidence, fault handling, transcript compliance, and concurrency, but they do not prove that an agent reaches the right conclusion. Use the manual drill in `evals/runtime/README.md` for model-behavior review, and keep blind human report review as a separate gate.
+The complete-report fixtures and mock SIREN suite are contract regressions. They verify report structure, style-sample text leakage, runtime policy, scenario evidence, fault handling, transcript compliance, and concurrency, but they do not prove that an agent reaches the right conclusion. Use the [isolated model drill](evals/runtime/README.md) for real model outputs and costs, then apply [semantic review](evals/output/review.md). The opt-in runner invokes the configured model service and writes a new explicit directory outside the repository; it is not part of offline CI. Blind human review remains separate.
 
 ## Contributing
 

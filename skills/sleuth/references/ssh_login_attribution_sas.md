@@ -11,12 +11,12 @@
 2. 查同实例 `aegis-log-login` 获取 SSH 登录来源。
    - 过滤：`__topic__: aegis-log-login AND instance_id: <instance_id>`。
    - 字段：`from_unixtime(__time__) AS log_time, username, login_type, src_ip, pid, host_ip`。
-   - `login_type=SSH` 且 `pid` 与告警进程链中的 sshd PID 接近/一致时，是较强关联证据。
+   - `login_type=SSH` 后按准确 sshd PID/父链、进程启动时间和登录时间对齐会话；有会话标识时一并核对。PID 接近只能筛候选，PID 相同也要排除复用、重启和不同容器命名空间。
 
 3. 查同窗口 `aegis-log-process` 复核执行链。
    - 过滤：`__topic__: aegis-log-process AND instance_id: <instance_id> AND username: <ssh_user>`，时间窗围绕登录/告警时间。
    - 字段：`cmd_chain, cmdline, proc_name, proc_path, pcmdline, pid, ppid, username`。
-   - `cmd_chain` 中常能看到 `command -> -bash -> /usr/sbin/sshd -D -R -> sshd listener`，用于把告警命令挂回 SSH 会话。
+   - `cmd_chain` 中常能看到 `command -> -bash -> /usr/sbin/sshd -D -R -> sshd listener`，用于把告警命令挂回 SSH 会话。同账号并发登录时，用户名和时间相邻不足以唯一关联；无法区分会话就分别列候选来源，不强选一个 IP。
 
 4. 若 `aegis-log-login.src_ip` 是私网 IP，谨慎表述。
    - 该 IP 通常是堡垒机、跳板机、VPC 内代理或内网运维出口。

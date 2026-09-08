@@ -1,6 +1,7 @@
 {
   "id": "logs-wiped",
   "title": "日志被清空：必须切换到替代证据源",
+  "prompt": "web02 发现 /dev/shm/.sysd 可疑进程，客户查不到原来的访问和登录日志。请还原已能确认的链路。",
   "category": "boundary",
   "investigation_mode": "free_form",
   "clients": [

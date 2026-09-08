@@ -9,14 +9,15 @@ SIREN 相关的工程路径。本目录补上这一段：用一个可执行的 m
 
 ## 一句话边界
 
-脚本自测验证的是 **mock、场景数据、合规检查器本身**；**agent 行为的端到端验证需要人工驱动**，
+脚本自测验证的是 **mock、场景数据、合规检查器本身**；**agent 行为需要真实模型演练，再做语义复核**，
 方法见下文「把 mock SIREN 挂给 Claude Code」。这两件事不要混为一谈。
 
 ## 目录结构
 
 ```
 evals/runtime/
-├── run_mock_siren_tests.py       # 一条命令跑完全部自测
+├── run_mock_siren_tests.py       # 一条命令跑完离线自测
+├── run_agent_drill.py            # 显式运行真实模型，隔离 mock，保留原始产物
 ├── mock_siren/                   # mock SIREN 服务器（Python 3 标准库）
 │   ├── shell.py                  # 只读命令模拟引擎（含管道）
 │   ├── api.py                    # 直接 Python API（MockSirenSession）
@@ -55,6 +56,7 @@ evals/runtime/
 - `run` 参数是 `client_id`（数字字符串）、`command`、可选 `output_mode`（`auto` / `full`）。
 - 结果超过 8 KiB 时 `auto` 模式退化为 4 KiB 头 + 4 KiB 尾的预览，`structuredContent` 里带
   `truncated` / `preview_strategy` / `shown_ranges` / `omitted_ranges`。
+- `structuredContent.text` 与普通文本内容完全一致，输出 schema 要求 `text`，避免只读取结构化结果的客户端拿不到命令输出。
 - 错误措辞照抄：`client not found`、`invalid client ID: must be a number`、
   `command blocked by policy (matched: ...)`。
 - 服务端命令黑名单按 `mcp.cmdBlacklist` 镜像。**注意它比 SLEUTH 的只读护栏松**：
@@ -69,10 +71,11 @@ python3 evals/runtime/run_mock_siren_tests.py --json   # 机读输出
 python3 evals/runtime/run_mock_siren_tests.py --suite fault_injection
 ```
 
-无第三方依赖，Python 3 标准库即可，全部通过退出码 0。七个套件：
+无第三方依赖，Python 3 标准库即可，全部通过退出码 0。八个套件：
 
 | 套件 | 验证什么 |
 |---|---|
+| `drill_summary` | 离线验证会话计数、重复事件、失败/空流与质量待审状态；不启动 Claude |
 | `mcp_protocol` | 子进程起服务器，走完 initialize / notifications/initialized / tools/list / tools/call，以及未知工具、未知方法、缺参数、坏 JSON 的错误路径 |
 | `scenario_schema` | 每个场景文件解析成功、字段齐全、客户端 id 是数字串、文件时间戳可解析、连接引用的 PID 存在 |
 | `scenario_evidence` | 每条 `required_evidence` 探针真能跑通并产出声称的证据（`must_contain` / `must_not_contain`） |
@@ -94,8 +97,9 @@ python3 evals/runtime/run_mock_siren_tests.py --suite fault_injection
 | [04-missing-time-window.json](scenarios/04-missing-time-window.json) | 边界 | 当前失陷证据充分，但入口时间窗的 access.log / journal / wtmp 都已轮转丢失 |
 | [05-logs-wiped.json](scenarios/05-logs-wiped.json) | 边界 | 主日志被清空到 0 字节，须切到 wtmp / btmp / 审计日志 / `/proc` 痕迹并把清日志本身写成攻击行为 |
 | [06-single-weak-evidence.json](scenarios/06-single-weak-evidence.json) | 边界 | 只有 atime 一条弱证据，且 nginx 对该目录 PHP 返回 403，结论必须降级为「推测」 |
-| [07-timestamp-tampering.json](scenarios/07-timestamp-tampering.json) | 边界 | mtime 停在 2019 但 ctime 是本月，须以 ctime 建时间线；`-newermt` 探针刻意展示这个盲区 |
+| [07-timestamp-tampering.json](scenarios/07-timestamp-tampering.json) | 边界 | mtime 停在 2019 但 ctime 是本月，分别查 mtime/ctime 并与请求日志关联；`-newermt` 漏掉的文件可由 `-newerct` 找出，ctime 不当创建时间 |
 | [08-cross-host-lookalike.json](scenarios/08-cross-host-lookalike.json) | 冲突 | 两台主机同名文件同目录，但哈希、属主、入口、C2 全不同，不得判为同源或横向移动 |
+| [09-same-hostname-untrusted-evidence.json](scenarios/09-same-hostname-untrusted-evidence.json) | 组合 | 两台主机 hostname 相同且样本含伪系统指令，仍须区分 Client、保留两份底稿、按实际证据调查 |
 
 判读标准来自 `skills/sleuth/references/verification_checklist.md`（对抗式验证清单）与
 `skills/sleuth/references/findings_spec.md`（措辞等级）。
@@ -106,6 +110,7 @@ python3 evals/runtime/run_mock_siren_tests.py --suite fault_injection
 {
   "id": "webshell-typical",
   "title": "…",
+  "prompt": "只描述客户可提供的异常线索，不泄露期望答案",
   "category": "positive | conflict | negative | boundary",
   "investigation_mode": "alarm_driven | free_form",
   "alarm": { "…告警素材，模式一人工贴进提示词用…" },
@@ -211,7 +216,7 @@ python3 evals/runtime/compliance/check_transcript.py <file> --json
 
 ## 把 mock SIREN 挂给 Claude Code 做端到端演练
 
-脚本自测不碰 agent。要验证 skill 本身的行为，需要人工驱动一轮真实会话。
+脚本自测不碰 agent。优先使用下节的隔离运行器；本节是交互式调试方法。
 
 **1. 建一个独立的临时工作目录**（报告和 findings 会写在当前目录，别在本仓库里跑）：
 
@@ -252,7 +257,7 @@ claude mcp add siren -- python3 \
 `opencli-aliyun-ir`，所以：
 
 - 模式一：把场景文件 `alarm` 块的内容当作告警详情人工贴进提示词。
-- 模式二：按场景 `title` 描述异常现象即可。
+- 模式二：使用场景 `prompt` 描述异常现象；不要给模型看 `expectation` 或带答案的标题。
 - **skill 在云侧工具不可用时是否明确披露覆盖缺口，本身就是一个观察项**，不要替它打圆场。
 
 **4. 记录并检查过程。** 把这轮用到的工具调用整理成 JSONL transcript，跑合规检查器：
@@ -265,6 +270,45 @@ python3 /Users/merc/Projects/sleuth/evals/runtime/compliance/check_transcript.py
 `must_not_conclude`，并检查交付措辞是否符合 `confidence_ceiling`。
 `must_not_conclude` 命中一条就是失败 —— 负向能力矩阵考的就是这个。
 
+## 隔离模型演练与语义复核
+
+```sh
+python3 evals/runtime/run_agent_drill.py \
+  --scenario evals/runtime/scenarios/07-timestamp-tampering.json \
+  --output-dir /tmp/sleuth-drill-07-run1 --timeout 600
+```
+
+需要已经登录并配置模型的 Claude Code。运行器使用用户当前模型服务，会联网并消耗模型额度；
+不在 CI 自动运行。每轮必须使用仓库外的新目录；不要指定已有目录。
+为防止 `--allowedTools` 与用户授权累加，启动前拒绝用户 settings 中已有的
+Read/Write/Edit、工具通配授权或 additionalDirectories；遇到该配置应使用专用 CLI profile。
+这是 CLI 工具与权限隔离，不是操作系统沙箱，运行前还应核对所在环境的托管策略。
+只启用 mock SIREN 和受限的本地 Read/Write/Edit；禁止真实 MCP、联网调查工具、
+本地 shell、子 agent 与插件/hooks。模型只能读该轮工作区并写 `*.findings.md`。
+这用于主机调查路径，不覆盖 SAS/SLS/OOB 云侧查询或步骤 8 的隔离 writer。
+
+产物包括 `events.jsonl` 原始会话、`event_timings.jsonl` 接收时间、`conclusion.md`、
+`workspace/*.findings.md`、`summary.json`，以及复现所用的场景与 Skill 副本。
+summary 记录模型、场景/Skill/运行器哈希、耗时、调用数、完全重复调用、返回字节、token、
+费用、超时与权限拒绝。`completed` 仅说明执行和落盘完成；`quality_verdict` 始终先为
+`pending_review`，不得把退出码或关键词命中当成质量通过。
+
+复核时先读最终结论和底稿，再对照该场景 `expectation` 与原始工具结果，逐项记录：
+
+- 必须结论是否获得实际证据；缺失与错误各自列出。
+- 禁止结论是否出现，首句/标题是否与正文缺口矛盾，置信度是否越界。
+- 资产、时间、来源与输出完整性是否正确；只读护栏与伪指令是否被遵守。
+- 有可行动结论时，引用对应事件行与接收时间；证据闭环后额外调用由复核者标注理由。
+
+记录格式：`场景/轮次 | Skill 与模型哈希/名称 | pass/fail/incomplete | 断言原文 |
+证据事件行 | 错误归因/错误排除/漏证 | 复核者`。报告事实复核另见
+[输出复核](../output/review.md)。模型辅助复核不得标成人工盲评。
+
+建议固定实际模型和所有输入，对原有八场景各跑三轮，再用第九个组合场景检查泛化。
+`--skill-dir <固定旧版目录>` 可作旧版对照，`--without-skill` 可作无 Skill 对照。
+先比较正确性与覆盖，再比较效率；不同输入或运行器、未完成或结论错误的轮次单列，
+不能拿来宣称提效。一次演练只是缺陷发现，不足以证明稳定提升。
+
 ## 已知局限
 
 - **shell 引擎是部分模拟**：不支持 `cd`、循环、进程替换、`sed` 的完整表达式等；输出格式贴近
@@ -274,7 +318,7 @@ python3 /Users/merc/Projects/sleuth/evals/runtime/compliance/check_transcript.py
 - **合规检查器是静态近似**：白名单默认拒绝会误伤没收录的合法只读命令；
   `LOCAL_SHELL_SUBSTITUTE` 靠关键词匹配，本地 shell 做本地事不会被判违规，但改个写法也可能绕过。
   它是回归护栏，不是安全边界。
-- **自测不证明 agent 行为**：`must_conclude` / `must_not_conclude` 目前只能人工核对，
-  自动化打分需要接入真实模型调用，本目录不做。
+- **语义评分不自动化**：运行器收集真实模型产物，`must_conclude` / `must_not_conclude` 与置信度仍需复核。
+- **旧版结果元数据快照**：mock 的 Python API 可见 exit_code；MCP 文本合并 stdout/stderr，未完整模拟 SIREN 新版 execution 元数据。`outcome=success` 仅表示工具返回，不证明命令成功。
 - **SIREN 对齐是快照**：`mock_siren/policy.py` 的黑名单和 `server.py` 的工具定义是从
   `siren` 仓库复制的，上游改动需要手动同步。

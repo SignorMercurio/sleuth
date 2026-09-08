@@ -3,7 +3,7 @@
 ## 调查重点（只读检查项）
 
 1. **确认 WebShell 文件**：取文件内容、元数据（`stat`）、哈希。
-2. **上传时间与方式**：以文件 mtime/ctime 为锚，用 `-newermt` 时间窗找同期落地的其他文件；在 access.log 里按文件名 / `POST .php` / 上传时间段定位上传请求。
+2. **上传时间与方式**：按 `references/tech_process_file.md` 同时检查 mtime/ctime 候选，结合访问日志定位上传请求；时间窗校准按 `references/tech_log_analysis.md`，不直接把告警时间或 ctime 当成上传时间。
 3. **追踪利用漏洞**：access.log 里找上传相关 POST 与利用特征（`eval|system|exec|shell_exec|passthru`）。
 4. **使用记录**：查对 WebShell 的访问请求与执行的命令（`cmd=` 等参数）。
 5. **关联进程**：查 web 用户（www-data 等）的进程与 web 服务子进程。
@@ -11,7 +11,7 @@
 ## 判读注意事项
 
 - 不要把可疑文件的 `atime` 自动判定为攻击者访问时间；云安全中心/SAS 扫描读取也会刷新访问时间。必须用 Web 访问日志、SAS 进程/网络遥测或 WAF 日志交叉验证。
-- 若 nginx/Apache 日志中告警文件 0 命中、而文件 `atime` 与告警时间接近，应明确写成“告警扫描触发/文件存在告警”，不要写成“攻击者在该时间调用 WebShell”。
+- 若 nginx/Apache 日志中告警文件 0 命中、而文件 `atime` 与告警时间接近，只能记录文件存在、已查日志范围内未见调用；扫描触发是候选解释，需要检测机制或扫描记录支持，不能据此确认扫描或攻击者调用。
 - WebShell 文件当前存在不等于当前可利用：检查 nginx/PHP 配置（例如 `location ~ \.php$ { return 403; }`、仅放行 `/index.php`）并实际核对访问日志状态码。
 - 发现一个 WebShell 时，扩展排查同目录同时间段批量落地的文件、压缩包和数据库探测脚本（常见：`shell*.php`、`s.php`、`mysql.php`、`db_*.php`、`dump*.php`、`rd*.php`、`rde*.php`、`arc.tar.gz`），并检查硬编码数据库凭据与数据导出风险。
 

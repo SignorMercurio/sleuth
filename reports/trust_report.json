@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-07T07:48:34Z",
+  "generated_at": "2026-09-08T01:06:42Z",
   "ok": true,
   "notes": [
     "Generated for the governed-release trust-report gate (reports/review_waivers.json, gate_key=trust-report).",
@@ -9,7 +9,7 @@
   "sections": {
     "secret_scan": {
       "ok": true,
-      "files_scanned": 117,
+      "files_scanned": 120,
       "files_skipped_binary": 0,
       "rules": [
         {
@@ -43,7 +43,7 @@
     },
     "script_surface": {
       "ok": true,
-      "script_count": 15,
+      "script_count": 16,
       "scripts": [
         {
           "path": "evals/output/validate_full_reports.py",
@@ -169,6 +169,23 @@
           "ok": true
         },
         {
+          "path": "evals/runtime/run_agent_drill.py",
+          "entry_point": "python3 evals/runtime/run_agent_drill.py",
+          "network_access": true,
+          "network_indicators_matched": [
+            "configured Claude Code model service"
+          ],
+          "subprocess_execution": true,
+          "subprocess_patterns_matched": [
+            "\\bsubprocess\\."
+          ],
+          "file_write_scopes": [
+            "explicit new output directory outside repository"
+          ],
+          "write_summary": "Opt-in model drill: copies synthetic inputs and writes raw events, timing, findings and metrics in a new caller-selected directory outside the repo. Reads configured model/auth, refuses ambient file grants and extra directories; disables hooks/plugins and live MCP. Model access is restricted to mock SIREN and scoped local file tools.",
+          "ok": true
+        },
+        {
           "path": "evals/runtime/run_mock_siren_tests.py",
           "entry_point": "python3 evals/runtime/run_mock_siren_tests.py",
           "network_access": false,
@@ -221,8 +238,8 @@
           "ok": true
         }
       ],
-      "conclusion": "No script under scripts/ or evals/ initiates network egress; file writes are confined to reports/ and/or evals/ output artifacts (static analysis).",
-      "method_note": "Static heuristic scan, not a full data-flow or taint analysis. Network access: real Python networking modules are matched on an actual import/connect statement anywhere in the file; command-line network tools (curl/wget/ssh/scp/rsync/netcat) count only when they appear as an argument inside an actual subprocess/os.system/os.popen/os.exec* call (.py) or as a shell-script line (.sh) -- a policy table or test-fixture string that merely names one of these tools is not a call site. File writes: a best-effort constant-propagation pass resolves a write call's target through named constants, one argparse-default hop, and tempfile.*/`with ... as` bindings (tagged as an ephemeral temp-dir, not a persistent write)."
+      "conclusion": "Offline check scripts show no network egress; writes resolve to reports/, evals/ or temporary artifacts (static heuristic). Exception: the digest-reviewed, opt-in run_agent_drill.py invokes the configured model service and writes a new explicit output directory outside the repo. It is not part of CI or the installed Skill.",
+      "method_note": "Static heuristic scan plus an exact-source-digest review of the opt-in model runner; not a sandbox or full data-flow analysis. Network access: real Python networking modules are matched on an actual import/connect statement anywhere in the file; command-line network tools (curl/wget/ssh/scp/rsync/netcat) count only when they appear as an argument inside an actual subprocess/os.system/os.popen/os.exec* call (.py) or as a shell-script line (.sh) -- a policy table or test-fixture string that merely names one of these tools is not a call site. File writes: a best-effort constant-propagation pass resolves a write call's target through named constants, one argparse-default hop, and tempfile.*/`with ... as` bindings (tagged as an ephemeral temp-dir, not a persistent write)."
     },
     "dependency_pinning": {
       "ok": true,
@@ -239,11 +256,11 @@
     "package_hash": {
       "ok": true,
       "package_root": "skills/sleuth",
-      "file_count": 41,
+      "file_count": 40,
       "files": [
         {
           "path": "skills/sleuth/SKILL.md",
-          "sha256": "f91eb8df228633ce2296d02782a5b67a5f870336e2db3ddb1cab9224b39cb287"
+          "sha256": "abff99b7e34c5d90d515be727bb78ee4da76848968848312e8569f39f15792a7"
         },
         {
           "path": "skills/sleuth/agents/interface.yaml",
@@ -275,11 +292,11 @@
         },
         {
           "path": "skills/sleuth/references/cloud_log_queries.md",
-          "sha256": "eefed25127f9eca22cc9e698266c2b7b2f4b6629dcb64574ae7c9142e48d54e4"
+          "sha256": "96a3bc9034f56eaaf174c101d661c3e0e6dc6614b0c6aa4941d16ce8ee08cb13"
         },
         {
           "path": "skills/sleuth/references/findings_spec.md",
-          "sha256": "ff22c3fbcba07af90ac4a7b8b5b4c46cdc64ddb506167a33e7188ab214dfc559"
+          "sha256": "4f6855ef8b9f4569576832e872e817fb4e7d27639b09a6a94bd52ba06299b9ac"
         },
         {
           "path": "skills/sleuth/references/invest_abnormal_login.md",
@@ -291,7 +308,7 @@
         },
         {
           "path": "skills/sleuth/references/invest_data_exfiltration.md",
-          "sha256": "18c99bc489d188af7903253894002c73b43691e2f08f5f4024b4b1146bd0b7df"
+          "sha256": "565ba4229a6f8cd4f5bfefcef8efabadc920d446e4a2a39e61a2cfb569b30802"
         },
         {
           "path": "skills/sleuth/references/invest_mining.md",
@@ -299,7 +316,7 @@
         },
         {
           "path": "skills/sleuth/references/invest_persistence.md",
-          "sha256": "5f7b311bf2f8d79545d0fc8f874e8b70d7e93744140d3bcf644a5ec88c9f3f15"
+          "sha256": "0195591ed96a9226d3ddf18c35ee514bd4a834e7eedd626cc51c584b9058940a"
         },
         {
           "path": "skills/sleuth/references/invest_privilege_escalation.md",
@@ -323,27 +340,23 @@
         },
         {
           "path": "skills/sleuth/references/invest_webshell.md",
-          "sha256": "f9ea5022a0024fb34b61b307e7195e149cdc08ee6defe2930b135243bd50c502"
+          "sha256": "4193009ab75b0f8454045777ede184dede1ea1ac5f76ea6755e80e8ee80016e7"
         },
         {
           "path": "skills/sleuth/references/oob_dnslog_investigation.md",
-          "sha256": "ee9b06c50bde731a0db23f6862ece94d27470008db0babfc711788822050d16e"
+          "sha256": "b6f089dd55432507ebce59b7999a2247bb57bdca00a3dcfcdd538a33d1247e83"
         },
         {
           "path": "skills/sleuth/references/playbook_index.md",
           "sha256": "ec2b5a4283593fd245ecf72be1f18f84392db7a77e74256f7645320090ca6c4b"
         },
         {
-          "path": "skills/sleuth/references/preflight_probe.md",
-          "sha256": "8b3e3fcdfdc7d187c201259099134d5bb8b37706e36f5af8f9c1cddd73b51a24"
-        },
-        {
           "path": "skills/sleuth/references/recon_residual.md",
-          "sha256": "488bb5b6e1f05151511a9a6651a86b516fcd83b1008a6866690c06cf30f61c89"
+          "sha256": "6af0fae1e5995e030f664be5c072d20efaaa2b251cd343ad9973a051431ccd8d"
         },
         {
           "path": "skills/sleuth/references/report_naming.md",
-          "sha256": "e263faae1822202b6f2dad4837754b01a8e7382ff4fab52dab7dc53d1748e822"
+          "sha256": "64f440b9644b8f2d3513e9056fa2498de495b41c5295337d612932314086d3a0"
         },
         {
           "path": "skills/sleuth/references/report_style.md",
@@ -355,7 +368,7 @@
         },
         {
           "path": "skills/sleuth/references/runtime_compat.md",
-          "sha256": "11c5be1750108a04de8faec503d6eba7f8548ab9b48c833e94ea43f2e586ee94"
+          "sha256": "dc662168959438a08569fd9a834d3308a88e585a7511728e1b82d652784adc86"
         },
         {
           "path": "skills/sleuth/references/sas_sls_host_telemetry.md",
@@ -363,7 +376,7 @@
         },
         {
           "path": "skills/sleuth/references/ssh_login_attribution_sas.md",
-          "sha256": "6e61a060c82515db42e6dd377107337859d4911969a96e8341dfc179532f2d64"
+          "sha256": "2405b33d880d8150c78b3c48ff96370acc74d80eb3a3adf0ff45e286ddb2c1b2"
         },
         {
           "path": "skills/sleuth/references/tech_attack_countermeasures.md",
@@ -371,15 +384,15 @@
         },
         {
           "path": "skills/sleuth/references/tech_cloud.md",
-          "sha256": "d5b29beeddc3c4a313665f7b8a3b5859d159185a90e887ad7d83c398010dce9b"
+          "sha256": "65bf907b12e656802670772c9e901cfe88bf4f19c30a5d122491bace1e444f20"
         },
         {
           "path": "skills/sleuth/references/tech_log_analysis.md",
-          "sha256": "042e1694dc32ac221df64f6ac41c907ad93dfa6dbdb39a1e74b22345d0fe2b5c"
+          "sha256": "ac20c8d0dfafa2c408a2eec6869c05dacdb4c8d80eebadbc9cd985bad7d431be"
         },
         {
           "path": "skills/sleuth/references/tech_process_file.md",
-          "sha256": "1ea4b62d0172bdfc2c454cbd1c85c2c520fbd9dd777146b5794c403ceb8223db"
+          "sha256": "d8080fd8642a1ab988cdd6fe2b16febf918bbed39155acbea69cb436f59a1071"
         },
         {
           "path": "skills/sleuth/references/tech_reverse_reasoning.md",
@@ -391,22 +404,22 @@
         },
         {
           "path": "skills/sleuth/references/verification_checklist.md",
-          "sha256": "b6f759deec65c0e79fae8fcd32f9bef63e58142cfe8ac3b5affe053ae9a119b9"
+          "sha256": "777a17f915853b2ee77b3aa392d612b687544fb04abb5de9ed98c60ed77672dd"
         },
         {
           "path": "skills/sleuth/references/workflow_delivery.md",
-          "sha256": "26cf5ce6fb84fb98e077fac914b669f74fcb3e32528695b143934749121e21be"
+          "sha256": "168c221700fdbf42ff5adf919c3b9b9e35fc8be8d48c304ec15aa52c657c3665"
         },
         {
           "path": "skills/sleuth/references/workflow_recon.md",
-          "sha256": "0f0d4c6411f9db52829e2fecf45c37404bcb9ab01786e3ae1f2391feb6a25aa8"
+          "sha256": "78270c6f6f0f8c37f2c4f33bfc748aa83ce87b91a010453890a739dc5f511f4c"
         },
         {
           "path": "skills/sleuth/references/workflow_tracing.md",
-          "sha256": "a84e01ad671f6f5fc71f37e1ee9c747f1c78e8aee63efb803b67b63e4a583093"
+          "sha256": "f80c8b7746b26216a92fd68c484139f4342672a2ef2e338d3a02af8077a34cd6"
         }
       ],
-      "aggregate_sha256": "9424c5b09879b828ffbe13de29150ef83ea7d5817af476f6c12178166b7a847e",
+      "aggregate_sha256": "92a5d7ea9ab51232d6fdbcbb34afa0274c6c070f83392841de989062c0e25320",
       "aggregate_method": "sha256 of the concatenation of 'relpath:filehash\\n' for each file, sorted by relpath",
       "snapshot_note": "skills/sleuth/ may be modified by a parallel, unrelated task. This is a snapshot taken at generation time -- regenerate this report (without --check) as the final step before the trust-report waiver is closed, so the recorded hash matches the package actually being shipped."
     }

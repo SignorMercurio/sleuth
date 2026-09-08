@@ -5,8 +5,8 @@
 ## 调查重点（只读检查项）
 
 1. **定时任务全覆盖**：逐用户 `crontab -l` 之外，核对 `/etc/crontab`、`/etc/cron.d/`、`cron.{hourly,daily,weekly,monthly}/`，以及易漏的 **systemd timer**（`systemctl list-timers --all`）和 **at 任务**（`at -l`、`ls /var/spool/at* /var/spool/cron`）——挖矿与回连脚本最常藏在分钟级重拉里。
-2. **服务与启动链**：`systemctl list-unit-files --type=service` 配 `find /etc/systemd/system /usr/lib/systemd/system -type f -mtime -7 -ls` 找近期落地 unit；读可疑 unit 的 `ExecStart`/`User=`/`WorkingDirectory=`，用 `journalctl -u <unit>` 核实实际启动记录。
-3. **登录触发点**：`/etc/profile`、`/etc/profile.d/`、各用户 `~/.bashrc` / `~/.bash_profile`（先 `find /home /root -maxdepth 2 -name '.bash*' -newermt <窗口>` 筛近期改动再读内容），以及 `/etc/rc.local`、`/etc/init.d/`。
+2. **服务与启动链**：`systemctl list-unit-files --type=service` 配合 `/etc/systemd/system`、`/usr/lib/systemd/system` 的文件元数据筛查；按 `references/tech_process_file.md` 分别查看 mtime/ctime 候选，避免仅按近期 mtime 漏掉时间回填的 unit。读可疑 unit 的 `ExecStart`/`User=`/`WorkingDirectory=`，用 `journalctl -u <unit>` 核实实际启动记录。
+3. **登录触发点**：`/etc/profile`、`/etc/profile.d/`、各用户 `~/.bashrc` / `~/.bash_profile`，以及 `/etc/rc.local`、`/etc/init.d/`。先查看元数据，再按上述 mtime/ctime 方法筛近期变化并读内容；未命中时间窗不能排除已有持久化。
 4. **SSH 通道**：各用户 `authorized_keys` 的公钥条目与文件时间（配 `last` 交叉该窗口的登录）；`sshd_config` 有效配置（`grep -v '^#'`），关注 `AuthorizedKeysFile`、`PermitRootLogin` 被改。
 
 ## 判读注意事项

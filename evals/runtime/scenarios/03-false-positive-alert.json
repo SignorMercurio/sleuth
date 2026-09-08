@@ -1,6 +1,7 @@
 {
   "id": "false-positive-alert",
   "title": "告警误报：主机无失陷证据，应得出阴性结论",
+  "prompt": "app01 的 /var/www/html/vendor/twig/twig/src/Environment.php 被报可疑脚本，请核实误报或入侵，说明范围。",
   "category": "negative",
   "investigation_mode": "alarm_driven",
   "alarm": {

@@ -580,7 +580,7 @@ class HostSimulator:
             roots = ["/"]
         name_pat = ""
         want_type = ""
-        newer_than: datetime | None = None
+        newer_than: dict[str, datetime] = {}
         older_mtime_days: float | None = None
         newer_mmin: float | None = None
         maxdepth: int | None = None
@@ -594,8 +594,10 @@ class HostSimulator:
             elif token == "-type":
                 want_type = value
                 index += 2
-            elif token == "-newermt":
-                newer_than = _parse_loose_time(value, self.now)
+            elif token in ("-newermt", "-newerct"):
+                field = "mtime" if token == "-newermt" else "ctime"
+                threshold = _parse_loose_time(value, self.now)
+                newer_than[field] = max(newer_than.get(field, threshold), threshold)
                 index += 2
             elif token == "-mtime":
                 older_mtime_days = float(value.lstrip("-+"))
@@ -631,7 +633,7 @@ class HostSimulator:
                     continue
                 if user and node.user != user:
                     continue
-                if newer_than and node.mtime <= newer_than:
+                if any(getattr(node, field) <= threshold for field, threshold in newer_than.items()):
                     continue
                 if newer_mmin is not None:
                     age_min = (self.now - node.mtime).total_seconds() / 60

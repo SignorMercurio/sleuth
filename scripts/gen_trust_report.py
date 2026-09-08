@@ -40,6 +40,11 @@ PACKAGE_ROOT = ROOT / "skills/sleuth"
 
 SCHEMA_VERSION = 1
 
+# Deliberate online evaluation capability, reviewed independently of the offline
+# heuristic. A source change invalidates this approval until reviewed again.
+MODEL_DRILL_PATH = "evals/runtime/run_agent_drill.py"
+MODEL_DRILL_SHA256 = "ce84264d5954722b167c37f2fc5749ce945a7bb35ddd0833afc27d39fe2ddd8d"
+
 # All scan surfaces enumerate git-tracked files only. The report attests the
 # committed tree (what is actually shipped and what CI checks out); untracked
 # local artifacts (__pycache__, editor exports, ignored files) would make
@@ -471,6 +476,18 @@ def analyze_script(path: Path) -> dict:
         scope_ok = True
 
     ok = (not network_hits) and scope_ok
+    if rel == MODEL_DRILL_PATH:
+        network_hits = sorted(set(network_hits) | {"configured Claude Code model service"})
+        write_scopes = {"explicit new output directory outside repository"}
+        write_summary = (
+            "Opt-in model drill: copies synthetic inputs and writes raw events, timing, "
+            "findings and metrics in a new caller-selected directory outside the repo. "
+            "Reads configured model/auth, refuses ambient file grants and extra directories; disables hooks/plugins and live MCP. "
+            "Model access is restricted to mock SIREN and scoped local file tools."
+        )
+        ok = hashlib.sha256(path.read_bytes()).hexdigest() == MODEL_DRILL_SHA256
+        if not ok:
+            write_summary += " REVIEW REQUIRED: runner source digest changed."
     return {
         "path": rel,
         "entry_point": entry_point,
@@ -497,13 +514,15 @@ def scan_scripts() -> dict:
         "script_count": len(scripts),
         "scripts": scripts,
         "conclusion": (
-            "No script under scripts/ or evals/ initiates network egress; file writes are "
-            "confined to reports/ and/or evals/ output artifacts (static analysis)."
+            "Offline check scripts show no network egress; writes resolve to reports/, evals/ "
+            "or temporary artifacts (static heuristic). Exception: the digest-reviewed, opt-in "
+            "run_agent_drill.py invokes the configured model service and writes a new explicit "
+            "output directory outside the repo. It is not part of CI or the installed Skill."
             if overall_ok
-            else "One or more scripts show network access or a write scope outside reports/ and evals/; see per-script detail."
+            else "One or more scripts have unreviewed capabilities or a changed opt-in runner digest; see per-script detail."
         ),
         "method_note": (
-            "Static heuristic scan, not a full data-flow or taint analysis. Network access: "
+            "Static heuristic scan plus an exact-source-digest review of the opt-in model runner; not a sandbox or full data-flow analysis. Network access: "
             "real Python networking modules are matched on an actual import/connect statement "
             "anywhere in the file; command-line network tools (curl/wget/ssh/scp/rsync/netcat) "
             "count only when they appear as an argument inside an actual subprocess/os.system/"

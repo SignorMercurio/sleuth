@@ -25,6 +25,7 @@ CONFIDENCE_LEVELS = ("confirmed", "probable", "speculative", "inconclusive")
 REQUIRED_TOP_LEVEL = (
     "id",
     "title",
+    "prompt",
     "category",
     "investigation_mode",
     "clients",
@@ -69,6 +70,8 @@ def validate_scenario(scenario: dict[str, Any]) -> list[str]:
         errors.append(f"category must be one of {CATEGORIES}, got {scenario['category']!r}")
     if scenario["investigation_mode"] not in MODES:
         errors.append(f"investigation_mode must be one of {MODES}")
+    if not isinstance(scenario["prompt"], str) or not scenario["prompt"].strip():
+        errors.append("prompt must be a non-empty user-facing incident description")
 
     clients = scenario["clients"]
     if not isinstance(clients, list) or not clients:

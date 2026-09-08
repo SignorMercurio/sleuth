@@ -45,6 +45,10 @@ class RunResult:
     stderr: str = ""
     exit_code: int = 0
 
+    def __post_init__(self) -> None:
+        # Real SIREN mirrors Content[0].text for structured-only MCP clients.
+        self.structured["text"] = self.text
+
     @property
     def truncated(self) -> bool:
         return bool(self.structured.get("truncated"))

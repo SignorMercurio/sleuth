@@ -1,6 +1,7 @@
 {
   "id": "timestamp-tampering",
   "title": "时间戳篡改识别：mtime 很早但 ctime 很新",
+  "prompt": "web03 的 /var/www/html/inc/config_bak.php 可疑，文件显示为 2019 年。请确认是否与本次事件有关，排查同期文件与入口。",
   "category": "boundary",
   "investigation_mode": "free_form",
   "clients": [
@@ -126,7 +127,7 @@
     "must_conclude": [
       "config_bak.php 的 mtime 停在 2019-05-11 但 ctime 是 2026-06-14 02:31:09，是时间戳被回改的典型特征（T1070.006）",
       "同目录 config.php / db.php 的 mtime 与 ctime 一致，说明 2019 这个时间不是目录整体的属性",
-      "以 ctime 为准建立时间线：02:31:07 攻击者 203.0.113.201 POST /admin/upload.php，02:31:09 文件落地，02:33:40 起被调用",
+      "结合访问日志和 ctime 建立时间线：02:31:07 来源 203.0.113.201 POST /admin/upload.php，02:31:09 文件元数据变更，02:33:40 起被访问；ctime 本身不是创建时间",
       "入口是 admin/upload.php 未做鉴权的任意文件上传"
     ],
     "must_not_conclude": [
@@ -149,6 +150,12 @@
         "client": "1",
         "command": "find /var/www/html/inc -type f -name '*.php' -newermt '2026-06-14 00:00'",
         "must_not_contain": ["config_bak.php"]
+      },
+      {
+        "client": "1",
+        "command": "find /var/www/html/inc -type f -name '*.php' -newerct '2026-06-14 00:00'",
+        "must_contain": ["config_bak.php"],
+        "must_not_contain": ["/inc/config.php", "/inc/db.php"]
       },
       {
         "client": "1",

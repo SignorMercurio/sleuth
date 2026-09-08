@@ -66,6 +66,12 @@ TOOL_DEFINITIONS = [
             },
             "required": ["client_id", "command"],
         },
+        "outputSchema": {
+            "type": "object",
+            "properties": {"text": {"type": "string"}},
+            "required": ["text"],
+            "additionalProperties": True,
+        },
     },
 ]
 

@@ -1,6 +1,7 @@
 {
   "id": "webshell-typical",
   "title": "典型 WebShell 入侵（完整证据链）",
+  "prompt": "云安全中心提示 web01 的 /var/www/html/uploads/s.php 存在 WebShell 通信。请确认是否已执行、入口与仍存风险。",
   "category": "positive",
   "investigation_mode": "alarm_driven",
   "alarm": {

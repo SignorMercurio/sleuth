@@ -7,7 +7,7 @@
 ## 功能
 
 - **两种调查模式**：告警 / 资产 / 实例维度的定向调查，以及无告警的自由排查
-- **能力预检**：调查前探测主机、云侧、子 agent、Web 证据源的可用性；缺失覆盖会压低结论置信度上限
+- **能力预检**：调查前探测主机、云侧、子 agent、Web 证据源的可用性；缺失覆盖约束依赖该证据的具体断言
 - **分类型调查 playbook**（webshell、挖矿、反弹 shell、暴破、勒索、RCE、SQL 注入、异常登录、数据外泄、持久化、提权）+ **横向技术指南**（日志分析、反向推理、云取证、威胁情报、进程/文件分析、攻击对抗手段）+ 专项指南（云日志路由、SAS/SLS 主机遥测、OOB/DNSLog、SSH 登录溯源、ASP.NET 上传追踪）+ **MITRE ATT&CK 映射**。路由表见 `skills/sleuth/references/playbook_index.md`
 - **并行命令调度**：无依赖关系的远程命令在同一轮发出，压缩调查时间
 - **问题驱动证据闭环**：基线扫描后，每轮后续必须回答一个能改变定性、范围或处置的具名问题；不再产出决策相关证据时停止扩张
@@ -16,8 +16,8 @@
 - **证据触发的漏洞归因**：仅在证据指向漏洞利用时调查 CVE；凭证滥用、配置暴露等非漏洞入口按实际路径报告，不为字段完整强行绑定 CVE
 - **报告确认门**：调查默认止于已验证结论；正式 `IR-....md` 报告仅在用户明确请求或确认后生成
 - **隔离写手**：确认报告后，子 agent 可用时由一个全新写手只看 findings、模板和写作规则；写手无法访问 SIREN 或调查上下文，写手与主调度均执行同一套交付前检查
-- **上下文隔离子 agent**：大量日志 / SLS / 全盘输出由子 agent（或内联）处理后只回传结论，保持主调度上下文精简
-- **多主机委托**：逐台调查（SIREN 按 client 工作），每台产出一份已验证的 `*.findings.md`；确认报告后合并为一份（见下文*多主机与合并*）
+- **上下文隔离子 agent**：大输出由子 agent（或内联）收窄，回传决定性证据、范围及截断信息，保持主调度上下文精简
+- **多主机委托**：先对已授权主机取最小易失证据快照，再逐台深入；每台持续维护一份 findings，交付前验证；确认报告后合并为一份（见下文*多主机与合并*）
 - **可选 Markdown 事件报告**：确认后从内置 Dossier 风格模板生成一份命名的 `IR-....md`，以 findings 工作表为唯一事实来源；已验证的云侧事实可由 `opencli-aliyun-ir` 只读截取控制台截图，报告按路径引用
 - **自然写作风格**：报告行文遵循 `skills/sleuth/references/report_style.md` 和内置的脱敏写作样本
 
@@ -94,7 +94,7 @@ Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运�
 
 ### 多主机与合并
 
-指定多台主机 / Client ID（或指向涉及多资产的告警），skill 逐台调查，每台写一份 `*.findings.md` 工作表，默认返回已验证结论而不创建报告。确认后合并为一份报告（`IR-{date}-{primary-host}-multiN-{type}.md`）。递交多份已有 `IR-*.md` 报告并明确要求合并视同报告确认，触发纯合并模式：跳过步骤 1-6，以已有报告作为 findings 输入，对跨报告新断言执行步骤 7 验证，然后产出一份合并报告。
+指定多台主机 / Client ID（或指向涉及多资产的告警），skill 先对已授权主机取最小快照，再逐台深挖；每个 Client 的工作底稿逐轮更新，复查不覆盖旧轮次，默认返回已验证结论而不创建报告。确认后合并为一份报告（`IR-{date}-{primary-host}-multiN-{type}.md`）。递交多份已有 `IR-*.md` 报告并明确要求合并视同报告确认，触发纯合并模式：跳过步骤 1-6，以已有报告作为 findings 输入，对跨报告新断言执行步骤 7 验证，然后产出一份合并报告。
 
 ## 目录结构
 
@@ -117,8 +117,7 @@ Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运�
 │       │   ├── report.md                   # Markdown 报告模板（来自 dossier/report.md）
 │       │   └── style/                      # 脱敏写作样本；首选 curated-ir-excerpts.md
 │       └── references/
-│           ├── preflight_probe.md          # 能力预检：缺口 → 置信度上限
-│           ├── workflow_recon.md           # 步骤 1-2 细则：模式路由、client/主机清单、首轮扫描
+│           ├── workflow_recon.md           # 步骤 1-2：能力确认、模式路由、client/主机清单、首轮扫描
 │           ├── workflow_tracing.md         # 步骤 3-6 细则：playbook 路由、云侧交叉验证、ATT&CK、残留风险
 │           ├── workflow_delivery.md        # 步骤 7-8 细则：验证门交接、findings、报告生成
 │           ├── playbook_index.md           # 步骤 3 路由表
@@ -183,7 +182,7 @@ git diff --check
 
 `scripts/gen_trust_report.py --check` 为只读模式。如果在包、脚本、依赖或跟踪文件变更后报告证据过时，运行一次 `python3 scripts/gen_trust_report.py` 并提交刷新的 `reports/trust_report.json` 和 `reports/trust_report.md`。
 
-完整报告 fixture 与 mock SIREN 套件是契约回归测试，验证报告结构、样本文字泄漏、运行时策略、场景证据、故障处理、转录合规和并发，但不证明 agent 能得出正确结论。模型行为审查使用 `evals/runtime/README.md` 中的手动演练，人工盲审报告作为独立门控。
+完整报告 fixture 与 mock SIREN 套件是契约回归测试，验证报告结构、样本文字泄漏、运行时策略、场景证据、故障处理、转录合规和并发，但不证明 agent 能得出正确结论。使用[隔离模型演练](evals/runtime/README.md)采集真实输出与成本，再做[事实复核](evals/output/review.md)。演练运行器需要显式启动，会调用已配置的模型服务并写入仓库外的新目录，不进入离线 CI；人工盲评仍单独进行。
 
 ## 贡献
 

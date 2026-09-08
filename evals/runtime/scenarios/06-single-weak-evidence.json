@@ -1,6 +1,7 @@
 {
   "id": "single-weak-evidence",
   "title": "孤证降级：仅有 atime 这一类弱证据",
+  "prompt": "app02 的 /var/www/html/tmp/1.php 被报 WebShell，文件访问时间接近告警时间。请确认有没有被调用、是否失陷。",
   "category": "boundary",
   "investigation_mode": "alarm_driven",
   "alarm": {

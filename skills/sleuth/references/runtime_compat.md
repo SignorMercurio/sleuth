@@ -2,20 +2,17 @@
 
 本 skill 兼容 Claude Code 与 Codex。不同客户端的工具界面名称可能不同，按下列映射执行，不要因为名称不完全一致而跳过流程。
 
-## 两阶段加载
+## 按需加载
 
-SKILL.md 只常驻安全护栏、调查模式判别、8 步骨架和报告确认门；每步的操作细则放在 `references/workflow_recon.md`（步骤 1–2）、`references/workflow_tracing.md`（步骤 3–6）、`references/workflow_delivery.md`（步骤 7–8），进入该步骤时才读，调查指南与写作规则同样按需加载。
+按 SKILL.md 的流程入口读取当前步骤细则，调查指南与写作规则同样按需加载。
 
-三个 adapter 目标都以 SKILL.md 源文本为准：`claude` 与 `generic` 直接读源文件，`openai` 只是元数据适配层，都不把 references 打包进提示词，因此降级到 neutral-source 时按需加载仍然成立——references 一律走运行环境的文件读取工具（见下节第一项）。
-
-若运行环境读不到 skill 目录文件：护栏、模式判别、工作流骨架与报告确认门以 SKILL.md 常驻内容为准继续执行，缺失的细则按能力缺口披露（`references/preflight_probe.md`），不得凭记忆编造细则，也不得跳过验证门与确认门。
+若读不到 skill 目录文件，以 SKILL.md 常驻内容继续执行并披露缺失细则，不凭记忆编造规则，不跳过验证门与报告确认门。
 
 ## 跨客户端工具映射
 
 - **读取本 skill 文件**：读取相对当前 skill 根目录的 `references/...` 或 `assets/...` 文件；Claude Code 可用 Read，Codex 可用本地文件读取工具。
-- **SIREN MCP**（主线，远程只读取证）：SLEUTH 只使用 `mcp__siren__ls`、`mcp__siren__run`。仅在运行环境实际暴露了其他名称时才使用等价的 list client、remote run 工具；不要臆造 `list_clients`、`exec`、`wait` 等未加载工具。即使运行环境自动批准了 `deploy` 或其他写操作，也不得调用。若完全不可用，告知用户缺少 SIREN MCP 并结束，不要改用本地 shell/SSH 代替。
-- **调用 `$sas` skill**：模式一只调用已安装的 `$sas` skill，不直接执行 SAS CLI；选择器、列表 / 详情分支与多告警范围按 `references/workflow_recon.md` 步骤 1.2，参数默认值、格式、分页和支持区域由 `$sas` 管理。若不可用，说明告警上下文缺口并向用户索取告警摘要；仍拿不到则按模式二继续，不要改用本地 shell、SSH 或其他云 CLI。
-- **调用云侧 skill**：按 `references/workflow_tracing.md` 步骤 3.2 保持 `$sas` 告警、`sls` 已投递日志、只读 `opencli-aliyun-ir` 控制面/专用能力的优先级，委派输入与输出边界同样以该节为准。全部不可用则跳过并记录覆盖缺口，不直接执行 OpenCLI、SLS CLI、本地 shell 或 SSH。
+- **SIREN MCP**：使用环境实际暴露的 list client / remote run 等价工具；名称与只读边界以 SKILL.md 为准。
+- **调用云侧 skill**：只调用已安装的 skill，路由与委派契约见 `references/workflow_tracing.md` 步骤 3.2；参数格式、默认值、分页和支持区域由对应 skill 管理。不可用则记录覆盖缺口，不自行执行云 CLI。模式一缺 `$sas` 时向用户索取告警摘要，区分用户提供与独立核验的事实；拿不到摘要则按模式二继续。
 - **联网查询**：需要查 CVE、Exploit 或修复方案时，使用运行环境提供的搜索工具、浏览器或官方/可信来源检索工具；不可联网时说明该部分未做外部验证。
 - **派生子 agent**：需要隔离大输出（步骤 3）、做独立结论核验（步骤 7）或隔离报告写作上下文（步骤 8）时，使用运行环境提供的 subagent / 委托机制（Claude Code 的 Agent 工具；Codex 的等价子 agent 机制）。调查与核验子 agent 同受只读安全护栏约束，且未必能访问 SIREN MCP——能访问就让它跑定向只读命令，不能就只处理传入的证据文本；报告 writer 不得访问 SIREN。运行时完全不提供子 agent 时按各节的内联方式降级，不要因此跳过对应步骤。
 
@@ -44,10 +41,12 @@ QA 结果只返回编排者。全部通过才交付报告；失败就修报告�
 
 ## 重输出隔离（调查子 agent）
 
-当某条命令/查询会返回大输出（大日志、全盘 `find`、SLS 大结果集）时，优先派一个子 agent 去读原始输出、只回传结论 + IoC + 决定性的几行，保持编排者上下文精简（见本文「跨客户端工具映射」的派生子 agent 项）。运行时不提供子 agent、或子 agent 拿不到 SIREN 时，按只读护栏内联降级：先 `wc -l` 评估，再 `head`/`tail`/`grep` 收窄。
+大日志、目录搜索、SLS 大结果先按待证问题限定资产、时间和字段；预估仍大时才派子 agent 读取，回传决定性原文和 `references/findings_spec.md` 规定的证据记录，不只给结论。内联降级遵守同一完整性要求。
+
+每次读取先检查命令退出状态及工具的 `truncated`、`shown_ranges`、`omitted_ranges` 等实际返回字段；头尾预览不代表全量，`wc -l` 也不能证明传输未截断。字段未提供时记「完整性未知」，不得猜为完整。截断后优先按时间/条件分块补读，必要时使用工具实际支持的完整输出模式并再次检查；仍有省略就记录未读范围，不凭已展示部分断言没有其他命中。错误输出、权限拒绝与空结果分开处理。
 
 ## SIREN 异常处理
 
-- SIREN 超时/失败：简化命令重试一次，仍失败则跳过并记录为证据缺口
+- SIREN 超时/失败：简化命令重试一次，仍失败则跳过并记录为证据缺口；不换写法反复跑同一重扫描
 - 客户端断线：告知用户，等待重连或切换备用客户端
 - 日志被清除：标注后转向其他证据源（进程、网络、文件时间戳）
