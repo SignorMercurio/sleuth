@@ -13,13 +13,7 @@
 
 ## 云端日志补充
 
-按 `references/cloud_log_queries.md`「反弹 Shell、C2、数据外传」优先用 `sls` 关联 SAS 网络/DNS 遥测、发起进程和 WAF。
-
-## 关键 IoC
-- 外传目标 IP/域名
-- 外传工具和方法
-- 外传的数据路径
-- 外传时间和数据量
+按 `references/cloud_log_queries.md`「反弹 Shell / C2 / 数据外传」关联 SAS 网络、DNS 遥测、发起进程和 WAF。
 
 ## ATT&CK 映射
 - **T1041** - 通过 C2 通道外传

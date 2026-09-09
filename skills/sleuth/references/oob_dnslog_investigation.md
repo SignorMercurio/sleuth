@@ -46,27 +46,15 @@ sls -uid <UID> -product sas \
   -from '<FROM>' -to '<TO>'
 ```
 
-5. Hunt for network follow-on, especially public destinations and reverse-shell ports:
+5. Hunt for network follow-on (public destinations, reverse-shell ports), bound to the same instance ID and window:
 
 ```bash
 sls -uid <UID> -product sas \
-  -query '__topic__: aegis-log-network AND (instance_id: <INSTANCE_ID> OR uuid: <UUID> OR src_ip: <HOST_IP> OR host_ip: <HOST_IP>) | SELECT dst_ip, dst_port, proc_name, proc_path, COUNT(*) AS cnt, MIN(from_unixtime(CAST(start_time AS bigint))) AS first_time, MAX(from_unixtime(CAST(start_time AS bigint))) AS last_time GROUP BY dst_ip, dst_port, proc_name, proc_path ORDER BY cnt DESC LIMIT 50' \
+  -query '__topic__: aegis-log-network AND instance_id: <INSTANCE_ID> | SELECT dst_ip, dst_port, proc_name, proc_path, COUNT(*) AS cnt, MIN(from_unixtime(CAST(start_time AS bigint))) AS first_time, MAX(from_unixtime(CAST(start_time AS bigint))) AS last_time GROUP BY dst_ip, dst_port, proc_name, proc_path ORDER BY cnt DESC LIMIT 50' \
   -from '<FROM>' -to '<TO>'
 ```
 
-6. Check same-host alert and login context:
-
-```bash
-sls -uid <UID> -product sas \
-  -query '__topic__: sas-security-log AND (instance_id: <INSTANCE_ID> OR uuid: <UUID> OR intranet_ip: <HOST_IP>) | SELECT from_unixtime(CAST(start_time AS bigint)) AS ts, suspicious_event_id, name, level, status, detail ORDER BY start_time ASC LIMIT 100' \
-  -from '<FROM>' -to '<TO>'
-```
-
-```bash
-sls -uid <UID> -product sas \
-  -query '__topic__: aegis-log-login AND (instance_id: <INSTANCE_ID> OR uuid: <UUID> OR src_ip: <HOST_IP> OR host_ip: <HOST_IP>) | SELECT from_unixtime(CAST(start_time AS bigint)) AS ts, login_type, username, src_ip, src_port, dst_ip, dst_port, status, instance_id, host_ip ORDER BY start_time ASC LIMIT 100' \
-  -from '<FROM>' -to '<TO>'
-```
+6. List same-host alerts (`sas-security-log`) and login context (`aegis-log-login`) ordered by `start_time` for the same instance and window; topics and pitfalls per `references/cloud_log_queries.md`「异常登录 / 暴力破解」. Coverage-window checks use the templates in `references/sas_sls_host_telemetry.md`.
 
 ## Reporting language
 

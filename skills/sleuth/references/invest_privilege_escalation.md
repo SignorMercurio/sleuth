@@ -9,13 +9,7 @@
 
 ## 云端日志补充
 
-主机本地提权（SUID / 内核漏洞 / sudo 滥用）靠上面的主机命令；若涉及**云上权限提升**（AK 泄露后创建 RAM 用户、附加策略、改角色权限）——按 `references/cloud_log_queries.md`「AK 泄露、RAM 提权、资源归属」优先用 `sls` 查已投递 ActionTrail，详见 `references/tech_cloud.md`。
-
-## 关键 IoC
-- 使用的提权漏洞或技术
-- 提权工具路径和哈希
-- 提权前后的用户和权限
-- 提权后执行的操作
+本地提权靠上面的主机命令；涉及**云上权限提升**（AK 泄露后创建 RAM 用户、附加策略、改角色权限）时按 `references/cloud_log_queries.md`「AK 泄露 / 云助手滥用 / API 溯源」查 ActionTrail（见 `references/tech_cloud.md`）。
 
 ## ATT&CK 映射
 - **T1068** - 利用漏洞提权

@@ -9,14 +9,7 @@
 
 ## 云端日志补充
 
-主机 `auth.log`/`secure` 可能被清除或不含 RDP/数据库登录——按 `references/cloud_log_queries.md`「异常登录、暴力破解」优先用 `$sas`/`sls`，区分 SAS 原始登录遥测与异常登录告警。
-
-## 关键 IoC
-- 登录用户名
-- 登录来源 IP 和地理位置
-- 登录时间
-- 登录方式（密码/密钥）
-- 登录后执行的操作
+主机 `auth.log`/`secure` 可能被清除或不含 RDP/数据库登录；按 `references/cloud_log_queries.md`「异常登录 / 暴力破解」用 SAS 登录遥测补证。
 
 ## ATT&CK 映射
 - **T1078** - 有效账户（初始访问）

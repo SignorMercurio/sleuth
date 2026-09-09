@@ -2,7 +2,7 @@
 
 ## 云助手命令日志
 
-**重要性**：AK 泄露后通过 `RunCommand` / `InvokeCommand` 下发命令的攻击，云侧绕开 SSH/WebShell 入口，主机也无 `bash_history` 痕迹——只能靠这里。云助手命令日志是溯源的关键证据，且**无法在控制台删除**。
+AK 泄露后通过 `RunCommand` / `InvokeCommand` 下发命令的攻击，绕开 SSH/WebShell 入口，主机也无 `bash_history` 痕迹，只能靠云助手命令日志溯源；该日志**无法在控制台删除**。
 
 ### 主机侧痕迹（SIREN 可直接捞 — Linux）
 
@@ -66,60 +66,19 @@ ECS 控制台 -> 运维与监控 -> 云助手 -> 命令执行结果
 
 云安全中心侧有"云助手异常命令"和"CreateCommand 可疑命令"告警可作触发线索；批量主机感染时优先翻这块日志。
 
----
+## ActionTrail 审计要点
 
-## Actiontrail 审计分析
+投递方式与查询语法见 `sls` skill，免费事件窗与控制台功能见 `opencli-aliyun-ir`；本节只写判读要点。
 
-### 三种查询功能对比
-
-| 功能 | 覆盖范围 | 特点 |
-|------|---------|------|
-| AccessKey 审计 | 所有类型事件（管控+数据） | 只记录每个云产品的最后一次调用时间，每个 API 最后一次管控事件详情 |
-| 事件查询 | 90 天内管控事件 | 完整的 API 调用记录列表 |
-| 高级查询 | 需提前创建跟踪 | 支持 90 天以前数据，可投递到 SLS 进行复杂查询 |
-
-### 使用技巧
-
-**快速定位可疑 AK**：
-```
-AccessKey 审计 -> 查看 AK 调用的云产品
-重点关注：
-- ECS: RunCommand (云助手)
-- RAM: CreateUser, AttachPolicyToUser (创建后门账号)
-- SAS: ModifySecurityCheckScheduleConfig (修改安全配置)
-```
-
-**梳理攻击时间线**：
-```
-事件查询 -> 按时间排序
-关注第一次异常调用的时间（AK 开始被利用的时间）
-```
-
-**复杂查询场景（需高级查询）**：
-```sql
--- 查询同一攻击者（源 IP）的所有调用
-SELECT * WHERE sourceIpAddress = '<攻击IP>'
-
--- 查询特定 AK 的所有敏感操作
-SELECT * WHERE userIdentity.accessKeyId = '<AK>'
-AND eventName IN ('RunCommand', 'CreateUser', 'AttachPolicyToUser')
-
--- 梳理 AK 白名单（统计所有 AK 及其调用次数）
-SELECT userIdentity.accessKeyId, COUNT(*) cnt
-GROUP BY userIdentity.accessKeyId ORDER BY cnt DESC
-```
-
-### 注意事项
-
-1. **无 errorCode 不等于成功**：部分 API（如 DescribeInstances）权限不足时不会返回 errorCode，而是直接返回空数据，需结合 AK 实际权限判断
-2. **操作者名称大小写敏感**：角色名称可能在事件查询中显示为小写（如 `AliyunServiceRoleForECSWorkbench` 显示为 `aliyunserviceroleforecsworkbench`），导致查询不到记录
-3. **数据事件需要单独投递**：默认只记录管控事件，数据事件（如 OSS GetObject）需要创建跟踪并投递
-
----
+- AccessKey 审计只记录每个云产品/API 的最后一次调用；完整调用列表靠事件查询（90 天内管控事件），更早或复杂关联需要已投递 SLS 的跟踪。
+- **无 `errorCode` 不等于成功**：部分 API（如 `DescribeInstances`）权限不足时直接返回空数据，需结合 AK 实际权限判断。
+- 操作者名称大小写敏感：角色名可能以小写出现（`AliyunServiceRoleForECSWorkbench` → `aliyunserviceroleforecsworkbench`），查不到先换大小写。
+- 数据事件（如 OSS `GetObject`）默认不记录，需单独创建跟踪投递。
+- 时间线以第一次异常调用为 AK 开始被利用的时间；同一 `sourceIpAddress` 或 `userIdentity.accessKeyId` 的全部调用一起看。
 
 ## AK 泄露利用方式总结
 
-按目的归类的高危 API（在 ActionTrail 按 `eventName` 检索，重点核 `sourceIpAddress` 与 `userIdentity`）：
+按目的归类的高危 API（按 `eventName` 检索，重点核 `sourceIpAddress` 与 `userIdentity`）：
 
 | 目的 | 关键 API |
 |---|---|
@@ -131,21 +90,6 @@ GROUP BY userIdentity.accessKeyId ORDER BY cnt DESC
 
 **检测**：ActionTrail 敏感 API 调用 + 云安全中心 AK 异常调用告警 + 源 IP 非预期地域 + 创建时间较新的 RAM 用户。
 
----
-
 ## 云安全中心溯源模块
 
-**使用场景**：了解攻击者执行的完整命令序列、查看进程启动链和父子关系、确定恶意文件植入方式
-
-**使用方法**：
-```
-云安全中心 -> 告警详情 -> 溯源模块
-或
-云安全中心 -> 调查响应 -> 进程启动 -> 选择时间范围
-```
-
-**能看到的信息**：完整的进程启动链、进程启动时间、进程命令行参数、父进程信息
-
-**局限性**：只能看到云安全中心已记录的进程启动日志；未安装时期无法查询；日志保留时间有限
-
-**技巧**：结合进程启动时间查询 WAF 日志；通过父进程确定攻击来源（如 VNC 登录）
+告警详情的溯源模块与「调查响应 → 进程启动」能看完整进程启动链、启动时间、命令行与父进程，等价于 `aegis-log-process` 遥测；只覆盖已记录时段，未安装时期无法查询。用父进程确定攻击来源（如 VNC 登录），结合进程启动时间查 WAF 日志。

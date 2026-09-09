@@ -8,6 +8,15 @@
 
 本文件建立之前的变更历史，见仓库 `git log`。
 
+## 2026-09-09
+
+### 变更
+
+- `skills/sleuth/` 安装包精简约 9%（117.8 KB → 107.5 KB），`SKILL.md` 压回 1300 token 档内：删除与 frontmatter、`workflow_recon.md` 重复的模式与排除项复述；`workflow_recon.md` 不再重抄调查模式，新增小输出基线检查可合批为一次 SIREN 调用；`invest_*.md` 去掉「关键 IoC」样板，云侧补充改为指向 `cloud_log_queries.md` 路由表；`tech_cloud.md` 删除控制台点击路径与 SQL 示例，查询语法由 `sls` skill 管理。安全护栏只压缩措辞，只读原则、状态变更禁令、SIREN 执行边界与工具名不变，`permission_probe.py` 锚点通过。
+- `references/verification_checklist.md` 重排为「要什么证据 / 缺则怎么写」，并把演练失败固化为反例：不补写「用 touch 回改」等未观察到的动作；文件时间与登录相近不等于唯一写入者；有限日志样本不能排除暴破或外联；单文件核验不扩成目录级加白；检测机制解释只是候选；一类记录的时长不推导另一类行为的时长。措辞等级定义与降级规则不变。
+- 报告写作：`report_style.md`「在报告各章的落点」并入 `report_writing_rules.md`「章节分工决定篇幅」，并加入可检查的篇幅上限（callout body ≤3 句、事件定性、影响范围、处置状态各 ≤2 句、残留风险按模板 1–3 项每项一句、事件总结 ≤3 句、简单事件排查过程 ≤3 段且产品建议 ≤1 项）；写作输入清单只保留在 `runtime_compat.md`。反 AI 腔与非通行措辞清单未改。
+- `evals/output/fixtures/full_reports/` 四份夹具由隔离 writer 按新规则重生成并复读；改前/改后度量、八场景 mock 演练对照与逐场景语义复核见 `reports/skill_simplification_20260909.md`。
+
 ## 2026-09-02
 
 ### 变更

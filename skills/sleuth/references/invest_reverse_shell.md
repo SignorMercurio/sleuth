@@ -9,13 +9,7 @@
 
 ## 云端日志补充
 
-按 `references/cloud_log_queries.md`「反弹 Shell、C2、数据外传」优先用 `sls` 关联 SAS 网络、进程和 DNS 遥测。
-
-## 关键 IoC
-- 反弹 Shell 目标 IP 和端口
-- 反弹 Shell 命令或脚本路径
-- 触发反弹 Shell 的漏洞或途径
-- 相关进程 PID 和命令行
+按 `references/cloud_log_queries.md`「反弹 Shell / C2 / 数据外传」关联 SAS 网络、进程和 DNS 遥测。
 
 ## ATT&CK 映射
 - **T1071** - 应用层协议（命令与控制）

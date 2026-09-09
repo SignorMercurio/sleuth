@@ -18,13 +18,7 @@
 
 ## 云端日志补充
 
-主机侧持久化（cron / systemd / profile / SSH key）靠上面的命令；若怀疑**云侧重入通道**（云助手 RunCommand 定期下发、AK 泄露后反复操作）——按 `references/cloud_log_queries.md`「云助手滥用、云侧持久化」优先用 `sls` 查 ActionTrail，并核对主机 `/var/log/aliyun/assist/`，详见 `references/tech_cloud.md`。
-
-## 关键 IoC
-- 持久化载体路径（cron 条目 / unit 或 timer 文件 / profile 注入行 / 公钥）及落地时间
-- 被拉起的 payload 路径与哈希
-- 下载源 URL / 回连地址
-- 植入的 SSH 公钥指纹
+主机侧持久化靠上面的命令；怀疑**云侧重入通道**（云助手 RunCommand 定期下发、AK 泄露后反复操作）时按 `references/cloud_log_queries.md`「AK 泄露 / 云助手滥用 / API 溯源」查 ActionTrail，并核对主机 `/var/log/aliyun/assist/`（见 `references/tech_cloud.md`）。
 
 ## ATT&CK 映射
 - **T1053.003** - Cron（执行/持久化）

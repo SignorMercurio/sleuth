@@ -9,13 +9,7 @@
 
 ## 云端日志补充
 
-按 `references/cloud_log_queries.md`「WebShell、SQL 注入、RCE、文件上传」优先用 `sls`：WAF 定位利用请求与来源 IP，SAS 进程遥测还原 Web 进程（如 `java`/`php-fpm`/`w3wp.exe`）的命令执行链。
-
-## 关键 IoC
-- 攻击源 IP
-- 漏洞利用 URL 和 payload
-- 执行的命令
-- 下载的恶意文件
+按 `references/cloud_log_queries.md`「WebShell / SQL 注入 / RCE / 文件上传」：WAF 定位利用请求与来源，SAS 进程遥测还原 Web 进程的命令执行链。
 
 ## ATT&CK 映射
 - **T1190** - 利用面向公众的应用程序

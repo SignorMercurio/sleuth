@@ -9,13 +9,7 @@
 
 ## 云端日志补充
 
-主机 `lastb`/`auth.log` 可能被清除或不含 RDP/数据库登录——按 `references/cloud_log_queries.md`「异常登录、暴力破解」优先用 `$sas`/`sls`，从 SAS 登录遥测找来源 IP 和「失败→成功」转折点。
-
-## 关键 IoC
-- 攻击源 IP 地址
-- 攻击时间段
-- 尝试的用户名列表
-- 是否成功登录
+主机 `lastb`/`auth.log` 可能被清除或不含 RDP/数据库登录；按 `references/cloud_log_queries.md`「异常登录 / 暴力破解」用 SAS 登录遥测补证。
 
 ## ATT&CK 映射
 - **T1110.001** - 密码猜测（凭证访问）

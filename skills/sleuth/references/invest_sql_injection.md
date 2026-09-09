@@ -9,13 +9,7 @@
 
 ## 云端日志补充
 
-主机 `access.log` 常被清除或轮转——按 `references/cloud_log_queries.md`「WebShell、SQL 注入、RCE、文件上传」优先用 `sls` 查 WAF 注入请求、URL 与来源 IP。
-
-## 关键 IoC
-- 攻击源 IP
-- 注入点 URL
-- 注入 payload
-- 受影响的数据库和表
+主机 `access.log` 常被清除或轮转；按 `references/cloud_log_queries.md`「WebShell / SQL 注入 / RCE / 文件上传」用 WAF 查注入请求、URL 与来源 IP。
 
 ## ATT&CK 映射
 - **T1190** - 利用面向公众的应用程序

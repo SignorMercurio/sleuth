@@ -10,21 +10,12 @@
 
 ## 判读注意事项
 
-- 不要把可疑文件的 `atime` 自动判定为攻击者访问时间；云安全中心/SAS 扫描读取也会刷新访问时间。必须用 Web 访问日志、SAS 进程/网络遥测或 WAF 日志交叉验证。
-- 若 nginx/Apache 日志中告警文件 0 命中、而文件 `atime` 与告警时间接近，只能记录文件存在、已查日志范围内未见调用；扫描触发是候选解释，需要检测机制或扫描记录支持，不能据此确认扫描或攻击者调用。
-- WebShell 文件当前存在不等于当前可利用：检查 nginx/PHP 配置（例如 `location ~ \.php$ { return 403; }`、仅放行 `/index.php`）并实际核对访问日志状态码。
+- `atime`、文件存在与调用、扫描触发解释的判读边界统一见 `references/verification_checklist.md`「时间」「存在 ≠ 利用 / 得手」「云端与阴性判断」，本文不重述。
 - 发现一个 WebShell 时，扩展排查同目录同时间段批量落地的文件、压缩包和数据库探测脚本（常见：`shell*.php`、`s.php`、`mysql.php`、`db_*.php`、`dump*.php`、`rd*.php`、`rde*.php`、`arc.tar.gz`），并检查硬编码数据库凭据与数据导出风险。
 
 ## 云端日志补充
 
-主机 `access.log` 常被清除或轮转，WAF 更适合确认入口看到的来源 IP——按 `references/cloud_log_queries.md`「WebShell、SQL 注入、RCE、文件上传」优先用 `sls` 定位上传/利用请求并用 SAS 遥测还原 WebShell 子进程链。
-
-## 关键 IoC
-- Web Shell 文件路径和哈希
-- 攻击者 IP 地址
-- 上传时间和方式
-- 利用的漏洞（CVE 编号）
-- 执行的命令记录
+主机 `access.log` 常被清除或轮转，WAF 更适合确认入口来源；按 `references/cloud_log_queries.md`「WebShell / SQL 注入 / RCE / 文件上传」定位上传/利用请求，用 SAS 遥测还原 WebShell 子进程链。
 
 ## ATT&CK 映射
 - **T1190** - 利用面向公众的应用程序（初始访问）
