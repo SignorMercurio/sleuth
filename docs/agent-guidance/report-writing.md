@@ -4,8 +4,8 @@
   findings, template, curated style sample, and named writing references. Do
   not give it the investigation transcript or access to SIREN, SAS, SLS, or the
   network.
-- If severity, event status, or action progress is missing, return the gap to
-  the orchestrator instead of inventing it.
+- Missing fields and verified unknown status follow the finalization gate in
+  `skills/sleuth/references/findings_spec.md`; do not invent values.
 - Keep one authoritative home for each writing rule:
   - Template HTML comments own block-local fill rules. Edit them in dossier,
     then re-sync the deployed copy.

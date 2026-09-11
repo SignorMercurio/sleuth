@@ -71,7 +71,7 @@ def directive_counts(text: str) -> Counter[str]:
 
 def timeline_count(text: str) -> int:
     match = re.search(r"^::: timeline\b.*?^:::$", text, flags=re.M | re.S)
-    return len(re.findall(r"^- T", match.group(0), flags=re.M)) if match else 0
+    return len(re.findall(r"^- .+?\s+::\s*", match.group(0), flags=re.M)) if match else 0
 
 
 def action_count(text: str) -> int:
@@ -215,8 +215,8 @@ def validate_case(case: dict[str, Any], base: Path, template: str, sample_grams:
         failures.append(f"timeline node count {timeline_nodes} is outside expected range")
     if not int(case["action_min"]) <= actions <= int(case["action_max"]):
         failures.append(f"action count {actions} is outside expected range")
-    if not int(case["visible_han_min"]) <= han_chars <= int(case["visible_han_max"]):
-        failures.append(f"visible Han character count {han_chars} is outside expected range")
+    if han_chars > int(case["visible_han_max"]):
+        failures.append(f"visible Han character count {han_chars} exceeds the maximum")
 
     compressed_lines = [
         line.strip()

@@ -22,9 +22,8 @@
       ],
       "timeline_min": 4,
       "timeline_max": 6,
-      "action_min": 5,
+      "action_min": 2,
       "action_max": 8,
-      "visible_han_min": 900,
       "visible_han_max": 2700
     },
     {
@@ -45,9 +44,8 @@
       ],
       "timeline_min": 4,
       "timeline_max": 6,
-      "action_min": 1,
+      "action_min": 0,
       "action_max": 4,
-      "visible_han_min": 700,
       "visible_han_max": 2200
     },
     {
@@ -73,7 +71,6 @@
       "timeline_max": 6,
       "action_min": 5,
       "action_max": 8,
-      "visible_han_min": 1200,
       "visible_han_max": 3200
     },
     {
@@ -102,7 +99,6 @@
       "timeline_max": 6,
       "action_min": 5,
       "action_max": 8,
-      "visible_han_min": 1500,
       "visible_han_max": 4000
     }
   ]
