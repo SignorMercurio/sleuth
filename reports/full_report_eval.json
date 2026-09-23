@@ -20,8 +20,8 @@
         "directive_ends": 12,
         "severity": "高危",
         "timeline_nodes": 5,
-        "actions": 4,
-        "visible_han_chars_without_attack_matrix": 1686,
+        "actions": 5,
+        "visible_han_chars_without_attack_matrix": 2323,
         "duplicate_sentence_count": 0,
         "sample_overlap_count": 0
       }
@@ -36,8 +36,8 @@
         "directive_ends": 12,
         "severity": "低危",
         "timeline_nodes": 4,
-        "actions": 0,
-        "visible_han_chars_without_attack_matrix": 1567,
+        "actions": 1,
+        "visible_han_chars_without_attack_matrix": 1881,
         "duplicate_sentence_count": 0,
         "sample_overlap_count": 0
       }
@@ -48,12 +48,12 @@
       "passed": true,
       "failures": [],
       "metrics": {
-        "directive_starts": 13,
-        "directive_ends": 13,
+        "directive_starts": 14,
+        "directive_ends": 14,
         "severity": "高危",
         "timeline_nodes": 5,
-        "actions": 6,
-        "visible_han_chars_without_attack_matrix": 2224,
+        "actions": 7,
+        "visible_han_chars_without_attack_matrix": 2507,
         "duplicate_sentence_count": 0,
         "sample_overlap_count": 0
       }
@@ -67,9 +67,9 @@
         "directive_starts": 14,
         "directive_ends": 14,
         "severity": "高危",
-        "timeline_nodes": 6,
+        "timeline_nodes": 5,
         "actions": 8,
-        "visible_han_chars_without_attack_matrix": 2556,
+        "visible_han_chars_without_attack_matrix": 2743,
         "duplicate_sentence_count": 0,
         "sample_overlap_count": 0
       }

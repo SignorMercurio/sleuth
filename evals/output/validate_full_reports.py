@@ -22,6 +22,7 @@ COMMON_FORBIDDEN = (
     "findings",
     "工作底稿",
     "writer qa",
+    "点亮",
     "步骤 7",
     "步骤 8",
     "进程遥测",
@@ -109,12 +110,16 @@ def sample_overlaps(visible: str, sample_grams: set[str]) -> list[str]:
     return hits
 
 
+def han_count(text: str) -> int:
+    return len(re.findall(r"[\u4e00-\u9fff]", text))
+
+
 def duplicate_sentences(visible: str) -> list[str]:
     cleaned = strip_attack_matrix(visible)
     candidates: list[str] = []
     for raw in re.split(r"[。！？]\s*", cleaned):
         sentence = re.sub(r"\s+", "", raw)
-        if len(re.findall(r"[\u4e00-\u9fff]", sentence)) < 12:
+        if han_count(sentence) < 12:
             continue
         if sentence.startswith(("#", "|", ":::", "-[")):
             continue
@@ -212,7 +217,7 @@ def validate_case(case: dict[str, Any], base: Path, template: str, sample_grams:
 
     timeline_nodes = timeline_count(report)
     actions = action_count(report)
-    han_chars = len(re.findall(r"[\u4e00-\u9fff]", visible_without_matrix))
+    han_chars = han_count(visible_without_matrix)
     metrics.update(
         {
             "timeline_nodes": timeline_nodes,
@@ -227,13 +232,11 @@ def validate_case(case: dict[str, Any], base: Path, template: str, sample_grams:
     if han_chars > int(case["visible_han_max"]):
         failures.append(f"visible Han character count {han_chars} exceeds the maximum")
 
-    compressed_lines = [
-        line.strip()
-        for line in visible_without_matrix.splitlines()
-        if line.count("；") >= 2 and len(re.findall(r"[\u4e00-\u9fff]", line)) >= 40
-    ]
-    if compressed_lines:
-        failures.append("one or more lines compress multiple relations with semicolons")
+    # Judge each sentence and table cell on its own; a paragraph or table row may hold several.
+    clauses = re.split(r"[|。！？\n]", visible_without_matrix)
+    compressed = [c for c in clauses if c.count("；") >= 2 and han_count(c) >= 40]
+    if compressed:
+        failures.append("one or more sentences compress multiple relations with semicolons")
 
     duplicates = duplicate_sentences(visible)
     metrics["duplicate_sentence_count"] = len(duplicates)

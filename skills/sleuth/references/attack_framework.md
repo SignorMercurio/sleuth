@@ -4,7 +4,7 @@
 
 把攻击行为映射到 ATT&CK：战术 → 技术（`T数字` 或 `T数字.子编号`）。**映射纪律**：优先用具体子技术；每条映射必须有溯源证据支撑；未涉及的战术省略；同一行为可跨多个战术（如定时任务属执行/持久化/权限提升）。具体技术编号与名称按 MITRE 标准（https://attack.mitre.org/ ）按需取用。
 
-报告 `::: attack` 矩阵的「12 战术 × 每战术 5 技术」槽位已固定写在模板 `assets/report.md` 里，只给有证据的技术加 `!` 点亮、不增删/重排槽位（见 `references/report_writing_rules.md`）。
+报告 `::: attack` 矩阵的「12 战术 × 每战术 5 技术」位置已固定写在模板 `assets/report.md` 里，只给有证据的技术加 `!` 标出、不增删/重排（见 `references/report_writing_rules.md`）。
 
 ## 战术名 ↔ 报告矩阵对照
 
