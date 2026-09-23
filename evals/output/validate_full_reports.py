@@ -74,6 +74,13 @@ def timeline_count(text: str) -> int:
     return len(re.findall(r"^- .+?\s+::\s*", match.group(0), flags=re.M)) if match else 0
 
 
+def fixed_recommendation(text: str) -> list[str]:
+    """Header, name and reason of the first recommendation; the template lets writers adapt only risk and action."""
+    block = re.search(r"^::: recommendation\b.*?^:::$", text, flags=re.M | re.S)
+    lines = block.group(0).splitlines() if block else []
+    return lines[:1] + [line for line in lines if line.startswith(("name ::", "reason ::"))]
+
+
 def action_count(text: str) -> int:
     phases = re.findall(r"^::: phase\b.*?^:::$", text, flags=re.M | re.S)
     return sum(len(re.findall(r"^- \[[x/ ]\] ", phase, flags=re.M)) for phase in phases)
@@ -165,6 +172,8 @@ def validate_case(case: dict[str, Any], base: Path, template: str, sample_grams:
             continue
         if actual != expected:
             failures.append(f"directive {name} count is {actual}, expected {expected}")
+    if fixed_recommendation(report) != fixed_recommendation(template):
+        failures.append("first recommendation differs from the template's fixed block")
 
     severity_match = re.search(r"^sev :: 严重等级 ·\s*(\S+)", visible, flags=re.M)
     severity = severity_match.group(1) if severity_match else ""
