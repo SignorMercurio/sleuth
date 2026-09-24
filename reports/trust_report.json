@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-23T07:57:42Z",
+  "generated_at": "2026-09-24T08:01:17Z",
   "ok": true,
   "notes": [
     "Generated for the governed-release trust-report gate (reports/review_waivers.json, gate_key=trust-report).",
@@ -272,7 +272,7 @@
         },
         {
           "path": "skills/sleuth/assets/report.md",
-          "sha256": "9c15c6ef13b0580b1ac2e2d088b9dfbe41f675ca8c344c153b7af8861c506921"
+          "sha256": "6388035a209ae06591aca3f7dd7f94792137dcadc284118aee3922a9b1915dc0"
         },
         {
           "path": "skills/sleuth/assets/style/README.md",
@@ -419,7 +419,7 @@
           "sha256": "16030b46b1f06af0b5a9f3e7094382ef6d838a675fa127b68d61bf33aa0d7bd3"
         }
       ],
-      "aggregate_sha256": "ff0262ce6ea037420c53b177ebdd8e7c37bc1033133a826bcc799de11c1ba669",
+      "aggregate_sha256": "3e5cf142c768370fd5d198b6042344da1c16d10da5c9ec43c10df93aaa181afe",
       "aggregate_method": "sha256 of the concatenation of 'relpath:filehash\\n' for each file, sorted by relpath",
       "snapshot_note": "skills/sleuth/ may be modified by a parallel, unrelated task. This is a snapshot taken at generation time -- regenerate this report (without --check) as the final step before the trust-report waiver is closed, so the recorded hash matches the package actually being shipped."
     }

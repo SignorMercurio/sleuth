@@ -31,7 +31,7 @@ title-en :: Security Incident Response Report
 
 ::: rev
 | 日期 | 版本 | 描述 | 作者 |
-| {date:slash-pad} | 1.0 | 新建：首次响应窗口的分析结论。 | 凌星 |
+| {date:slash} | 1.0 | 新建：首次响应窗口的分析结论。 | 凌星 |
 | — | — | 待客户评审与确认。 | — |
 :::
 
