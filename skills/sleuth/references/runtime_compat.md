@@ -14,6 +14,7 @@
 - **SIREN MCP**：使用环境实际暴露的 list client / remote run 等价工具；名称与只读边界以 SKILL.md 为准。
 - **调用云侧 skill**：只调用已安装的 skill，路由与委派契约见 `references/workflow_tracing.md` 步骤 3.2；参数格式、默认值、分页和支持区域由对应 skill 管理。不可用则记录覆盖缺口，不自行执行云 CLI。模式一缺 `$sas` 时向用户索取告警摘要，区分用户提供与独立核验的事实；拿不到摘要则按模式二继续。
 - **联网查询**：需要查 CVE、Exploit 或修复方案时，使用运行环境提供的搜索工具、浏览器或官方/可信来源检索工具；不可联网时说明该部分未做外部验证。
+- **生成图片**：Codex 用内置图片生成工具，生成后复制到目标路径；Claude Code 在本地用 `codex exec --skip-git-repo-check -s workspace-write -C <工作目录> "<提示词>"` 转调，提示词里写明保存路径。
 - **派生子 agent**：隔离大输出（步骤 3）、独立核验（步骤 7）或隔离写作（步骤 8）时用运行环境的 subagent / 委托机制。调查与核验子 agent 同受只读护栏约束，能访问 SIREN 就让它跑定向只读命令，不能就只处理传入的证据文本；writer 不得访问 SIREN。运行时不提供子 agent 时按各节的内联方式降级，不跳过对应步骤。
 
 ## 报告写作隔离（步骤 8，用户确认后）
@@ -27,13 +28,14 @@
 - `references/report_naming.md`
 - `references/report_style.md`
 - `references/report_writing_rules.md`
+- 入侵路径示意图路径（生成成功时）
 
 writer 只读取这些文件，只创建最终一份 `IR-….md` 报告，不调用 SIREN、SAS、SLS、OpenCLI 或联网工具。是否因字段缺失停止定稿，以 `references/findings_spec.md`「正式报告写作层使用规则」为准；区分漏填与编排者已核实的未知边界。
 
 writer 完成后先自检，编排者再按相同边界复核：
 
 1. 按 `references/findings_spec.md` 检查事实边界、措辞等级、严重等级、影响统计口径与处置进展；数量和状态逐项核对来源，已核实的未知边界不能改写成确定结果
-2. 按模板 HTML 注释检查原有标题、`:::` 指令块、占位符和各块内容；图片引用逐条核对路径出现在 findings 且文件存在
+2. 按模板 HTML 注释检查原有标题、`:::` 指令块、占位符和各块内容；图片引用逐条核对路径来自 findings 或编排者传入，且文件存在
 3. 按 `references/report_writing_rules.md` 检查跨章节分工、证据实体下限、内部标识、IoC、样本串案与重复
 4. 按 `references/report_style.md` 通读中文，清理不自然或机械化表达
 

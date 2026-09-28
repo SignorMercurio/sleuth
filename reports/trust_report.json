@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-24T08:01:17Z",
+  "generated_at": "2026-09-28T08:32:10Z",
   "ok": true,
   "notes": [
     "Generated for the governed-release trust-report gate (reports/review_waivers.json, gate_key=trust-report).",
@@ -272,7 +272,7 @@
         },
         {
           "path": "skills/sleuth/assets/report.md",
-          "sha256": "6388035a209ae06591aca3f7dd7f94792137dcadc284118aee3922a9b1915dc0"
+          "sha256": "49f0b10d9ab946fdb301687802c86b73aea4a9b8f9727430c35f5f6b41fb14c8"
         },
         {
           "path": "skills/sleuth/assets/style/README.md",
@@ -364,11 +364,11 @@
         },
         {
           "path": "skills/sleuth/references/report_writing_rules.md",
-          "sha256": "082e13e03682e946010a8775d4c2d07b1a3678a89137711d0a2805f9e1c714c5"
+          "sha256": "b72c135b0878c76751431136fcdc2fc3460a6a3f231ffe109d699666126f04b1"
         },
         {
           "path": "skills/sleuth/references/runtime_compat.md",
-          "sha256": "c69bdf075d9fa0e7417b48dd93f06b48af6613153105e118448c9ce982327709"
+          "sha256": "2da2b8bb4053715b98cf76bb3fa09791e4d851266959a7ad1d7a4cf73ff0bef9"
         },
         {
           "path": "skills/sleuth/references/sas_sls_host_telemetry.md",
@@ -408,7 +408,7 @@
         },
         {
           "path": "skills/sleuth/references/workflow_delivery.md",
-          "sha256": "f4562f0d00067aaea94bc3038a1e4a317442f348a9afb4c3cee6fc893aac5e57"
+          "sha256": "d51a41f88421255d340e3653e21cf0e8f376c04d96e0c6773d499725770a921b"
         },
         {
           "path": "skills/sleuth/references/workflow_recon.md",
@@ -419,7 +419,7 @@
           "sha256": "16030b46b1f06af0b5a9f3e7094382ef6d838a675fa127b68d61bf33aa0d7bd3"
         }
       ],
-      "aggregate_sha256": "3e5cf142c768370fd5d198b6042344da1c16d10da5c9ec43c10df93aaa181afe",
+      "aggregate_sha256": "72177a63c3c4b2307f27efd568a9bd50b09fadc3b4df4e7d971765bf0364db49",
       "aggregate_method": "sha256 of the concatenation of 'relpath:filehash\\n' for each file, sorted by relpath",
       "snapshot_note": "skills/sleuth/ may be modified by a parallel, unrelated task. This is a snapshot taken at generation time -- regenerate this report (without --check) as the final step before the trust-report waiver is closed, so the recorded hash matches the package actually being shipped."
     }
