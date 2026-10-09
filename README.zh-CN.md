@@ -140,7 +140,8 @@ Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运�
 │   ├── validate.py                         # Frontmatter、链接、孤立引用检查
 │   ├── permission_probe.py                 # 运行时信任与只读护栏锚点检查
 │   ├── permission_probe_anchors.yaml       # permission_probe.py 的预期信任锚点
-│   └── gen_trust_report.py                 # 密钥扫描、脚本执行面、依赖锁定、包哈希证据
+│   ├── gen_trust_report.py                 # 密钥扫描、脚本执行面、依赖锁定、包哈希证据
+│   └── air_session_stats.py                # Codex AIR 会话的往返次数、上下文负载与 exec 输出分布
 ├── evals/
 │   ├── semantic_config.json                # 语义评估配置
 │   ├── blind_holdout/                      # 人工盲审 trigger cases

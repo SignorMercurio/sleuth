@@ -1,6 +1,6 @@
 # SLEUTH 信任报告（Trust Report）
 
-生成时间：`2026-10-09T06:21:37Z`
+生成时间：`2026-10-09T08:00:21Z`
 
 总体结论：**通过**
 
@@ -9,7 +9,7 @@
 
 ## 1. 密钥与凭据扫描（secret scan）
 
-- 扫描文件数：121（跳过二进制/不可解码文件 0 个）
+- 扫描文件数：122（跳过二进制/不可解码文件 0 个）
 - 规则：
   - `aliyun_ak_sk`：Aliyun AccessKeyId: LTAI prefix followed by 12-30 alnum chars
   - `private_key_block`：PEM private key BEGIN marker (RSA/EC/DSA/OPENSSH/ENCRYPTED)
@@ -36,6 +36,7 @@
 | `evals/runtime/mock_siren/shell.py` | `evals/runtime/mock_siren/shell.py (imported module, no CLI entry point found)` | 否 | 否 | no file-write call detected (static) |
 | `evals/runtime/run_agent_drill.py` | `python3 evals/runtime/run_agent_drill.py` | 是 | 是 | Opt-in model drill: copies synthetic inputs and writes raw events, timing, findings and metrics in a new caller-selected directory outside the repo. Reads configured model/auth, refuses ambient file grants and extra directories; disables hooks/plugins and live MCP. Model access is restricted to mock SIREN and scoped local file tools. |
 | `evals/runtime/run_mock_siren_tests.py` | `python3 evals/runtime/run_mock_siren_tests.py` | 否 | 是 | write call present; resolves to a Python-managed temp directory (tempfile.*, ephemeral, deleted at context exit) -- not a persistent write outside reports/ or evals/ (static) |
+| `scripts/air_session_stats.py` | `python3 scripts/air_session_stats.py` | 否 | 否 | no file-write call detected (static) |
 | `scripts/gen_trust_report.py` | `python3 scripts/gen_trust_report.py` | 否 | 是 | write call present; resolves to reports/ (static) |
 | `scripts/permission_probe.py` | `python3 scripts/permission_probe.py` | 否 | 否 | no file-write call detected (static) |
 | `scripts/validate.py` | `python3 scripts/validate.py (flat script, executes at import time, no __main__ guard)` | 否 | 否 | no file-write call detected (static) |
@@ -53,7 +54,7 @@
 
 - 包目录：`skills/sleuth`
 - 文件数：40
-- 聚合 SHA-256：`aa552454484933c46b44f9cdb62ca13c92d76ef5d7ee6d84fcfad84a7b87e3c9`
+- 聚合 SHA-256：`66521d8b505d7415ce8720fa76ea5513d2b850766bcfba827c21f1055f79ee36`
 - 聚合算法：sha256 of the concatenation of 'relpath:filehash\n' for each file, sorted by relpath
 - 说明：skills/sleuth/ may be modified by a parallel, unrelated task. This is a snapshot taken at generation time -- regenerate this report (without --check) as the final step before the trust-report waiver is closed, so the recorded hash matches the package actually being shipped.
 - 逐文件清单见 `reports/trust_report.json` 的 `sections.package_hash.files`。

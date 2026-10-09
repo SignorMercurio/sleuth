@@ -8,6 +8,14 @@
 
 本文件建立之前的变更历史，见仓库 `git log`。
 
+## 2026-10-09
+
+### 变更
+
+- `SKILL.md` 工具边界：新增 `mcp__siren__run_batch` 与 `read_run_result`/`search_run_result`；`run_batch` 与 `run` 受同样只读护栏，只显式传已授权 Client。原因：真实 AIR 会话里单主机 `run` 1112 次而 `run_batch` 仅 69 次，模型往返次数是耗时主因。只读原则、状态变更禁令与 SIREN 执行边界不变，`permission_probe.py` 锚点通过。
+- 「限制输出」改为「输出纪律」：单次返回控制在 8 KiB 内，超出只看头尾预览再按 `audit_id` 定点取，图片默认 `detail: "low"`；并行条写明多主机用 `run_batch`、单主机合并进一个 `run`、长等待用 `yield_time_ms` 而非循环 `wait`；上下文压缩后先读 findings 工作区段。细则见 `runtime_compat.md`「上下文预算」。原因：exec 输出超过 20 KB 的约 10% 调用占 62–85% 的入上下文字节，导致每会话 12–21 次压缩和 SKILL.md 反复重读。
+- 新增 `scripts/air_session_stats.py`：统计 Codex rollout 的模型调用、上下文中位/峰值、压缩次数、工具调用与 exec 输出分布，用于对比上述改动的效果。
+
 ## 2026-09-23
 
 ### 变更

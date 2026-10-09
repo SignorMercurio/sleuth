@@ -7,3 +7,5 @@
   `python3 scripts/gen_trust_report.py` / `python3 scripts/gen_trust_report.py --check`
 - **`permission_probe.py`** —— 运行时权限探测：校验 `agents/interface.yaml` 信任块不变量、`agents/openai.yaml` 未声明超范围执行权限、`SKILL.md` 仍含护栏语义锚点（锚点清单见 `permission_probe_anchors.yaml`，未来 SKILL.md 改版时在此处校准，无需改脚本）。
   `python3 scripts/permission_probe.py`
+- **`air_session_stats.py`** —— 统计 Codex AIR 会话 rollout 的模型调用次数、上下文 token 中位/峰值、总用量、压缩次数、工具调用计数、非图片 exec 输出字节分布与 SKILL.md 读取次数；仅用标准库。
+  `python3 scripts/air_session_stats.py ROLLOUT.jsonl [...]`（服务器上可 `python3 - ROLLOUT.jsonl < scripts/air_session_stats.py`）

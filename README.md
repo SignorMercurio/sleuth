@@ -142,7 +142,8 @@ Name several hosts / Client IDs (or point at an alarm affecting multiple assets)
 │   ├── validate.py                         # Frontmatter, link, and orphan checks
 │   ├── permission_probe.py                 # Runtime trust and read-only guardrail anchors
 │   ├── permission_probe_anchors.yaml       # Expected trust anchors for permission_probe.py
-│   └── gen_trust_report.py                 # Secret, script-surface, dependency, and package-hash evidence
+│   ├── gen_trust_report.py                 # Secret, script-surface, dependency, and package-hash evidence
+│   └── air_session_stats.py                # Round trips, context load, and exec output sizes in Codex AIR rollouts
 ├── evals/
 │   ├── semantic_config.json                # Semantic eval configuration
 │   ├── blind_holdout/                      # Blind holdout trigger cases for human review
