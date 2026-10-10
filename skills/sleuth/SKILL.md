@@ -24,6 +24,7 @@ description: SLEUTH · 安全应急响应专家。用于对具体安全告警、
 - **一·告警驱动**：UID + 一个 SAS 选择器（告警 `Id`/资产 UUID/实例 ID）；缺一且问不到时转 **二·自由调查**，按用户描述的异常线索排查。
 - **多主机委托**：多主机/多 Client 或告警涉及多资产 → 先对已授权清单取最小快照，再逐台完成步骤 2–7，每台一份 findings，确认后只出一份报告。
 - **合并模式**：用户给多份既有 `IR-….md` 要求合并 → 即报告确认；跳过步骤 1–6，以既有报告作为 findings 进入步骤 7 核验，再进入步骤 8。
+- **修订模式**：用户给既有 `IR-….md` 加复核意见或新证据要求修改 → 按 `references/workflow_delivery.md`「8.4」把裁决写回 findings 后整章重写。
 
 ## 工作流程（默认止于步骤 7；细则读 `references/workflow_recon.md`（1–2）、`references/workflow_tracing.md`（3–6）、`references/workflow_delivery.md`（7–8））
 

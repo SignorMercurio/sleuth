@@ -4,8 +4,8 @@
   "manifest": "evals/output/full_report_cases.json",
   "template": "skills/sleuth/assets/report.md",
   "summary": {
-    "case_count": 4,
-    "passed_count": 4,
+    "case_count": 5,
+    "passed_count": 5,
     "failed_count": 0,
     "gate_pass": true
   },
@@ -16,13 +16,15 @@
       "passed": true,
       "failures": [],
       "metrics": {
-        "directive_starts": 12,
-        "directive_ends": 12,
+        "directive_starts": 13,
+        "directive_ends": 13,
         "severity": "高危",
         "timeline_nodes": 5,
-        "actions": 5,
-        "visible_han_chars_without_attack_matrix": 2323,
+        "actions": 6,
+        "visible_han_chars_without_attack_matrix": 2177,
         "duplicate_sentence_count": 0,
+        "long_paragraph_count": 0,
+        "repeated_phrase_count": 0,
         "sample_overlap_count": 0
       }
     },
@@ -37,8 +39,10 @@
         "severity": "低危",
         "timeline_nodes": 4,
         "actions": 1,
-        "visible_han_chars_without_attack_matrix": 1881,
+        "visible_han_chars_without_attack_matrix": 1737,
         "duplicate_sentence_count": 0,
+        "long_paragraph_count": 0,
+        "repeated_phrase_count": 0,
         "sample_overlap_count": 0
       }
     },
@@ -52,9 +56,11 @@
         "directive_ends": 14,
         "severity": "高危",
         "timeline_nodes": 5,
-        "actions": 7,
-        "visible_han_chars_without_attack_matrix": 2507,
+        "actions": 5,
+        "visible_han_chars_without_attack_matrix": 2362,
         "duplicate_sentence_count": 0,
+        "long_paragraph_count": 0,
+        "repeated_phrase_count": 0,
         "sample_overlap_count": 0
       }
     },
@@ -64,14 +70,39 @@
       "passed": true,
       "failures": [],
       "metrics": {
-        "directive_starts": 14,
-        "directive_ends": 14,
+        "directive_starts": 15,
+        "directive_ends": 15,
         "severity": "高危",
         "timeline_nodes": 5,
-        "actions": 8,
-        "visible_han_chars_without_attack_matrix": 2743,
+        "actions": 7,
+        "visible_han_chars_without_attack_matrix": 2552,
         "duplicate_sentence_count": 0,
+        "long_paragraph_count": 0,
+        "repeated_phrase_count": 1,
         "sample_overlap_count": 0
+      }
+    },
+    {
+      "id": "bloated-revision",
+      "report": "evals/output/fixtures/full_reports/bloated-revision.md",
+      "passed": true,
+      "failures": [],
+      "metrics": {
+        "directive_starts": 12,
+        "directive_ends": 12,
+        "severity": "高危",
+        "timeline_nodes": 5,
+        "actions": 5,
+        "visible_han_chars_without_attack_matrix": 2635,
+        "duplicate_sentence_count": 0,
+        "long_paragraph_count": 1,
+        "repeated_phrase_count": 3,
+        "sample_overlap_count": 0,
+        "observed_failures": [
+          "处置状态 has 152 Han chars, limit 150",
+          "1 paragraphs exceed 200 Han chars",
+          "3 phrases repeat 3+ times: 云安全中心告警本身不等于每条命令都执行成功、现有访问日志不能说明攻击者是否另有其他上传入口、进程启动记录覆盖期之外的主机活动无法据此排除"
+        ]
       }
     }
   ]

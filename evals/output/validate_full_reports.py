@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_MANIFEST = ROOT / "evals" / "output" / "full_report_cases.json"
 DEFAULT_TEMPLATE = ROOT / "skills" / "sleuth" / "assets" / "report.md"
 DEFAULT_SAMPLE = ROOT / "skills" / "sleuth" / "assets" / "style" / "curated-ir-excerpts.md"
+WRITING_RULES = ROOT / "skills" / "sleuth" / "references" / "report_writing_rules.md"
 DEFAULT_JSON = ROOT / "reports" / "full_report_eval.json"
 DEFAULT_MD = ROOT / "reports" / "full_report_eval.md"
 
@@ -128,7 +129,54 @@ def duplicate_sentences(visible: str) -> list[str]:
     return [sentence for sentence, count in counts.items() if count > 1]
 
 
-def validate_case(case: dict[str, Any], base: Path, template: str, sample_grams: set[str]) -> dict[str, Any]:
+REPEAT_GRAM, REPEAT_MIN, REPEAT_PHRASES_MAX = 10, 3, 2
+
+
+def han_caps(template: str) -> tuple[dict[str, int], int]:
+    """Read the caps from their owners: the template 事件结论 comment and report_writing_rules.md."""
+    headline, field = map(int, re.search(r"headline 不超过 (\d+) 字，四个字段各不超过 (\d+) 字", template).groups())
+    paragraph = int(re.search(r"正文自然段不超过 (\d+) 字", WRITING_RULES.read_text(encoding="utf-8")).group(1))
+    return {"headline": headline, **dict.fromkeys(("事件定性", "影响范围", "处置状态", "残留风险"), field)}, paragraph
+
+
+def field_overruns(visible: str, caps: dict[str, int]) -> list[str]:
+    overruns = []
+    for field, limit in caps.items():
+        match = re.search(rf"^{field} :: (.*)$", visible, flags=re.M)
+        if match and (count := han_count(match.group(1))) > limit:
+            overruns.append(f"{field} has {count} Han chars, limit {limit}")
+    return overruns
+
+
+def prose_lines(visible: str) -> list[str]:
+    """Body paragraphs only: tables, lists, quotes, code, images, headings and field lines are excluded."""
+    body = re.sub(r"^```.*?^```$", "", strip_attack_matrix(visible), flags=re.M | re.S)
+    skip = ("|", "#", ":::", "![", "- ", ">")
+    field = re.compile(r"^[^:\n]{1,20} :: ")
+    return [line for line in body.splitlines() if line.strip() and not line.startswith(skip) and not field.match(line)]
+
+
+def repeated_phrases(lines: list[str]) -> list[str]:
+    """Maximal CJK runs whose every REPEAT_GRAM-char window recurs REPEAT_MIN+ times across body prose."""
+    runs = re.findall(r"[\u4e00-\u9fff]+", "\n".join(lines))
+    grams: Counter[str] = Counter()
+    for run in runs:
+        grams.update({run[i : i + REPEAT_GRAM] for i in range(len(run) - REPEAT_GRAM + 1)})
+    hot = {gram for gram, count in grams.items() if count >= REPEAT_MIN}
+    phrases: set[str] = set()
+    for run in runs:
+        covered = [False] * len(run)
+        for i in range(len(run) - REPEAT_GRAM + 1):
+            if run[i : i + REPEAT_GRAM] in hot:
+                covered[i : i + REPEAT_GRAM] = [True] * REPEAT_GRAM
+        mask = "".join("1" if flag else "0" for flag in covered)
+        phrases.update(run[m.start() : m.end()] for m in re.finditer(r"1+", mask))
+    return sorted(phrases)
+
+
+def validate_case(
+    case: dict[str, Any], base: Path, template: str, sample_grams: set[str], caps: tuple[dict[str, int], int]
+) -> dict[str, Any]:
     report_path = (base / str(case["report"])).resolve()
     failures: list[str] = []
     metrics: dict[str, Any] = {}
@@ -243,11 +291,30 @@ def validate_case(case: dict[str, Any], base: Path, template: str, sample_grams:
     if duplicates:
         failures.append("duplicate customer-facing sentence detected")
 
+    field_caps, paragraph_cap = caps
+    failures.extend(field_overruns(visible, field_caps))
+    prose = prose_lines(visible)
+    long_paragraphs = sum(han_count(line) > paragraph_cap for line in prose)
+    metrics["long_paragraph_count"] = long_paragraphs
+    if long_paragraphs:
+        failures.append(f"{long_paragraphs} paragraphs exceed {paragraph_cap} Han chars")
+    repeated = repeated_phrases(prose)
+    metrics["repeated_phrase_count"] = len(repeated)
+    if len(repeated) > REPEAT_PHRASES_MAX:
+        failures.append(f"{len(repeated)} phrases repeat {REPEAT_MIN}+ times: {'、'.join(repeated)}")
+
     copied = sample_overlaps(visible, sample_grams)
     metrics["sample_overlap_count"] = len(copied)
     for gram in copied:
         failures.append(f"style sample text reused: {gram}")
 
+    # Negative cases list failure fragments they must trigger, and nothing else.
+    expected = [str(prefix) for prefix in case.get("expected_failures", [])]
+    if expected:
+        missing = [prefix for prefix in expected if not any(prefix in f for f in failures)]
+        unexpected = [f for f in failures if not any(prefix in f for prefix in expected)]
+        metrics["observed_failures"] = failures
+        failures = [f"expected failure not raised: {p}" for p in missing] + unexpected
     return {
         "id": case["id"],
         "report": str(report_path.relative_to(ROOT)),
@@ -314,8 +381,9 @@ def main() -> None:
     payload = json.loads(manifest_path.read_text(encoding="utf-8"))
     template = template_path.read_text(encoding="utf-8")
     sample_grams = sample_ngrams(Path(args.sample).read_text(encoding="utf-8"))
+    caps = han_caps(template)
     results = [
-        validate_case(case, manifest_path.parent, template, sample_grams)
+        validate_case(case, manifest_path.parent, template, sample_grams, caps)
         for case in payload.get("cases", [])
     ]
     passed = sum(1 for result in results if result["passed"])
