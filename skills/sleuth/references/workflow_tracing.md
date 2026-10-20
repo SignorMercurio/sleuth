@@ -24,6 +24,6 @@ SKILL.md 进入步骤 3 时加载本文件。安全护栏以 SKILL.md 为准，�
 
 ## 步骤 6 遗留风险排查
 
-六维均需记录覆盖：恶意文件 / 定时任务 / 启动项与服务 / 账户与授权 / 网络连接 / 系统完整性。先复用步骤 2–5 仍有效的结果，再补缺；每维写检查对象、时间范围与结论，未查/失败/截断不能填成「未观察到」。Linux 轻量检查包括相关临时目录、全用户 crontab、systemd/rc.local/init.d、passwd/authorized_keys/sudoers.d、当前连接，以及 `ld.so.preload`/profile 中的 `LD_PRELOAD`，合并调用同步骤 2「调用效率」；Windows 与容器按等价维度，缺工具或权限则记录限制。
+六维均需记录覆盖：恶意文件 / 定时任务 / 启动项与服务 / 账户与授权 / 网络连接 / 系统完整性。先复用步骤 2–5 仍有效的结果，再补缺；每维写检查对象、时间范围与结论，未查/失败/截断不能填成「未观察到」。Linux 轻量检查包括相关临时目录、全用户 crontab、systemd/rc.local/init.d、passwd/authorized_keys/sudoers.d、当前连接，以及 `ld.so.preload`/profile 中的 `LD_PRELOAD`，合并调用同步骤 2「调用效率」；Windows 与容器按等价维度，缺工具或权限则记录限制。云侧事件的六维改为：凭据（AK / STS / 控制台密码）/ RAM 用户与授权 / 角色与信任策略 / 新建或改动的云资源 / 网络与访问控制（安全组、WAF、白名单）/ 审计与日志完整性（Trail、LogStore 删改）；按 `references/tech_cloud.md`「AK 泄露利用方式总结」对应 API 核查，无可疑信号的维度只做最小核查（如 AK 最近使用）并写明范围。
 
 可疑项才加载 `references/recon_residual.md`。包完整性先核验证据涉及的二进制及所属包；发现工具替换、包级异常或必须排除更广篡改时再做 `rpm -Va`/`dpkg -V`。全盘搜索、全包校验与大日志扫描须先写出待证问题和范围，逐级扩大；超时按运行机制降级，不将未完成扫描视为阴性。

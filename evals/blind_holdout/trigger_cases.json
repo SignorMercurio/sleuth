@@ -16,6 +16,14 @@
     {
       "text": "UID 123456，调查 ECS 实例 ID i-demo001 上的全部云安全中心告警并生成应急响应报告",
       "family": "alarm_ecs_instance"
+    },
+    {
+      "text": "客户 UID 9876543210 一直在被攻击，先看最近一个月的 SAS 告警做研判",
+      "family": "cloud_sas_triage"
+    },
+    {
+      "text": "审核这份应急响应 findings，核对每条结论有没有证据支撑",
+      "family": "report_verify"
     }
   ],
   "should_not_trigger": [

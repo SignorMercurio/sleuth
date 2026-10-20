@@ -8,7 +8,7 @@ Investigation outputs and optional reports are generated in Simplified Chinese b
 
 ## Features
 
-- **Two investigation modes**: alarm-, asset-, or instance-scoped investigation, plus free-form host triage
+- **Investigation modes**: alarm-, asset-, or instance-scoped investigation, free-form host triage, and cloud-side investigation (AccessKey/STS abuse, anomalous ActionTrail calls, WAF attack entry, SAS alarm triage) that needs no SIREN client; a verification mode checks the conclusions of an existing report or findings
 - **Capability preflight**: checks which host, cloud, sub-agent, and web evidence sources are available before investigation; missing coverage constrains the specific claims that depend on it
 - **Per-alarm-type investigation playbooks** (webshell, miner, reverse shell, brute force, ransomware, RCE, SQL injection, abnormal login, data exfiltration, persistence, privilege escalation) + **cross-cutting tradecraft guides** (log analysis, reverse reasoning, cloud forensics, threat intel, process/file analysis, attack countermeasures) + specialized guides (cloud-log routing, SAS/SLS host telemetry, OOB/DNSLog, SSH login attribution, ASP.NET upload tracing) + **MITRE ATT&CK mapping**. See `skills/sleuth/references/playbook_index.md` for the routing table
 - **Parallel command orchestration**: independent remote commands are dispatched in a single round to cut investigation time
@@ -26,7 +26,7 @@ Investigation outputs and optional reports are generated in Simplified Chinese b
 ## Prerequisites
 
 - **Claude Code or Codex**: latest stable. The installable skill follows the open agent skills format under `skills/sleuth/` (`SKILL.md` with optional `references/`, `assets/`, and `agents/openai.yaml` metadata).
-- **SIREN MCP server**: the skill depends on SIREN list-client and remote-run tools, usually exposed as `mcp__siren__ls` and `mcp__siren__run`. Configure SIREN as an MCP server in the client you use before running the skill.
+- **SIREN MCP server**: host investigation depends on SIREN list-client and remote-run tools (cloud-side investigation runs without them), usually exposed as `mcp__siren__ls` and `mcp__siren__run`. Configure SIREN as an MCP server in the client you use before running the skill.
 - **`$sas` skill**: required for alarm-driven lookup.
 - **Optional `sls` skill**: the first choice for WAF / SAS / ActionTrail cloud-log cross-validation.
 - **Optional `opencli-aliyun-ir` skill**: used after direct `sas` / `sls` for Alibaba Cloud control-plane state, dedicated adapters, internal consoles, cross-product correlation, and explicit coverage gaps.

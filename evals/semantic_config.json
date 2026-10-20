@@ -1,6 +1,6 @@
 {
   "optimizer_hints": {
-    "capability": "Read-only remote forensic incident response over SIREN, delivering verified ATT&CK-mapped findings and optional user-confirmed Chinese IR reports",
+    "capability": "Read-only incident response on hosts over SIREN and in Alibaba Cloud through SAS/SLS/OpenCLI, delivering verified ATT&CK-mapped findings and optional user-confirmed Chinese IR reports",
     "inputs": [
       "security alerts",
       "host anomalies",
@@ -15,7 +15,12 @@
       "ECS 实例 ID",
       "主机异常",
       "入侵线索",
-      "既有 IR 报告"
+      "既有 IR 报告",
+      "AccessKey ID",
+      "RAM user or role",
+      "WAF-protected domain",
+      "AK ID",
+      "受攻击域名"
     ],
     "trigger_actions": [
       "investigate a security alert",
@@ -27,17 +32,24 @@
       "查告警",
       "排查这台主机",
       "事件溯源",
-      "合并报告"
+      "合并报告",
+      "investigate AccessKey or STS abuse",
+      "triage a WAF attack",
+      "verify an existing IR report",
+      "AK 异常调用排查",
+      "告警研判",
+      "核实报告结论"
     ],
     "exclusions": [
-      "cloud-log-only queries (delegate to sls) or Alibaba Cloud control-plane investigations (delegate to opencli-aliyun-ir)",
+      "log query or statistics requests that need no incident judgement (delegate to sls) or Alibaba Cloud control-plane lookups without an incident (delegate to opencli-aliyun-ir)",
       "proactive threat hunting (TALON domain)",
       "code review or vulnerability fixing",
       "generic security advice without an incident",
-      "只查云日志",
+      "只要日志查询/统计结果",
       "主动威胁狩猎",
       "纯代码审查",
-      "无事件的通用安全建议"
+      "无事件的通用安全建议",
+      "报告润色"
     ],
     "artifacts": [
       "IR-*.md report",
@@ -49,7 +61,7 @@
   "frontmatter_contract": {
     "required_exclusion_markers": [
       "排除主动威胁狩猎",
-      "只查云侧数据",
+      "只要日志查询/统计结果不研判",
       "代码审计/漏洞修复",
       "无事件的通用加固/合规",
       "仅翻译或总结"
@@ -92,7 +104,11 @@
         "incident",
         "intrusion",
         "trace this intrusion",
-        "forensic"
+        "forensic",
+        "研判",
+        "核实",
+        "异常调用",
+        "credential abuse"
       ]
     },
     "host_or_alert": {
@@ -111,7 +127,15 @@
         "ecs 实例 id",
         "alert",
         "host",
-        "uid"
+        "uid",
+        "ak",
+        "accesskey",
+        "sts",
+        "ram 用户",
+        "actiontrail",
+        "操作审计",
+        "waf",
+        "云账号"
       ]
     },
     "attack_type": {
@@ -138,7 +162,12 @@
         "后门",
         "横向移动",
         "提权",
-        "数据外传"
+        "数据外传",
+        "ak 泄露",
+        "凭据滥用",
+        "sts 滥用",
+        "撞库",
+        "接口攻击"
       ]
     }
   },
@@ -147,17 +176,14 @@
       "weight": 0.34,
       "exclusive": true,
       "phrases": [
-        "云日志",
-        "日志查询",
-        "捞日志",
+        "只要日志",
         "只查日志",
         "只看日志",
-        "只要日志",
-        "waf",
-        "sls",
-        "actiontrail",
-        "query the logs",
-        "cloud logs"
+        "只要查询结果",
+        "统计一下",
+        "only the logs",
+        "just query the logs",
+        "log statistics"
       ]
     },
     "code_review_only": {
@@ -216,7 +242,10 @@
         "概括",
         "summary",
         "summarize",
-        "recap"
+        "recap",
+        "润色",
+        "优化文字",
+        "polish"
       ]
     },
     "translate_only": {

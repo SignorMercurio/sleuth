@@ -19,6 +19,8 @@
 | 远程代码执行 (RCE) | `references/invest_rce.md` |
 | DNSLog / OOB 域名请求 | `references/oob_dnslog_investigation.md` |
 | 持久化后门 | `references/invest_persistence.md` |
+| AK/STS 凭据滥用、ActionTrail 异常调用（云侧事件） | `references/tech_cloud.md`「ActionTrail 审计要点」「AK 泄露利用方式总结」+ `references/cloud_log_queries.md` |
+| WAF 攻击入口研判（云侧事件） | `references/cloud_log_queries.md` WAF 行 + `references/tech_log_analysis.md`；证据指向具体漏洞类型时再读对应指南 |
 
 **模式二补充**：根据用户描述的异常现象推断最可能的攻击类型，从相应调查思路入手。
 

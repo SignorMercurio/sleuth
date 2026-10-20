@@ -6,7 +6,7 @@
 
 ## 功能
 
-- **两种调查模式**：告警 / 资产 / 实例维度的定向调查，以及无告警的自由排查
+- **调查模式**：告警 / 资产 / 实例维度的定向调查、无告警的自由排查，以及无需 SIREN Client 的云侧调查（AK/STS 凭据滥用、ActionTrail 异常调用、WAF 攻击入口、SAS 告警研判）；核实模式逐条核验既有报告或 findings 的结论
 - **能力预检**：调查前探测主机、云侧、子 agent、Web 证据源的可用性；缺失覆盖约束依赖该证据的具体断言
 - **分类型调查 playbook**（webshell、挖矿、反弹 shell、暴破、勒索、RCE、SQL 注入、异常登录、数据外泄、持久化、提权）+ **横向技术指南**（日志分析、反向推理、云取证、威胁情报、进程/文件分析、攻击对抗手段）+ 专项指南（云日志路由、SAS/SLS 主机遥测、OOB/DNSLog、SSH 登录溯源、ASP.NET 上传追踪）+ **MITRE ATT&CK 映射**。路由表见 `skills/sleuth/references/playbook_index.md`
 - **并行命令调度**：无依赖关系的远程命令在同一轮发出，压缩调查时间
@@ -24,7 +24,7 @@
 ## 前置条件
 
 - **Claude Code 或 Codex**：最新稳定版。skill 遵循开放 agent skills 格式，位于 `skills/sleuth/`（`SKILL.md` + 可选的 `references/`、`assets/`、`agents/openai.yaml`）。
-- **SIREN MCP server**：skill 依赖 SIREN 的 list-client 和 remote-run 工具，通常暴露为 `mcp__siren__ls` 和 `mcp__siren__run`。使用前需在客户端配置 SIREN 为 MCP server。
+- **SIREN MCP server**：主机侧调查依赖 SIREN 的 list-client 和 remote-run 工具（云侧调查不需要），通常暴露为 `mcp__siren__ls` 和 `mcp__siren__run`。使用前需在客户端配置 SIREN 为 MCP server。
 - **`$sas` skill**：告警驱动查询必需。
 - **可选 `sls` skill**：WAF / SAS / ActionTrail 云日志交叉验证的首选。
 - **可选 `opencli-aliyun-ir` skill**：在 `sas` / `sls` 之后用于阿里云控制面状态、专用适配器、内部控制台、跨产品关联及覆盖缺口。

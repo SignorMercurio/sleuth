@@ -16,7 +16,7 @@ IR-{YYYYMMDD}-{hostname}-{event_type}[-{event_id}].md
 |------|------|
 | `IR-` | 固定前缀（Incident Response），便于排序与过滤 |
 | `{YYYYMMDD}` | 事件发生日期（优先使用告警时间，其次使用调查时间） |
-| `{hostname}` | 受影响主机名（不含域名后缀，特殊字符转 `-`） |
+| `{hostname}` | 受影响主机名（不含域名后缀，特殊字符转 `-`）；云侧事件没有主机时用 `uid{UID}`，WAF 攻击事件可用受攻击域名 |
 | `{event_type}` | 事件类型 slug（见下表），未知时填 `unknown` |
 | `{event_id}` | 仅使用数字告警 `Id` 直接启动的模式一包含；资产 UUID / ECS 实例 ID 的列表型输入不加此字段，即使列表只返回一条告警 |
 
@@ -41,6 +41,7 @@ IR-{YYYYMMDD}-{hostname}-{event_type}[-{event_id}].md
 | SQL 注入 | `sqli` |
 | 远程代码执行 (RCE) | `rce` |
 | 持久化后门 | `backdoor` |
+| AK/STS 凭据滥用 | `akabuse` |
 | 其他/未分类 | `unknown` |
 
 ### 专项场景对应 slug
@@ -54,4 +55,5 @@ IR-{YYYYMMDD}-{hostname}-{event_type}[-{event_id}].md
 - 模式一（资产 / 实例范围内多条告警）：`IR-20260417-web01-webshell.md`
 - 模式二（自由调查）：`IR-20260417-db-prod-rce.md`
 - 多个事件同主机同日：`IR-20260417-web01-webshell-123456.md` 与 `IR-20260417-web01-revshell-123789.md`
+- 云侧事件（告警驱动）：`IR-20260417-uid1234567890-akabuse-123456.md`
 - 多主机合并报告（3 台，首要主机 web01）：`IR-20260417-web01-multi3-miner-123456.md`
