@@ -98,6 +98,10 @@ When there is no alarm, asset, or instance selector, provide the Client ID plus 
 
 Name several hosts / Client IDs (or point at an alarm affecting multiple assets) and the skill captures a minimal snapshot on each authorized host before investigating in depth. It maintains one `*.findings.md` worksheet per Client, preserves separate reruns, and returns verified findings without creating a formal report by default. After confirmation, it merges everything into a single report (`IR-{date}-{primary-host}-multiN-{type}.md`). Handing it several existing `IR-*.md` reports and explicitly asking to merge them counts as report confirmation and triggers merge-only mode. The skill skips evidence collection steps 1-6, treats the reports as findings input, runs step 7 verification for any new cross-report claim, then produces one consolidated report.
 
+### Report review
+
+The companion skill `skills/ir-report-review/` reviews a finished `IR-….md` (a Dossier link on SIREN or a local path) and rewrites it for customer readability without changing facts, judgment strength, or action status. Its `scripts/check_report.py` reports over-cap blocks and dense sentences, then checks the revision for structure changes, dropped attacker IoCs or hashes, and new concrete values. Write-back only happens when the report's hash still matches the fetched copy. It reads sleuth's writing rules from `../sleuth/references/`, so install the two skills side by side. New evidence or changed conclusions still go through sleuth's revision mode.
+
 ## Layout
 
 ```
@@ -110,6 +114,9 @@ Name several hosts / Client IDs (or point at an alarm affecting multiple assets)
 │   ├── agent-guidance/                     # Task-specific guidance for AI agents working on this repo
 │   └── sleuth-design-principles.*          # Design principles (HTML + PDF)
 ├── skills/
+│   ├── ir-report-review/
+│   │   ├── SKILL.md                        # Review and simplify a finished report for customer readability
+│   │   └── scripts/check_report.py         # Density leads plus structure, IoC and fact-value checks of a revision
 │   └── sleuth/
 │       ├── SKILL.md                        # Resident layer: safety rails, mode routing, 8-step skeleton, report gate
 │       ├── agents/

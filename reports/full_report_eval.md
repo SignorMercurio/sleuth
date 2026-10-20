@@ -2,8 +2,8 @@
 
 Complete-report contract regression for SLEUTH Step 8.
 
-- Cases: `5`
-- Passed: `5`
+- Cases: `6`
+- Passed: `6`
 - Failed: `0`
 - Gate pass: `True`
 
@@ -14,6 +14,7 @@ Complete-report contract regression for SLEUTH Step 8.
 | complex-rce-credential | True | 高危 | 5 | 5 | 2362 |
 | multi-host-rce | True | 高危 | 5 | 7 | 2552 |
 | bloated-revision | True | 高危 | 5 | 5 | 2635 |
+| bloated-revision-reviewed | True | 高危 | 5 | 5 | 2264 |
 
 ## Failures
 

@@ -171,6 +171,23 @@ for p in ref_files:
     if p not in referenced:
         errors.append(f"{p}: orphan, not referenced from {SKILL_PATH} or any other document")
 
+# Companion packages: name matches the directory, the description fits, and every
+# scripts/references/assets path in SKILL.md (sibling paths such as ../sleuth/... included)
+# resolves from the package directory.
+for package in sorted(p.parent for p in pathlib.Path("skills").glob("*/SKILL.md")):
+    if package == SKILL_ROOT:
+        continue
+    body = (package / "SKILL.md").read_text(encoding="utf-8")
+    m = re.match(r"^---\n(.*?)\n---\n", body, re.S)
+    meta = yaml.safe_load(m.group(1)) if m else None
+    if not isinstance(meta, dict) or meta.get("name") != package.name:
+        errors.append(f"{package}/SKILL.md: frontmatter name must be {package.name!r}")
+    elif not meta.get("description") or len(meta["description"]) > DESCRIPTION_LIMIT:
+        errors.append(f"{package}/SKILL.md: description missing or over {DESCRIPTION_LIMIT} chars")
+    for ref in sorted(set(re.findall(r"(?:\.\./[\w-]+/)?(?:scripts|references|assets)/[\w./-]+", body))):
+        if not (package / ref).exists():
+            errors.append(f"{package}/SKILL.md: broken reference {ref}")
+
 if errors:
     print("FAIL")
     for e in errors:

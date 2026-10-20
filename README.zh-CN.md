@@ -96,6 +96,10 @@ Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运�
 
 指定多台主机 / Client ID（或指向涉及多资产的告警），skill 先对已授权主机取最小快照，再逐台深挖；每个 Client 的工作底稿逐轮更新，复查不覆盖旧轮次，默认返回已验证结论而不创建报告。确认后合并为一份报告（`IR-{date}-{primary-host}-multiN-{type}.md`）。递交多份已有 `IR-*.md` 报告并明确要求合并视同报告确认，触发纯合并模式：跳过步骤 1-6，以已有报告作为 findings 输入，对跨报告新断言执行步骤 7 验证，然后产出一份合并报告。
 
+### 报告审校
+
+配套 skill `skills/ir-report-review/` 审校已成稿的 `IR-….md`（SIREN 上的 Dossier 链接或本地路径），按客户可读性改写，事实、判断强度和处置状态不变。它的 `scripts/check_report.py` 先标出超出字数上限的块和高密度句子，改写后再核对结构是否变动、攻击者 IoC 或哈希是否被删、是否出现原稿没有的具体值；只有报告哈希与取稿时一致才写回。它从 `../sleuth/references/` 读取 sleuth 的写作规则，两个 skill 需装在同一目录下。补充新证据或修改结论仍走 sleuth 的修订模式。
+
 ## 目录结构
 
 ```
@@ -108,6 +112,9 @@ Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运�
 │   ├── agent-guidance/                     # AI agent 协作本仓库的分任务指南
 │   └── sleuth-design-principles.*          # 设计原则（HTML + PDF）
 ├── skills/
+│   ├── ir-report-review/
+│   │   ├── SKILL.md                        # 审校并精简已成稿报告，面向客户可读性
+│   │   └── scripts/check_report.py         # 密度线索，以及新稿的结构、IoC 与具体值核对
 │   └── sleuth/
 │       ├── SKILL.md                        # 常驻层：安全护栏、模式路由、8 步骨架、报告确认门
 │       ├── agents/

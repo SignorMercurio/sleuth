@@ -249,7 +249,8 @@ def scan_secrets() -> dict:
 # Section 2: script surface
 # ---------------------------------------------------------------------------
 
-SCRIPT_DIRS = ("scripts", "evals")
+# "skills" covers scripts shipped inside installable packages, e.g. skills/*/scripts/.
+SCRIPT_DIRS = ("scripts", "evals", "skills")
 SCRIPT_SUFFIXES = (".py", ".sh")
 DECLARED_WRITE_DIRS = ("reports", "evals")
 

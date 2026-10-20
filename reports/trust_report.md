@@ -1,6 +1,6 @@
 # SLEUTH 信任报告（Trust Report）
 
-生成时间：`2026-10-20T10:27:18Z`
+生成时间：`2026-10-20T10:27:43Z`
 
 总体结论：**通过**
 
@@ -9,7 +9,7 @@
 
 ## 1. 密钥与凭据扫描（secret scan）
 
-- 扫描文件数：123（跳过二进制/不可解码文件 0 个）
+- 扫描文件数：126（跳过二进制/不可解码文件 0 个）
 - 规则：
   - `aliyun_ak_sk`：Aliyun AccessKeyId: LTAI prefix followed by 12-30 alnum chars
   - `private_key_block`：PEM private key BEGIN marker (RSA/EC/DSA/OPENSSH/ENCRYPTED)
@@ -40,6 +40,7 @@
 | `scripts/gen_trust_report.py` | `python3 scripts/gen_trust_report.py` | 否 | 是 | write call present; resolves to reports/ (static) |
 | `scripts/permission_probe.py` | `python3 scripts/permission_probe.py` | 否 | 否 | no file-write call detected (static) |
 | `scripts/validate.py` | `python3 scripts/validate.py (flat script, executes at import time, no __main__ guard)` | 否 | 否 | no file-write call detected (static) |
+| `skills/ir-report-review/scripts/check_report.py` | `python3 skills/ir-report-review/scripts/check_report.py` | 否 | 否 | no file-write call detected (static) |
 
 - 结论：Offline check scripts show no network egress; writes resolve to reports/, evals/ or temporary artifacts (static heuristic). Exception: the digest-reviewed, opt-in run_agent_drill.py invokes the configured model service and writes a new explicit output directory outside the repo. It is not part of CI or the installed Skill.
 - 方法说明：Static heuristic scan plus an exact-source-digest review of the opt-in model runner; not a sandbox or full data-flow analysis. Network access: real Python networking modules are matched on an actual import/connect statement anywhere in the file; command-line network tools (curl/wget/ssh/scp/rsync/netcat) count only when they appear as an argument inside an actual subprocess/os.system/os.popen/os.exec* call (.py) or as a shell-script line (.sh) -- a policy table or test-fixture string that merely names one of these tools is not a call site. File writes: a best-effort constant-propagation pass resolves a write call's target through named constants, one argparse-default hop, and tempfile.*/`with ... as` bindings (tagged as an ephemeral temp-dir, not a persistent write).

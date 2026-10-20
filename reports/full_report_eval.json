@@ -4,8 +4,8 @@
   "manifest": "evals/output/full_report_cases.json",
   "template": "skills/sleuth/assets/report.md",
   "summary": {
-    "case_count": 5,
-    "passed_count": 5,
+    "case_count": 6,
+    "passed_count": 6,
     "failed_count": 0,
     "gate_pass": true
   },
@@ -103,6 +103,24 @@
           "1 paragraphs exceed 200 Han chars",
           "3 phrases repeat 3+ times: 云安全中心告警本身不等于每条命令都执行成功、现有访问日志不能说明攻击者是否另有其他上传入口、进程启动记录覆盖期之外的主机活动无法据此排除"
         ]
+      }
+    },
+    {
+      "id": "bloated-revision-reviewed",
+      "report": "evals/output/fixtures/full_reports/bloated-revision-reviewed.md",
+      "passed": true,
+      "failures": [],
+      "metrics": {
+        "directive_starts": 12,
+        "directive_ends": 12,
+        "severity": "高危",
+        "timeline_nodes": 5,
+        "actions": 5,
+        "visible_han_chars_without_attack_matrix": 2264,
+        "duplicate_sentence_count": 0,
+        "long_paragraph_count": 0,
+        "repeated_phrase_count": 0,
+        "sample_overlap_count": 0
       }
     }
   ]
