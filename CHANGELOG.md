@@ -14,6 +14,11 @@
 
 - `run_agent_drill.py --subagents`：开放 `Task` 工具，子 agent 沿用同一组授权，summary 按子 agent 记录 SIREN 调用数。默认仍关闭，旧演练可比。原因：此前演练只能覆盖步骤 7 的内联降级，测不到独立核验与隔离结论起草的主路径。
 
+### 变更
+
+- 步骤 7 交付结论改为隔离起草：准备交付的定性与建议动作先写进 findings 过验证门；findings 全部「已验证」后，由只读 findings 与 `findings_spec.md` 的全新结论 writer 起草，编排者逐句对照 findings 复核，只判通过与否、不改写草稿；不通过就改 findings 或把问题清单交回 writer 重写，需新增或加强的断言回到验证门；通过稿原样发送。无子 agent 时编排者重读 findings 后内联起草。规则见 `findings_spec.md`「结论交付层使用规则」与 `workflow_delivery.md`「结论交付隔离」；跨主机关联裁决写入相关各台 findings，供 writer 读取。原因：2026-09-08 演练（`reports/ir_quality_efficiency_review.md`）中，findings 已把爆破降为推测，结论首句仍重新确认（candidate-05）；先写草稿再核验的复测仍把未核验告警首句定为误报（delivery-gate-03）。编排者在长调查上下文里起草，规则文本拦不住措辞回升，因此把起草移出该上下文。2026-10-21 开放子 agent 的演练里 writer 草稿守住了边界，但编排者复核时整篇改写，在 03 场景又加入一条未核验断言（把推测的文件来源写成事实）并抄错一个 IP，因此复核改为不得改写。同日复测中编排者没有读取放在 references 里的这条规则，仍改写草稿，首句又把采集时刻的连接写成持续外联；因此把“必须派 writer、原样转发”写进常驻的 SKILL.md 步骤 7。措辞等级本身与只读护栏不变。
+- `skills/sleuth/` 安装包精简（141.5 KB → 131.0 KB，40 → 24 个文件）：11 个 `invest_*.md`、`aspnet_webshell_upload_tracing.md` 与 `playbook_index.md` 合并为 `references/playbooks.md`，步骤 3 只读一个文件的对应小节；删去各指南的「ATT&CK 映射」清单（与「按证据映射」冲突）和重复的云端补充指引，ASP.NET 报告措辞坑已在 `verification_checklist.md`。`attack_framework.md` 删除，v18 基准、子技术与跨战术规则并入 `workflow_tracing.md` 步骤 5，战术名对照表删去（报告矩阵在模板里直接可见）。`tech_reverse_reasoning.md` 并入 `tech_log_analysis.md`，`tech_threat_intel.md` 压成路由表一行。结论交付隔离与报告写作隔离从 `runtime_compat.md` 移到 `workflow_delivery.md`，并与原 8.2 生成步骤去重，步骤 7–8 只需读一个细则文件。删除 `assets/style/README.md` 与样本缺失时的兜底规则（样本维护规则已在 `docs/agent-guidance/repository-boundaries.md`）；`findings_spec.md` 写作层不再重抄报告确认门。`tech_attack_countermeasures.md` 的执行边界提示压成一句并指向 SKILL.md 安全护栏。原因：多数文件只有一两屏且与其他 reference 重复，加载路径要跳 2–3 个文件。只读原则、状态变更禁令、SIREN 执行边界、措辞等级、报告确认门与结论交付隔离均未改变语义。
+
 ## 2026-10-20
 
 ### 新增

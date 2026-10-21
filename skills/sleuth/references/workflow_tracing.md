@@ -8,7 +8,7 @@ SKILL.md 进入步骤 3 时加载本文件。安全护栏以 SKILL.md 为准，�
 
 ## 步骤 3.1 按需加载调查指南与实战技巧
 
-**读取 `references/playbook_index.md`**，按告警或异常选择指南与技巧；命令仅供参考，按实际参数调整。大输出按 `references/runtime_compat.md`「重输出隔离」处理。
+**读取 `references/playbooks.md`** 中与告警或异常对应的小节，命令仅供参考，按实际参数调整。大输出按 `references/runtime_compat.md`「重输出隔离」处理。
 
 ## 步骤 3.2 阿里云云侧交叉验证
 
@@ -20,7 +20,7 @@ SKILL.md 进入步骤 3 时加载本文件。安全护栏以 SKILL.md 为准，�
 
 ## 步骤 5 攻击链重建
 
-**读取 `references/attack_framework.md`**，按 ATT&CK 战术阶段映射并构建时间线：用具体子技术编号，每条映射有证据支撑，未涉及的战术在文字映射里省略（报告矩阵版式固定，见 `references/report_writing_rules.md`）。
+按 ATT&CK 战术阶段映射并构建时间线。编号基准为 MITRE ATT&CK v18。优先用具体子技术编号；每条映射有证据支撑，同一行为可跨多个战术（如定时任务属执行/持久化/权限提升）；未涉及的战术在文字映射里省略（报告矩阵版式固定，见 `references/report_writing_rules.md`）。
 
 ## 步骤 6 遗留风险排查
 

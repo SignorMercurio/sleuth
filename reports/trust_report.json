@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-21T02:50:16Z",
+  "generated_at": "2026-10-21T02:50:39Z",
   "ok": true,
   "notes": [
     "Generated for the governed-release trust-report gate (reports/review_waivers.json, gate_key=trust-report).",
@@ -9,7 +9,7 @@
   "sections": {
     "secret_scan": {
       "ok": true,
-      "files_scanned": 126,
+      "files_scanned": 110,
       "files_skipped_binary": 0,
       "rules": [
         {
@@ -278,11 +278,11 @@
     "package_hash": {
       "ok": true,
       "package_root": "skills/sleuth",
-      "file_count": 40,
+      "file_count": 24,
       "files": [
         {
           "path": "skills/sleuth/SKILL.md",
-          "sha256": "31fd7d6932e971d3d12860e38fb026356e08d2628cf78c6623c6c4918d75ff6e"
+          "sha256": "a35cef01b849d0dad8fa3ae9a153818857566c95a115a333338263864b1431b5"
         },
         {
           "path": "skills/sleuth/agents/interface.yaml",
@@ -297,80 +297,24 @@
           "sha256": "dbc5c5ac2874f55b28c475fa573623358127a34eac9f285d30755403ec802e96"
         },
         {
-          "path": "skills/sleuth/assets/style/README.md",
-          "sha256": "c37e74abb973e6ea70b424331e8c6924edc26b8f45cbac9930c849545a6a7ad8"
-        },
-        {
           "path": "skills/sleuth/assets/style/curated-ir-excerpts.md",
           "sha256": "8373684e0899b64e26f2117f9f6339c96487f82b37232fd074f803da3c31cfdd"
         },
         {
-          "path": "skills/sleuth/references/aspnet_webshell_upload_tracing.md",
-          "sha256": "0fd6aaef5b6bed2d298f6ce61d34d30478c7b1eb8ad1d2c8e1247c4196bdbcdb"
-        },
-        {
-          "path": "skills/sleuth/references/attack_framework.md",
-          "sha256": "babb9c425e2850878a4001285cfff86164a5e6016cbfb6dd8291fb5cffb76eda"
-        },
-        {
           "path": "skills/sleuth/references/cloud_log_queries.md",
-          "sha256": "96a3bc9034f56eaaf174c101d661c3e0e6dc6614b0c6aa4941d16ce8ee08cb13"
+          "sha256": "cd1ce4e96f2898152255564ff68e433ce826dd31f48c2af9fd9d201ccd878aca"
         },
         {
           "path": "skills/sleuth/references/findings_spec.md",
-          "sha256": "beb776fc564d31e725597dceb70eca236dad95d857c39c96a98762d5fa4c9046"
-        },
-        {
-          "path": "skills/sleuth/references/invest_abnormal_login.md",
-          "sha256": "a6e20d80f757469bb0ee811c893a47e7afbc9c052b40af433da471a56a09a2aa"
-        },
-        {
-          "path": "skills/sleuth/references/invest_brute_force.md",
-          "sha256": "42604b3923a63297cd8cb412e1e850167a7452ba7d6f7153558012bd2c1fe6f3"
-        },
-        {
-          "path": "skills/sleuth/references/invest_data_exfiltration.md",
-          "sha256": "c07178753658a654c4b783c7e36e06accfad4469c5cd0eb81715f740157963be"
-        },
-        {
-          "path": "skills/sleuth/references/invest_mining.md",
-          "sha256": "75b32f6ade7a084044c0b2733a23dacc81c595da44bab5ddf7e56c787fd1bc19"
-        },
-        {
-          "path": "skills/sleuth/references/invest_persistence.md",
-          "sha256": "ec0b291fe369dbf7c02c7fa1e7b8aa0af47b981bd95342e326415a3e72aace67"
-        },
-        {
-          "path": "skills/sleuth/references/invest_privilege_escalation.md",
-          "sha256": "fddfbce8cf3adc8e1a1c7683eef3959cb7511545d44dc29c5f7ad27cc86d8dd1"
-        },
-        {
-          "path": "skills/sleuth/references/invest_ransomware.md",
-          "sha256": "0a16b712910e8b7b984f4d0ad216c57828008958f2e8301a15dc6a98964c1536"
-        },
-        {
-          "path": "skills/sleuth/references/invest_rce.md",
-          "sha256": "c12a360aa9c0fa2fdc57ccf85926403dc408025ff903eb29e438071921e49e21"
-        },
-        {
-          "path": "skills/sleuth/references/invest_reverse_shell.md",
-          "sha256": "84abe0e9ba913919e395c25550e80f8d2251f2199a369050eed7a86ed08d3c27"
-        },
-        {
-          "path": "skills/sleuth/references/invest_sql_injection.md",
-          "sha256": "75de141dd603318ca9d31bfc8d8c68eeae39edbb90d0da447205588a12b3abab"
-        },
-        {
-          "path": "skills/sleuth/references/invest_webshell.md",
-          "sha256": "5e557c797b8c2c8c78c6eea076502b099e8cf000bcb6ea6d384c945c4666dfc3"
+          "sha256": "f1a2ec642bb4fe7588b9fa3249db072ee8cfd5503751f16e52ef46275e5fd047"
         },
         {
           "path": "skills/sleuth/references/oob_dnslog_investigation.md",
           "sha256": "766eeff9bb3b9e299618447bef0c06ec8a34346f37fe1432f1a6b59d3a3676fc"
         },
         {
-          "path": "skills/sleuth/references/playbook_index.md",
-          "sha256": "02f868e7d4c455e123e24b9ab27eaafe6db423707897504a3cd9d9da5086eb0a"
+          "path": "skills/sleuth/references/playbooks.md",
+          "sha256": "22bf474052bd4a7f66b2322f1ccb1ecdea6383ac6729e476d39be83c090e5aa3"
         },
         {
           "path": "skills/sleuth/references/recon_residual.md",
@@ -378,11 +322,11 @@
         },
         {
           "path": "skills/sleuth/references/report_naming.md",
-          "sha256": "624cadd9cf8b022d3ef9be98f135f8e9561fc50ceb2d61795bc558dd86c56856"
+          "sha256": "963c85b02da34df6759be2cc72ddc4131f284654180ae7c3f1603ef65812caaa"
         },
         {
           "path": "skills/sleuth/references/report_style.md",
-          "sha256": "fea19a93547cb94e403e7606a3c3a4e5323686e5d974f9f9058629731418a99a"
+          "sha256": "b1e1cd819a9912fbaa9eb55998263ff1ecaf370670995c24a6128beed3a852d2"
         },
         {
           "path": "skills/sleuth/references/report_writing_rules.md",
@@ -390,7 +334,7 @@
         },
         {
           "path": "skills/sleuth/references/runtime_compat.md",
-          "sha256": "dc7980782e9de4c12688679bfd5508b9269279c3cc5cf7edafb825c07cf32e74"
+          "sha256": "4c3d4e302e67607758f205f35e260f399fd4a31ec07781f238ef09e357e117a4"
         },
         {
           "path": "skills/sleuth/references/sas_sls_host_telemetry.md",
@@ -402,7 +346,7 @@
         },
         {
           "path": "skills/sleuth/references/tech_attack_countermeasures.md",
-          "sha256": "653de67cdba9bf26c5f854fea0411fdaf4826894b15d71478ee989e856673920"
+          "sha256": "ccce6c8ad320f4fa613a441ea0feee2d0a2c9f49b9d723ffd7160d0fdbbee82f"
         },
         {
           "path": "skills/sleuth/references/tech_cloud.md",
@@ -410,27 +354,19 @@
         },
         {
           "path": "skills/sleuth/references/tech_log_analysis.md",
-          "sha256": "ac20c8d0dfafa2c408a2eec6869c05dacdb4c8d80eebadbc9cd985bad7d431be"
+          "sha256": "beccf10b114dde5e50ca75a26e33e095fe7ad630eedc9ef6356f5a5d9d558c23"
         },
         {
           "path": "skills/sleuth/references/tech_process_file.md",
           "sha256": "d8080fd8642a1ab988cdd6fe2b16febf918bbed39155acbea69cb436f59a1071"
         },
         {
-          "path": "skills/sleuth/references/tech_reverse_reasoning.md",
-          "sha256": "1ab276d6eb1c07a526a17716a3c9acd643e6f6e9ef1422de2a79a3f409bde2e3"
-        },
-        {
-          "path": "skills/sleuth/references/tech_threat_intel.md",
-          "sha256": "bd86bfed9f979e46690eb6ecb99615b82bfcfb334f66aed65e05fe0c9be8181b"
-        },
-        {
           "path": "skills/sleuth/references/verification_checklist.md",
-          "sha256": "1c96d1340dca7d03e0ad38ab77e3ae1ce6dbdc79873de66ef45abd3c684c8eaf"
+          "sha256": "f4674dd8698a071edad1728fc439e0d9d9b7ee1f95a709a4409c686639579f81"
         },
         {
           "path": "skills/sleuth/references/workflow_delivery.md",
-          "sha256": "b401522cea3c101813089b717777bea853cbd20a07399343a94fd14c51421762"
+          "sha256": "2a7a7d185452e73abb224182644c435cbca8a71cf12d6e924975e2ab4616bcee"
         },
         {
           "path": "skills/sleuth/references/workflow_recon.md",
@@ -438,10 +374,10 @@
         },
         {
           "path": "skills/sleuth/references/workflow_tracing.md",
-          "sha256": "aca1d0ab3cb05071a58eac9a591d78dbfff83918c1334e15f010d4162671b7f8"
+          "sha256": "b6b1e7df2f09bbea903819ff3f5f9360bddfdfe59eef67f40968747ca26c6323"
         }
       ],
-      "aggregate_sha256": "e1e0059fce4d20709be61afe5009fbc52229a5f50456b57bd3b7011783d618d2",
+      "aggregate_sha256": "0c0b204309ea2650f5009f84772dcd5c1b541a4b8686ff8e6509e79d1ac6909d",
       "aggregate_method": "sha256 of the concatenation of 'relpath:filehash\\n' for each file, sorted by relpath",
       "snapshot_note": "skills/sleuth/ may be modified by a parallel, unrelated task. This is a snapshot taken at generation time -- regenerate this report (without --check) as the final step before the trust-report waiver is closed, so the recorded hash matches the package actually being shipped."
     }

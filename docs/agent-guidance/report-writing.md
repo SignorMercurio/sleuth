@@ -4,6 +4,9 @@
   findings, template, curated style sample, and named writing references. Do
   not give it the investigation transcript or access to SIREN, SAS, SLS, or the
   network.
+- The Step 7 conclusion writer gets the same boundary with only the findings
+  and `skills/sleuth/references/findings_spec.md`; its contract lives there and
+  in `workflow_delivery.md`「结论交付隔离」.
 - Missing fields and verified unknown status follow the finalization gate in
   `skills/sleuth/references/findings_spec.md`; do not invent values.
 - Keep one authoritative home for each writing rule:

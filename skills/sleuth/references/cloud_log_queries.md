@@ -12,7 +12,7 @@
 
 | 攻击 / 告警类型 | `sls` 产品 / topic | 待证问题与判读入口 |
 |---|---|---|
-| **WebShell / SQL 注入 / RCE / 文件上传** | WAF | 定位上传或利用请求、来源与实际处置结果。规则命中不等于拦截，须让 `sls` 核对测试模式、最终动作与回源结果；来源归因见 `references/tech_log_analysis.md`，上传链见 `references/aspnet_webshell_upload_tracing.md` |
+| **WebShell / SQL 注入 / RCE / 文件上传** | WAF | 定位上传或利用请求、来源与实际处置结果。规则命中不等于拦截，须让 `sls` 核对测试模式、最终动作与回源结果；来源归因见 `references/tech_log_analysis.md`，ASP.NET 上传链见 `references/playbooks.md`「Web Shell」 |
 | **挖矿 / 可疑进程 / RCE 后续执行** | SAS：`aegis-log-process`，必要时配 `aegis-log-network` | 用命令行、父进程和启动时间还原启动链，区分 Web、定时任务与登录后执行；时间字段与关联陷阱见 `references/sas_sls_host_telemetry.md` |
 | **反弹 Shell / C2 / 数据外传** | SAS：`aegis-log-network`，DNS 配 `aegis-log-dns-query` | 关联外联目标、端口与发起进程 |
 | **DNSLog / 带外域名请求** | SAS：`aegis-log-dns-query` | 核对域名、进程链及请求来源，见 `references/oob_dnslog_investigation.md` |

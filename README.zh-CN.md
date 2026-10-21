@@ -8,14 +8,14 @@
 
 - **调查模式**：告警 / 资产 / 实例维度的定向调查、无告警的自由排查，以及无需 SIREN Client 的云侧调查（AK/STS 凭据滥用、ActionTrail 异常调用、WAF 攻击入口、SAS 告警研判）；核实模式逐条核验既有报告或 findings 的结论
 - **能力预检**：调查前探测主机、云侧、子 agent、Web 证据源的可用性；缺失覆盖约束依赖该证据的具体断言
-- **分类型调查 playbook**（webshell、挖矿、反弹 shell、暴破、勒索、RCE、SQL 注入、异常登录、数据外泄、持久化、提权）+ **横向技术指南**（日志分析、反向推理、云取证、威胁情报、进程/文件分析、攻击对抗手段）+ 专项指南（云日志路由、SAS/SLS 主机遥测、OOB/DNSLog、SSH 登录溯源、ASP.NET 上传追踪）+ **MITRE ATT&CK 映射**。路由表见 `skills/sleuth/references/playbook_index.md`
+- **分类型调查 playbook**（webshell、挖矿、反弹 shell、暴破、勒索、RCE、SQL 注入、异常登录、数据外泄、持久化、提权）+ **横向技术指南**（日志分析与反向推理、云取证、进程/文件分析、攻击对抗手段）+ 专项指南（云日志路由、SAS/SLS 主机遥测、OOB/DNSLog、SSH 登录溯源）+ **MITRE ATT&CK 映射**。调查指南、ASP.NET 上传追踪与技巧路由表见 `skills/sleuth/references/playbooks.md`
 - **并行命令调度**：无依赖关系的远程命令在同一轮发出，压缩调查时间
 - **问题驱动证据闭环**：基线扫描后，每轮后续必须回答一个能改变定性、范围或处置的具名问题；不再产出决策相关证据时停止扩张
 - **严格只读**：只跑不改系统状态的命令（读文件、列举进程/网络/服务、查日志），绝不执行破坏或安装命令；保全证据完整性
 - **对抗验证门**：所有承重断言在交付前经独立反驳（子 agent 或内联），防止错误归因
 - **证据触发的漏洞归因**：仅在证据指向漏洞利用时调查 CVE；凭证滥用、配置暴露等非漏洞入口按实际路径报告，不为字段完整强行绑定 CVE
 - **报告确认门**：调查默认止于已验证结论；正式 `IR-....md` 报告仅在用户明确请求或确认后生成
-- **隔离写手**：确认报告后，子 agent 可用时由一个全新写手只看 findings、模板和写作规则；写手无法访问 SIREN 或调查上下文，写手与主调度均执行同一套交付前检查
+- **隔离写手**：子 agent 可用时，步骤 7 的交付结论由一个全新写手只看已验证 findings 起草，主调度只判通过与否，通过稿原样发送；确认报告后，再由一个全新写手只看 findings、模板和写作规则。写手均无法访问 SIREN 或调查上下文，写手与主调度均执行同一套交付前检查
 - **上下文隔离子 agent**：大输出由子 agent（或内联）收窄，回传决定性证据、范围及截断信息，保持主调度上下文精简
 - **多主机委托**：先对已授权主机取最小易失证据快照，再逐台深入；每台持续维护一份 findings，交付前验证；确认报告后合并为一份（见下文*多主机与合并*）
 - **可选 Markdown 事件报告**：确认后从内置 Dossier 风格模板生成一份命名的 `IR-....md`，以 findings 工作表为唯一事实来源；已验证的云侧事实可由 `opencli-aliyun-ir` 只读截取控制台截图，报告按路径引用；入侵路径按已验证步骤经 Codex 生图能力画出攻击链示意图，无法生成时保留占位
@@ -122,16 +122,14 @@ Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运�
 │       │   └── openai.yaml                 # Codex 应用元数据与 SIREN MCP 依赖提示
 │       ├── assets/
 │       │   ├── report.md                   # Markdown 报告模板（来自 dossier/report.md）
-│       │   └── style/                      # 脱敏写作样本；首选 curated-ir-excerpts.md
+│       │   └── style/                      # 脱敏写作样本 curated-ir-excerpts.md
 │       └── references/
 │           ├── workflow_recon.md           # 步骤 1-2：能力确认、模式路由、client/主机清单、首轮扫描
 │           ├── workflow_tracing.md         # 步骤 3-6 细则：playbook 路由、云侧交叉验证、ATT&CK、残留风险
-│           ├── workflow_delivery.md        # 步骤 7-8 细则：验证门交接、findings、报告生成
-│           ├── playbook_index.md           # 步骤 3 路由表
-│           ├── invest_*.md                 # 11 个分类型调查 playbook
-│           ├── tech_*.md                   # 6 个横向技术指南
-│           ├── attack_framework.md         # ATT&CK 战术/技术参考（v18 基准）
-│           ├── runtime_compat.md           # 跨客户端工具映射、子 agent、SIREN 异常处理
+│           ├── workflow_delivery.md        # 步骤 7-8 细则：验证门交接、结论与报告 writer 隔离
+│           ├── playbooks.md                # 步骤 3 分类型调查指南与技巧路由表
+│           ├── tech_*.md                   # 4 个横向技术指南
+│           ├── runtime_compat.md           # 跨客户端工具映射、子 agent、上下文预算、SIREN 异常
 │           ├── report_naming.md            # IR-….md 文件名格式、event_type slug、多主机规则
 │           ├── findings_spec.md            # 每主机 findings 工作表：调查→报告交接
 │           ├── report_writing_rules.md     # 模板逐块填写规则 + 项目约束
@@ -141,8 +139,7 @@ Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运�
 │           ├── oob_dnslog_investigation.md # dnslog.cn / interact.sh / OOB 回调
 │           ├── ssh_login_attribution_sas.md # 基于 SAS 遥测的 SSH 登录源追溯
 │           ├── recon_residual.md           # 六轴扫描后的残留风险跟进
-│           ├── verification_checklist.md   # 交付前对抗验证门
-│           └── aspnet_webshell_upload_tracing.md # ASP.NET webshell 上传追踪
+│           └── verification_checklist.md   # 交付前对抗验证门
 ├── scripts/
 │   ├── validate.py                         # Frontmatter、链接、孤立引用检查
 │   ├── permission_probe.py                 # 运行时信任与只读护栏锚点检查

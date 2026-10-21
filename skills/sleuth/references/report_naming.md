@@ -46,7 +46,6 @@ IR-{YYYYMMDD}-{hostname}-{event_type}[-{event_id}].md
 
 ### 专项场景对应 slug
 
-- ASP.NET / IIS WebShell（`aspnet_webshell_upload_tracing.md`）→ `webshell`
 - DNSLog / 带外域名请求（`oob_dnslog_investigation.md`）→ 确认由 RCE/注入触发用 `rce`；仅有 DNS 外带、攻击类型未定时用 `unknown`
 
 ## 示例

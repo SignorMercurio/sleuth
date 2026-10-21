@@ -7,6 +7,9 @@
   core workflow semantic markers enforced by `scripts/validate.py`. Update the
   markers with any intentional wording change; do not weaken the underlying
   route, evidence-loop, or CVE-attribution boundary to satisfy the check.
+- ATT&CK numbering follows the v18 baseline stated in
+  `skills/sleuth/references/workflow_tracing.md` step 5. When the baseline
+  changes, enumerate references with `rg 'T1[0-9]{3}'` and check each for drift.
 - Delegate alarm-driven lookup to the `sas` skill. Its parameter contract is
   `../log0-utils/.agents/skills/sas/SKILL.md`. When that contract changes, keep
   SLEUTH step 1.2, README usage, report naming, findings handoff, and selector

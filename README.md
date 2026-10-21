@@ -10,18 +10,18 @@ Investigation outputs and optional reports are generated in Simplified Chinese b
 
 - **Investigation modes**: alarm-, asset-, or instance-scoped investigation, free-form host triage, and cloud-side investigation (AccessKey/STS abuse, anomalous ActionTrail calls, WAF attack entry, SAS alarm triage) that needs no SIREN client; a verification mode checks the conclusions of an existing report or findings
 - **Capability preflight**: checks which host, cloud, sub-agent, and web evidence sources are available before investigation; missing coverage constrains the specific claims that depend on it
-- **Per-alarm-type investigation playbooks** (webshell, miner, reverse shell, brute force, ransomware, RCE, SQL injection, abnormal login, data exfiltration, persistence, privilege escalation) + **cross-cutting tradecraft guides** (log analysis, reverse reasoning, cloud forensics, threat intel, process/file analysis, attack countermeasures) + specialized guides (cloud-log routing, SAS/SLS host telemetry, OOB/DNSLog, SSH login attribution, ASP.NET upload tracing) + **MITRE ATT&CK mapping**. See `skills/sleuth/references/playbook_index.md` for the routing table
+- **Per-alarm-type investigation playbooks** (webshell, miner, reverse shell, brute force, ransomware, RCE, SQL injection, abnormal login, data exfiltration, persistence, privilege escalation) + **cross-cutting tradecraft guides** (log analysis and reverse reasoning, cloud forensics, process/file analysis, attack countermeasures) + specialized guides (cloud-log routing, SAS/SLS host telemetry, OOB/DNSLog, SSH login attribution) + **MITRE ATT&CK mapping**. Playbooks, ASP.NET upload tracing, and the tradecraft routing table live in `skills/sleuth/references/playbooks.md`
 - **Parallel command orchestration**: independent remote commands are dispatched in a single round to cut investigation time
 - **Question-driven evidence loop**: after a bounded baseline, each follow-up must answer a named question that can change classification, scope, or response; branches stop when they add no decision-relevant evidence
 - **Strictly read-only**: runs only commands that don't change system state (read files, list processes/network/services, inspect logs), never destructive or install commands; evidence integrity is preserved
 - **Adversarial verification gate**: every load-bearing claim is independently refuted before delivery (sub-agent or inline) to guard against false attribution
 - **Evidence-gated vulnerability attribution**: CVEs are investigated only when evidence points to vulnerability exploitation; credential abuse, exposed configuration, and other non-vulnerability entry paths are reported as such instead of being forced into a CVE
 - **Report confirmation gate**: investigations stop after verified findings by default; a formal `IR-....md` report is created only when the user explicitly requests or confirms it
-- **Isolated report writer**: after report confirmation, a fresh writer sees only the verified findings, template, and writing rules when sub-agents are available; it cannot access SIREN or the investigation transcript, and both writer and orchestrator run the same pre-delivery QA
+- **Isolated conclusion and report writers**: when sub-agents are available, the Step 7 conclusion is drafted by a fresh writer that sees only the verified findings, and the orchestrator only passes or rejects it, sending a passed draft verbatim; after report confirmation, another fresh writer sees only the verified findings, template, and writing rules. Neither writer can access SIREN or the investigation transcript, and both writer and orchestrator run the same pre-delivery QA
 - **Context-isolation sub-agents**: large outputs are narrowed by a sub-agent (or inline), returning decisive evidence with scope and truncation metadata, keeping the orchestrator's context lean
 - **Multi-host engagements**: authorized hosts receive minimal volatile-evidence snapshots first, followed by per-host investigation; each worksheet is updated throughout and verified before delivery; if the user confirms a report, the findings are merged into one report (see *Multi-host and merge* below)
 - **Optional Markdown incident report**: after user confirmation, the engagement writes one named `IR-....md` from the bundled Dossier-style template, using the findings worksheets as the only source of facts; verified cloud-side facts can carry console screenshots captured read-only through `opencli-aliyun-ir` and referenced from the report, and the intrusion path gets an attack-chain diagram drawn from the verified steps through Codex image generation (a placeholder remains when generation is unavailable)
-- **Human writing style**: report prose follows `skills/sleuth/references/report_style.md` and bundled, sanitized IR excerpts; corpus rules live in `skills/sleuth/assets/style/README.md`
+- **Human writing style**: report prose follows `skills/sleuth/references/report_style.md` and the bundled, sanitized IR excerpts in `skills/sleuth/assets/style/curated-ir-excerpts.md`
 
 ## Prerequisites
 
@@ -124,16 +124,14 @@ The companion skill `skills/ir-report-review/` reviews a finished `IR-….md` (a
 │       │   └── openai.yaml                 # Codex app metadata and SIREN MCP dependency hint
 │       ├── assets/
 │       │   ├── report.md                   # Markdown report template copied from dossier/report.md
-│       │   └── style/                      # Tracked, sanitized writing samples; curated-ir-excerpts.md is preferred
+│       │   └── style/                      # Sanitized writing sample: curated-ir-excerpts.md
 │       └── references/
 │           ├── workflow_recon.md           # Step 1-2: capabilities, mode routing, client/host list, first sweep
 │           ├── workflow_tracing.md         # Step 3-6 detail: playbook routing, cloud cross-validation, ATT&CK, residual risk
-│           ├── workflow_delivery.md        # Step 7-8 detail: verification gate handoff, findings, report generation
-│           ├── playbook_index.md           # Step-3 routing table into the guides below
-│           ├── invest_*.md                 # 11 investigation playbooks, one per alarm type
-│           ├── tech_*.md                   # 6 cross-cutting tradecraft guides
-│           ├── attack_framework.md         # ATT&CK tactic/technique reference (v18 baseline)
-│           ├── runtime_compat.md           # Cross-client tool mapping, sub-agents, SIREN failure handling
+│           ├── workflow_delivery.md        # Step 7-8 detail: verification handoff, conclusion and report-writer isolation
+│           ├── playbooks.md                # Step-3 alarm-type playbooks and tradecraft routing table
+│           ├── tech_*.md                   # 4 cross-cutting tradecraft guides
+│           ├── runtime_compat.md           # Cross-client tool mapping, sub-agents, context budget, SIREN failures
 │           ├── report_naming.md            # IR-….md filename format, event_type slugs, multi-host rule
 │           ├── findings_spec.md            # Per-host findings worksheet: the investigation→report handoff
 │           ├── report_writing_rules.md     # Template block-by-block filling + project-specific constraints
@@ -143,8 +141,7 @@ The companion skill `skills/ir-report-review/` reviews a finished `IR-….md` (a
 │           ├── oob_dnslog_investigation.md # dnslog.cn / interact.sh / OOB callbacks
 │           ├── ssh_login_attribution_sas.md # SSH login source attribution via SAS telemetry
 │           ├── recon_residual.md           # Residual-risk follow-ups after the 6-axis sweep
-│           ├── verification_checklist.md   # Adversarial verification gate run before delivery
-│           └── aspnet_webshell_upload_tracing.md # ASP.NET webshell upload tracing
+│           └── verification_checklist.md   # Adversarial verification gate run before delivery
 ├── scripts/
 │   ├── validate.py                         # Frontmatter, link, and orphan checks
 │   ├── permission_probe.py                 # Runtime trust and read-only guardrail anchors
