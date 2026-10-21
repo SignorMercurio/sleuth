@@ -44,10 +44,6 @@ IR-{YYYYMMDD}-{hostname}-{event_type}[-{event_id}].md
 | AK/STS 凭据滥用 | `akabuse` |
 | 其他/未分类 | `unknown` |
 
-### 专项场景对应 slug
-
-- DNSLog / 带外域名请求（`oob_dnslog_investigation.md`）→ 确认由 RCE/注入触发用 `rce`；仅有 DNS 外带、攻击类型未定时用 `unknown`
-
 ## 示例
 
 - 模式一（告警驱动）：`IR-20260417-web01-webshell-123456.md`

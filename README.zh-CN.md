@@ -135,9 +135,7 @@ Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运�
 │           ├── report_writing_rules.md     # 模板逐块填写规则 + 项目约束
 │           ├── report_style.md             # 写作风格指南（来自手写文章提炼）
 │           ├── cloud_log_queries.md        # WAF / SAS / ActionTrail 日志路由
-│           ├── sas_sls_host_telemetry.md   # SAS SLS 主机遥测查询（环境特定注意事项）
-│           ├── oob_dnslog_investigation.md # dnslog.cn / interact.sh / OOB 回调
-│           ├── ssh_login_attribution_sas.md # 基于 SAS 遥测的 SSH 登录源追溯
+│           ├── sas_sls_host_telemetry.md   # SAS 主机遥测：字段坑、w3wp.exe、SSH 登录归因、OOB/DNSLog
 │           ├── recon_residual.md           # 六轴扫描后的残留风险跟进
 │           └── verification_checklist.md   # 交付前对抗验证门
 ├── scripts/

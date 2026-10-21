@@ -1,6 +1,6 @@
 # SLEUTH 信任报告（Trust Report）
 
-生成时间：`2026-10-21T06:22:52Z`
+生成时间：`2026-10-21T07:00:16Z`
 
 总体结论：**通过**
 
@@ -9,7 +9,7 @@
 
 ## 1. 密钥与凭据扫描（secret scan）
 
-- 扫描文件数：110（跳过二进制/不可解码文件 0 个）
+- 扫描文件数：108（跳过二进制/不可解码文件 0 个）
 - 规则：
   - `aliyun_ak_sk`：Aliyun AccessKeyId: LTAI prefix followed by 12-30 alnum chars
   - `private_key_block`：PEM private key BEGIN marker (RSA/EC/DSA/OPENSSH/ENCRYPTED)
@@ -54,8 +54,8 @@
 ## 4. 安装包哈希（package hash）
 
 - 包目录：`skills/sleuth`
-- 文件数：24
-- 聚合 SHA-256：`c98a1aca9f536c34192474383564f2592145bdd124a0deb8783140ce6077052f`
+- 文件数：22
+- 聚合 SHA-256：`a3363eb12029a61c92efce1d32fa5cb9068fec22404229439636e6376600e02e`
 - 聚合算法：sha256 of the concatenation of 'relpath:filehash\n' for each file, sorted by relpath
 - 说明：skills/sleuth/ may be modified by a parallel, unrelated task. This is a snapshot taken at generation time -- regenerate this report (without --check) as the final step before the trust-report waiver is closed, so the recorded hash matches the package actually being shipped.
 - 逐文件清单见 `reports/trust_report.json` 的 `sections.package_hash.files`。

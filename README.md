@@ -137,9 +137,7 @@ The companion skill `skills/ir-report-review/` reviews a finished `IR-….md` (a
 │           ├── report_writing_rules.md     # Template block-by-block filling + project-specific constraints
 │           ├── report_style.md             # Writing style guide distilled from hand-written articles
 │           ├── cloud_log_queries.md        # WAF / SAS / ActionTrail log routing
-│           ├── sas_sls_host_telemetry.md   # SAS SLS host telemetry queries (env-specific gotchas)
-│           ├── oob_dnslog_investigation.md # dnslog.cn / interact.sh / OOB callbacks
-│           ├── ssh_login_attribution_sas.md # SSH login source attribution via SAS telemetry
+│           ├── sas_sls_host_telemetry.md   # SAS host telemetry: field gotchas, w3wp.exe, SSH attribution, OOB/DNSLog
 │           ├── recon_residual.md           # Residual-risk follow-ups after the 6-axis sweep
 │           └── verification_checklist.md   # Adversarial verification gate run before delivery
 ├── scripts/

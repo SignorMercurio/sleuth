@@ -1,98 +1,44 @@
-# Alibaba Cloud SAS SLS host telemetry notes
+# SAS 主机遥测判读（SLS）
 
-Use when building customer-facing IR timelines from Alibaba Cloud Security Center (`sas`) SLS logs.
+查询交给 `sls` skill 执行，实例绑定与跨资产边界按 `references/cloud_log_queries.md`「调用要点」；本文只写本环境特有的字段坑与判读边界。
 
-> **执行查询优先走 `sls` skill**（调用已安装的 skill，或读取已安装的 `sls` skill 指令）。先看 `references/cloud_log_queries.md` 决定查哪个 `-product` / topic。本文件只补充**本环境特有的坑和报告措辞要求**：时间戳 CAST、`proc_start_time` 过滤、`w3wp.exe` 子进程解读、覆盖时间窗的报告写法。下面的命令示例可以直接给 `sls` skill 当模板（命令里用 `sls` 代指调用，二进制路径与 `-c` 配置由 `sls` skill 提供）。
+## 字段坑
 
-## Core topics
+- `start_time` 可能是字符串，直接 `from_unixtime(start_time)` 会报 `Unexpected parameters (varchar)`，先 `CAST(start_time AS bigint)`；`proc_start_time` 可能为 `N/A` 或空，筛选时排除。
+- `aegis-log-dns-query` 按进程记录 DNS 请求（`domain`、`pid`/`ppid`、`proc_path`、`cmdline`、`cmd_chain`），常无 `answer` 字段，没有应答不等于没有解析行为。
+- `sas-security-log` 的 `detail` 含父链（`cmdline`、`ppcmdline`…`ppppcmdline`、`complex_report_info`）；异常登录类告警的 RDP 来源、用户、协议也在 `detail` 里。
+- 云安全中心告警详情的溯源模块与「调查响应 → 进程启动」看的是 `aegis-log-process` 同一份数据。
 
-- `__topic__: aegis-log-network` — host network connection telemetry.
-- `__topic__: aegis-log-process` — process start telemetry.
-- `__topic__: aegis-log-login` — login/remote connection/database login telemetry.
-- `__topic__: aegis-log-dns-query` — per-process DNS query telemetry. Use this to confirm DNSLog/OOB-domain alerts and extract `domain`, `host_ip`, `pid`, `ppid`, `proc_path`, `cmdline`, and `cmd_chain`.
-- `__topic__: sas-security-log` — Security Center alert events such as abnormal login and WebShell findings.
+## 覆盖时间窗
 
-Always state the queried time window and the earliest/latest record per topic. Do not imply absence of execution if a telemetry source starts after the attack window.
+每个用到的 topic 都查该实例的最早 / 最新记录与数量：进程 topic 用 `MIN(proc_start_time)`，登录 topic 条件改为 `(instance_id: … OR src_ip: <HOST_IP> OR host_ip: <HOST_IP>)`，告警按 `name` 分组。覆盖结果按 `references/findings_spec.md`「云端证据覆盖」记录，阴性写法按 `references/verification_checklist.md`「云端与阴性判断」。
 
-## Timestamp handling
+## IIS / ASP.NET（`w3wp.exe`）
 
-In this environment, fields such as `start_time` may be stored as strings. `from_unixtime(start_time)` can fail with `Unexpected parameters (varchar) for function from_unixtime`. Cast first:
+子进程按 `parent_proc_name: w3wp.exe OR pcmdline: w3wp.exe` 查，外联按 `proc_name: w3wp.exe` 查并按 `dst_ip, dst_port` 分组。
 
-```sql
-from_unixtime(CAST(start_time AS bigint))
-```
+- `w3wp.exe -> csc.exe`（路径在 `.NET Framework*/Temporary ASP.NET Files`）通常是 ASP.NET 动态编译，单独不算恶意。
+- `w3wp.exe -> cmd.exe / powershell.exe / certutil / bitsadmin / mshta / rundll32 / regsvr32 / wscript / cscript` 是较强的执行证据。
+- `w3wp.exe` 外联公网 22 端口属异常，除非客户确认有 SFTP/SSH 业务逻辑。
 
-Some process logs have human-readable `proc_start_time`; it may contain `N/A` or empty values. Filter carefully:
+## SSH 登录来源归因
 
-```sql
-WHERE proc_start_time != 'N/A' AND proc_start_time != ''
-```
+以下查询都限告警实例与告警时间窗。
 
-## Coverage queries
+1. 先用 `sas-security-log` 告警明细确认父链：形如 `sshd listener -> sshd: <user> [priv] -> sshd: <user>@notty -> -bash -> <command>` 可确认命令在 SSH 会话下执行。
+2. 查 `aegis-log-login`（`login_type=SSH`），按准确的 sshd PID / 父链、进程启动时间和登录时间对齐会话，有会话标识时一并核对；PID 相同也要排除复用、重启和不同容器命名空间。
+3. 查 `aegis-log-process`（`username: <ssh_user>`）复核执行链，`cmd_chain` 里的 `-bash -> /usr/sbin/sshd -D -R -> sshd listener` 把命令挂回会话。同账号并发登录分不开时分别列候选来源，不强选一个 IP。
+4. `src_ip` 是私网地址时通常是堡垒机、跳板、VPC 内代理或运维出口，真实来源要查堡垒机审计、跳板 sshd/auth 日志、VPN/NAT/VPC 流日志或运维平台。
+5. 用户给了公网 IP 时可补查云防火墙入方向 22 端口；来源走私网跳板时公网侧可能无记录，无命中不能推翻 SAS 登录证据。
 
-Network coverage:
+能确认的只有：命令是否处在 SSH 会话父链下、SAS 记录的客户端来源 IP、登录用户与时间。私网 `src_ip` 背后的公网 IP、具体自然人和是否恶意登录都不能据此确认。
 
-```bash
-sls -uid <UID> -product sas \
-  -query "__topic__: aegis-log-network AND instance_id: <INSTANCE_ID> | SELECT MIN(from_unixtime(CAST(start_time AS bigint))) AS first_time, MAX(from_unixtime(CAST(start_time AS bigint))) AS last_time, COUNT(*) AS cnt LIMIT 10" \
-  -from '<FROM>' -to '<TO>'
-```
+## DNSLog / OOB 域名告警
 
-Process coverage:
+适用：「恶意DNS请求拦截」「请求带外攻击(OOB)域名」，或域名以 `dnslog.cn`、`interact.sh`、`oast.*`、`burpcollaborator.*`、`ceye.io` 等结尾。
 
-```bash
-sls -uid <UID> -product sas \
-  -query "__topic__: aegis-log-process AND instance_id: <INSTANCE_ID> | SELECT MIN(proc_start_time) AS first_proc_start, COUNT(*) AS cnt LIMIT 10" \
-  -from '<FROM>' -to '<TO>'
-```
+这类请求默认不是普通 DNS 误报：它说明 payload 已进入某个进程并触发解析，常见于 RCE 探测、SSRF、带外回显的 SQL 注入、模板注入、JNDI/Log4j 类探测，或应用本身会解析攻击者可控的输入；能否升级为主机失陷按 `references/verification_checklist.md`「云端与阴性判断」。
 
-Login coverage:
+从告警取实例与时间窗，在 `aegis-log-dns-query` 按域名（含小写变体）找到触发进程，再在同实例同时间窗查后续证据：进程用 `ppid: <PID> OR pcmdline: <触发进程> OR parent_proc_name: <进程名>`，并看 `cmdline` 是否含域名、`dnslog.cn`、`curl`、`wget`、`nc`、`bash`、`sh`、`python`、`perl`、`/tmp`；外联按 `dst_ip, dst_port, proc_name, proc_path` 分组；其他告警与登录按 `start_time` 排序；按 OOB 根域名跨 topic 计数看是否反复出现。
 
-```bash
-sls -uid <UID> -product sas \
-  -query "__topic__: aegis-log-login AND (instance_id: <INSTANCE_ID> OR src_ip: <HOST_IP> OR host_ip: <HOST_IP>) | SELECT MIN(from_unixtime(CAST(start_time AS bigint))) AS first_time, MAX(from_unixtime(CAST(start_time AS bigint))) AS last_time, COUNT(*) AS cnt LIMIT 10" \
-  -from '<FROM>' -to '<TO>'
-```
-
-Security alert coverage:
-
-```bash
-sls -uid <UID> -product sas \
-  -query "__topic__: sas-security-log AND instance_id: <INSTANCE_ID> | SELECT name, COUNT(*) AS cnt, MIN(from_unixtime(CAST(start_time AS bigint))) AS first_time, MAX(from_unixtime(CAST(start_time AS bigint))) AS last_time GROUP BY name ORDER BY first_time ASC LIMIT 20" \
-  -from '<FROM>' -to '<TO>'
-```
-
-## IIS / ASP.NET pivots
-
-Find `w3wp.exe` outbound connections:
-
-```bash
-sls -uid <UID> -product sas \
-  -query "__topic__: aegis-log-network AND instance_id: <INSTANCE_ID> AND proc_name: w3wp.exe | SELECT dst_ip, dst_port, COUNT(*) AS cnt, MIN(from_unixtime(CAST(start_time AS bigint))) AS first_time, MAX(from_unixtime(CAST(start_time AS bigint))) AS last_time GROUP BY dst_ip, dst_port ORDER BY cnt DESC LIMIT 50" \
-  -from '<FROM>' -to '<TO>'
-```
-
-Find `w3wp.exe` child processes:
-
-```bash
-sls -uid <UID> -product sas \
-  -query "__topic__: aegis-log-process AND instance_id: <INSTANCE_ID> AND (parent_proc_name: w3wp.exe OR pcmdline: w3wp.exe) | SELECT proc_start_time, proc_name, proc_path, parent_proc_name, username, cmdline, pcmdline ORDER BY proc_start_time ASC LIMIT 50" \
-  -from '<FROM>' -to '<TO>'
-```
-
-Interpretation:
-- `w3wp.exe -> csc.exe` under `.NET Framework*/Temporary ASP.NET Files` is commonly ASP.NET dynamic compilation; do not call it malicious by itself.
-- `w3wp.exe -> cmd.exe/powershell.exe/certutil/bitsadmin/mshta/rundll32/regsvr32/wscript/cscript` is stronger execution evidence.
-- `w3wp.exe` connecting to external SSH port 22 is abnormal unless the customer confirms SFTP/SSH business logic.
-
-## Reporting requirements
-
-For customer reports, include a compact table:
-
-`日志类型 | 最早时间 | 最新时间 | 数量 | 结论`
-
-Include process telemetry even when negative. A good wording:
-
-“当前未在 SAS 进程日志中发现 w3wp.exe 直接拉起 cmd.exe、powershell.exe 等典型命令执行链路；但 SAS 进程启动日志最早仅覆盖到 <FIRST_PROC_TIME>，无法覆盖 <ATTACK_WINDOW> 的早期攻击窗口，因此不能据此完全排除早期命令执行。”
-
-For abnormal login, distinguish raw login telemetry from Security Center alert telemetry. `aegis-log-login` may include SQL Server/database login records; `sas-security-log` contains alert names such as `异常登录-ECS非常用时间登录` with details including RDP source IP, user, protocol, and client IP.
+建议客户按告警时间排查触发进程的应用日志、SQL / 查询历史、调度任务与 JDBC/ODBC/HTTP 访问来源；`impalad`、`spark`、`hadoop`、`java` 类大数据服务另看 YARN/Spark 应用日志。

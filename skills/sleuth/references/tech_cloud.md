@@ -57,11 +57,6 @@ systemctl status aliyun.service                          # systemd 单元
 
 ### 云侧入口（交叉验证）
 
-控制台路径：
-```
-ECS 控制台 -> 运维与监控 -> 云助手 -> 命令执行结果
-```
-
 拿到主机侧 task/invocation ID、实例与时间戳后，回查 ActionTrail 的 `RunCommand` / `InvokeCommand` / `CreateCommand` 事件，核对命令与成功状态，再识别 `sourceIpAddress`、`userIdentity` 及凭据类型（长期 AK、角色/临时会话等）。将任务关联、API 调用身份、非预期使用和凭据泄露分别裁决；查不到任务对应关系就保留缺口，不把长期服务的祖先链当成当前任务证据。
 
 云安全中心侧有"云助手异常命令"和"CreateCommand 可疑命令"告警可作触发线索；批量主机感染时优先翻这块日志。
@@ -89,7 +84,3 @@ ECS 控制台 -> 运维与监控 -> 云助手 -> 命令执行结果
 | 痕迹清除 | `DeleteSnapshot`、`DeleteTrail`、`UpdateLogStore` |
 
 **检测**：ActionTrail 敏感 API 调用 + 云安全中心 AK 异常调用告警 + 源 IP 非预期地域 + 创建时间较新的 RAM 用户。
-
-## 云安全中心溯源模块
-
-告警详情的溯源模块与「调查响应 → 进程启动」能看完整进程启动链、启动时间、命令行与父进程，等价于 `aegis-log-process` 遥测；只覆盖已记录时段，未安装时期无法查询。用父进程确定攻击来源（如 VNC 登录），结合进程启动时间查 WAF 日志。

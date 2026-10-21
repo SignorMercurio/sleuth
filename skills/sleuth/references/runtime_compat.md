@@ -21,13 +21,11 @@
 
 每次读取先检查命令退出状态及工具的 `truncated`、`shown_ranges`、`omitted_ranges` 等实际返回字段；头尾预览不代表全量，`wc -l` 也不能证明传输未截断。字段未提供时记「完整性未知」，不得猜为完整。截断后优先按时间/条件分块补读，必要时使用工具实际支持的完整输出模式并再次检查；仍有省略就记录未读范围，不凭已展示部分断言没有其他命中。错误输出、权限拒绝与空结果分开处理。
 
-## 上下文预算（输出、图片与压缩恢复）
+## 上下文预算
 
 - **exec 脚本**：Codex 经 exec 脚本调工具时只取 `structuredContent` 中需要的字段（如 `outcome`、`truncated`、`omitted_ranges`、`audit_id` 与所需输出片段），不 `text()` 整个结果；首行声明 `// @exec: {"max_output_tokens": N}`。
-- **大输出**：`run` 超 8 KiB 只返回头尾预览，`run_batch` 每台预览 1 KiB；按 `audit_id` 用 `search_run_result` 定位、`read_run_result` 按字节范围补读，结果 60 分钟后过期。需保留的大段原文按运行环境既有证据规则落盘（如 AIR 的 `evidence/`），之后用 `grep`/`sed -n` 读片段，不整文件回读。
-- **图片**：`view_image` 默认 `detail: "low"`；需读小字才用 `original`，且一次一张。
-- **等待**：长命令用更长的 `yield_time_ms` 一次等待，不循环调用 `wait` 轮询。
-- **压缩恢复**：findings 工作区段同步维护当前模式、Client 清单、待证问题和已读 references 的要点。上下文压缩后先读该区段，按需重读当前步骤的单个 reference，不整篇重读 SKILL.md 或全部 references。
+- **大输出**：`run_batch` 每台预览 1 KiB；`audit_id` 用 `search_run_result` 定位、`read_run_result` 按字节范围补读，结果 60 分钟后过期。需保留的大段原文按运行环境既有证据规则落盘（如 AIR 的 `evidence/`），之后用 `grep`/`sed -n` 读片段，不整文件回读。
+- **图片**：需读小字才用 `view_image` 的 `original`，且一次一张。
 
 ## SIREN 异常处理
 

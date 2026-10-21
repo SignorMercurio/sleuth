@@ -9,11 +9,9 @@
 | 找不到 Web 日志、只有应用日志、正向证据链断裂、WAF 来源归因 | `references/tech_log_analysis.md` |
 | AK/STS 滥用、云助手、ActionTrail 异常调用，或进程父链含 `aliyun-service` / `AliyunService.exe` | `references/tech_cloud.md`（审计看「ActionTrail 审计要点」「AK 泄露利用方式总结」） |
 | 需要阿里云云侧证据（WAF / SAS / 云防火墙 / ActionTrail / 云资源配置） | `references/cloud_log_queries.md` |
-| SAS 主机遥测的覆盖时间窗、`w3wp.exe` 子进程判读与报告措辞 | `references/sas_sls_host_telemetry.md` |
-| 父链含 `sshd`，或要确认 SSH 客户端来源 IP | `references/ssh_login_attribution_sas.md` |
+| SAS 主机遥测覆盖时间窗；`w3wp.exe` 子进程；父链含 `sshd` 或要确认 SSH 来源 IP；DNSLog / OOB 域名请求 | `references/sas_sls_host_telemetry.md` |
 | 进程关联、文件时间分析 | `references/tech_process_file.md` |
 | 进程隐藏、命令替换、Python 标准库注入 | `references/tech_attack_countermeasures.md` |
-| DNSLog / OOB 域名请求 | `references/oob_dnslog_investigation.md` |
 | 威胁情报 | 用运行环境的联网检索查哈希、IP、域名（如 VirusTotal 的 Relations / Community、微步）；平台无检出时，用主机上看似无关的目录名或报错原文检索社区分析与 GitHub Issue |
 
 ## Web Shell
@@ -50,7 +48,7 @@
 
 1. **攻击源与模式**：失败登录（`lastb`、Debian `auth.log`、RHEL `secure`）按源 IP 聚合，统计被尝试的用户名与时间分布；auth.log 用户名常在 `$(NF-5)`，随格式偏移，先核对再取。
 2. **是否得手**：同源成功登录（`Accepted`）找「失败→成功」转折点，区分密码（`Accepted password`）与密钥（`Accepted publickey`）登录；密钥登录核对该用户 `authorized_keys` 是否被植入。得手后查登录后的命令历史、进程与连接。
-3. **来源研判**：来源 IP 未必是真实操作人，判断代理 / VPN / 跳板；私网来源见 `references/ssh_login_attribution_sas.md`。
+3. **来源研判**：来源 IP 未必是真实操作人，判断代理 / VPN / 跳板；私网来源见 `references/sas_sls_host_telemetry.md`「SSH 登录来源归因」。
 4. **账户变更与防护**：`awk -F: '$3>=1000'` 列普通用户，警惕与 root 同 UID 0 的隐藏账户，查 `password changed`；核对 fail2ban / 防火墙是否已拦截该 IP。
 
 主机登录日志可能被清除或不含 RDP / 数据库登录，用 SAS 登录遥测补证。
