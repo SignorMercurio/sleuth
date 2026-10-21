@@ -148,12 +148,28 @@ def field_overruns(visible: str, caps: dict[str, int]) -> list[str]:
     return overruns
 
 
+def strip_fences(text: str) -> str:
+    return re.sub(r"^```.*?^```$", "", text, flags=re.M | re.S)
+
+
 def prose_lines(visible: str) -> list[str]:
     """Body paragraphs only: tables, lists, quotes, code, images, headings and field lines are excluded."""
-    body = re.sub(r"^```.*?^```$", "", strip_attack_matrix(visible), flags=re.M | re.S)
+    body = strip_fences(strip_attack_matrix(visible))
     skip = ("|", "#", ":::", "![", "- ", ">")
     field = re.compile(r"^[^:\n]{1,20} :: ")
     return [line for line in body.splitlines() if line.strip() and not line.startswith(skip) and not field.match(line)]
+
+
+# A link that is not an image (group 1 is the target), and the schemes a delivered PDF can open;
+# same patterns as ir-report-review's check_report.py.
+MARKDOWN_LINK = re.compile(r"(?<!!)\[(?:\\.|[^\]\\\n])*\]\(\s*([^)\s]*)")
+PDF_LINK = re.compile(r"(?:https?|mailto):", re.I)
+
+
+def relative_links(visible: str) -> list[str]:
+    """Link targets that cannot open from the delivered PDF: anything but http(s) or mailto."""
+    text = re.sub(r"`[^`\n]+`", "", strip_fences(visible))
+    return [target for target in MARKDOWN_LINK.findall(text) if not PDF_LINK.match(target)]
 
 
 def repeated_phrases(lines: list[str]) -> list[str]:
@@ -302,6 +318,9 @@ def validate_case(
     metrics["repeated_phrase_count"] = len(repeated)
     if len(repeated) > REPEAT_PHRASES_MAX:
         failures.append(f"{len(repeated)} phrases repeat {REPEAT_MIN}+ times: {'、'.join(repeated)}")
+
+    for target in relative_links(visible):
+        failures.append(f"relative link will not open in the PDF: {target}")
 
     copied = sample_overlaps(visible, sample_grams)
     metrics["sample_overlap_count"] = len(copied)

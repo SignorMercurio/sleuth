@@ -100,7 +100,7 @@ Name several hosts / Client IDs (or point at an alarm affecting multiple assets)
 
 ### Report review
 
-The companion skill `skills/ir-report-review/` reviews a finished `IR-….md` (a Dossier link on SIREN or a local path) and rewrites it for customer readability without changing facts, judgment strength, or action status. Its `scripts/check_report.py` reports over-cap blocks and dense sentences, then checks the revision for structure changes, dropped attacker IoCs or hashes, and new concrete values. Write-back only happens when the report's hash still matches the fetched copy. It reads sleuth's writing rules from `../sleuth/references/`, so install the two skills side by side. New evidence or changed conclusions still go through sleuth's revision mode.
+The companion skill `skills/ir-report-review/` reviews a finished `IR-….md` (a Dossier link on SIREN or a local path) and rewrites it for customer readability without changing facts, judgment strength, or action status. Its `scripts/check_report.py` reports over-cap blocks and dense sentences, then checks the revision for structure changes, dropped attacker IoCs or hashes, and new concrete values; links the delivered PDF cannot open (such as relative attachment links) always fail. Write-back only happens when the report's hash still matches the fetched copy. It reads sleuth's writing rules from `../sleuth/references/`, so install the two skills side by side. New evidence or changed conclusions still go through sleuth's revision mode.
 
 ## Layout
 

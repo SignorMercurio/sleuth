@@ -93,7 +93,7 @@
         "severity": "高危",
         "timeline_nodes": 5,
         "actions": 5,
-        "visible_han_chars_without_attack_matrix": 2635,
+        "visible_han_chars_without_attack_matrix": 2644,
         "duplicate_sentence_count": 0,
         "long_paragraph_count": 1,
         "repeated_phrase_count": 3,
@@ -101,7 +101,8 @@
         "observed_failures": [
           "处置状态 has 152 Han chars, limit 150",
           "1 paragraphs exceed 200 Han chars",
-          "3 phrases repeat 3+ times: 云安全中心告警本身不等于每条命令都执行成功、现有访问日志不能说明攻击者是否另有其他上传入口、进程启动记录覆盖期之外的主机活动无法据此排除"
+          "3 phrases repeat 3+ times: 云安全中心告警本身不等于每条命令都执行成功、现有访问日志不能说明攻击者是否另有其他上传入口、进程启动记录覆盖期之外的主机活动无法据此排除",
+          "relative link will not open in the PDF: IR-20260417-web01-upload-webshell.assets/x.php.txt"
         ]
       }
     },
@@ -116,7 +117,7 @@
         "severity": "高危",
         "timeline_nodes": 5,
         "actions": 5,
-        "visible_han_chars_without_attack_matrix": 2264,
+        "visible_han_chars_without_attack_matrix": 2274,
         "duplicate_sentence_count": 0,
         "long_paragraph_count": 0,
         "repeated_phrase_count": 0,

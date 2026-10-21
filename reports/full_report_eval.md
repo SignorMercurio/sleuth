@@ -13,8 +13,8 @@ Complete-report contract regression for SLEUTH Step 8.
 | no-current-intrusion | True | 低危 | 4 | 1 | 1737 |
 | complex-rce-credential | True | 高危 | 5 | 5 | 2362 |
 | multi-host-rce | True | 高危 | 5 | 7 | 2552 |
-| bloated-revision | True | 高危 | 5 | 5 | 2635 |
-| bloated-revision-reviewed | True | 高危 | 5 | 5 | 2264 |
+| bloated-revision | True | 高危 | 5 | 5 | 2644 |
+| bloated-revision-reviewed | True | 高危 | 5 | 5 | 2274 |
 
 ## Failures
 

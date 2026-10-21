@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Density leads for an IR report, and change checks for a revision of it.
 
-  check_report.py ORIGINAL           where the report is over its caps or dense
-  check_report.py ORIGINAL REVISED   the same before -> after, plus FAIL checks that the
-                                     revision kept the structure, attacker IoCs and hashes
-                                     and introduced no concrete value the original lacks
+  check_report.py ORIGINAL           where the report is over its caps or dense, and FAIL
+                                     on links the delivered PDF cannot open
+  check_report.py ORIGINAL REVISED   the same before -> after (links checked on REVISED), plus
+                                     FAIL checks that the revision kept the structure, attacker
+                                     IoCs and hashes and introduced no concrete value the
+                                     original lacks
   --summary TEXT                     also check the one-line summary for the tracking table
 
 Reads Markdown only and writes nothing. Exits 1 when a FAIL check trips.
@@ -31,6 +33,10 @@ FIXED_BLOCKS = ("cover-hero", "cover-meta", "rev", "attack")
 BLOCK = re.compile(r"^:::[ \t]*(\S+)([^\n]*)\n(.*?)^:::[ \t]*$", re.M | re.S)
 FIELD = re.compile(r"^([^\s:|#>!\-{][^:\n]{0,30}?) :: (.*)$", re.M)
 IMAGE = re.compile(r"!\[[^\]]*\]\(([^)\s]+)\)(\{[^}\n]*\})?")
+# A link that is not an image (group 1 is the target), and the schemes a delivered PDF can open;
+# same patterns as sleuth's validate_full_reports.py.
+LINK = re.compile(r"(?<!!)\[(?:\\.|[^\]\\\n])*\]\(\s*([^)\s]*)")
+PDF_LINK = re.compile(r"(?:https?|mailto):", re.I)
 LAYOUT = re.compile(r"^\{(?:break|gap)\b[^}\n]*\}[ \t]*$", re.M)
 CODE = re.compile(r"`[^`\n]+`")
 # Order matters: each match is masked before the next pattern runs, so an IP's digits are
@@ -114,6 +120,11 @@ class Report:
             caption = re.search(r'caption="([^"]*)"', attrs)
             found.append((match.group(1), size.group(1) if size else "", caption.group(1) if caption else ""))
         return found
+
+    def relative_links(self) -> list[tuple[int, str]]:
+        """Link targets the delivered PDF cannot open: anything but http(s) or mailto."""
+        return [(n, m.group(1)) for n, line in enumerate(self.lines, 1) for m in LINK.finditer(CODE.sub("", line))
+                if not PDF_LINK.match(m.group(1))]
 
     # --- density ---------------------------------------------------------------------
 
@@ -416,8 +427,10 @@ def main() -> int:
         print(f"== Leads in {reports[-1].path} ==")
         for lead in reports[-1].leads() or ["none"]:
             print(f"  {lead}")
-    if len(reports) == 2:
-        fails, warns, infos = compare(*reports)
+        if len(reports) == 2:
+            fails, warns, infos = compare(*reports)
+        fails += [f"L{n} link will not open in the PDF, name the attachment in plain text: {target}"
+                  for n, target in reports[-1].relative_links()]
     print("== Checks ==")
     if args.summary is not None:
         fails += check_summary(args.summary)

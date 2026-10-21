@@ -128,7 +128,8 @@
       "expected_failures": [
         "处置状态 has",
         "paragraphs exceed",
-        "phrases repeat"
+        "phrases repeat",
+        "relative link will not open"
       ]
     },
     {

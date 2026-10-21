@@ -123,7 +123,7 @@ headline :: 攻击者经网站上传接口写入 Webshell，很可能已借此�
 
 <!-- 有样本时只写与结论和处置有关的路径、哈希、类型、行为、外连或配置，以及与事件的关联。家族背景仅在影响处置时说明。 -->
 
-样本为 `/var/www/upload/x.php`，MD5 为 `demo-aaaa1111`，是攻击者写入网站上传目录的 PHP Webshell。它被访问时由 php-fpm 解析执行，已观察到的行为是启动 sh 执行 `id` 和 `whoami`。
+样本为 `/var/www/upload/x.php`，MD5 为 `demo-aaaa1111`，是攻击者写入网站上传目录的 PHP Webshell。它被访问时由 php-fpm 解析执行，已观察到的行为是启动 sh 执行 `id` 和 `whoami`。样本副本见交付包附件 `x.php.txt`。
 
 ### 入侵路径 / Intrusion Path
 

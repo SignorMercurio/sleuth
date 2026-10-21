@@ -98,7 +98,7 @@ Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运�
 
 ### 报告审校
 
-配套 skill `skills/ir-report-review/` 审校已成稿的 `IR-….md`（SIREN 上的 Dossier 链接或本地路径），按客户可读性改写，事实、判断强度和处置状态不变。它的 `scripts/check_report.py` 先标出超出字数上限的块和高密度句子，改写后再核对结构是否变动、攻击者 IoC 或哈希是否被删、是否出现原稿没有的具体值；只有报告哈希与取稿时一致才写回。它从 `../sleuth/references/` 读取 sleuth 的写作规则，两个 skill 需装在同一目录下。补充新证据或修改结论仍走 sleuth 的修订模式。
+配套 skill `skills/ir-report-review/` 审校已成稿的 `IR-….md`（SIREN 上的 Dossier 链接或本地路径），按客户可读性改写，事实、判断强度和处置状态不变。它的 `scripts/check_report.py` 先标出超出字数上限的块和高密度句子，改写后再核对结构是否变动、攻击者 IoC 或哈希是否被删、是否出现原稿没有的具体值，PDF 中打不开的链接（如指向附件的相对链接）一律报 FAIL；只有报告哈希与取稿时一致才写回。它从 `../sleuth/references/` 读取 sleuth 的写作规则，两个 skill 需装在同一目录下。补充新证据或修改结论仍走 sleuth 的修订模式。
 
 ## 目录结构
 
