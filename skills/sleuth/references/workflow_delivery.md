@@ -17,7 +17,7 @@ SKILL.md 进入步骤 7 时加载本文件。报告确认门以 SKILL.md 为准�
 
 全部 findings 标记「已验证」后，运行时支持子 agent 时派生一个全新结论 writer 起草交付结论。只给它全部 findings 文件路径与 `references/findings_spec.md`，不传调查对话、工具输出、编排者推理或核验表。它按「结论交付层使用规则」返回草稿，不创建文件，不调用 SIREN、SAS、SLS、OpenCLI 或联网工具。
 
-编排者逐句对照 findings 复核，只判通过或不通过，不改写草稿：每条断言都要对得上已验证章节的措辞等级、数量与范围，IoC、时间与路径逐字一致。不通过时，findings 本身有误或需要新增、加强断言的，先改 findings（新增或加强的断言回到 `references/verification_checklist.md` 过门）；草稿越界的，把问题清单交回 writer 重写。问题清单只写原句、违反的规则和对应 findings 章节，不附改写文本或新事实。重写稿重新复核。通过后把 writer 稿原文写入 findings 并原样发送，不增删字句，不追加调查过程说明；末尾只可另起一行询问是否生成报告。
+编排者逐句对照 findings 复核，只判通过或不通过，不改写草稿：每条断言都要对得上已验证章节的措辞等级、数量与范围，IoC、时间与路径逐字一致。不通过时，findings 本身有误或需要新增、加强断言的，先改 findings（新增或加强的断言回到 `references/verification_checklist.md` 过门）；草稿越界的，把问题清单交回 writer 重写。问题清单只写原句、违反的规则和对应 findings 章节，不附改写文本或新事实。重写稿重新复核。通过后把 writer 稿原样发送，不增删字句，不追加调查过程说明；末尾只可另起一行询问是否生成报告。
 
 运行时不支持子 agent 时，编排者重新读取全部 findings 后内联起草，只用文件内容，不凭会话记忆补事实或改措辞，再做同一复核。
 
