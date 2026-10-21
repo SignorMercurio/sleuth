@@ -28,6 +28,42 @@ SERVER = Path(__file__).resolve().parent / "mock_siren" / "server.py"
 SUBAGENT_TOOLS = {"Task", "Agent"}
 
 
+def result_text(block: dict) -> str:
+    content = block.get("content", "")
+    if isinstance(content, list):
+        return "\n".join(c.get("text", "") for c in content if isinstance(c, dict))
+    return str(content)
+
+
+def nonblank(text: str) -> list[str]:
+    return [line.strip() for line in text.splitlines() if line.strip()]
+
+
+def relay_check(final: str, drafts: list[str]) -> tuple[bool | None, list[str] | None]:
+    """Whether the final answer relays one sub-agent draft verbatim.
+
+    Lines are compared stripped, so the CLI's hand-back indentation and wrapper
+    lines do not matter. The answer, optionally minus one added trailing line
+    (the report question), must be a contiguous run of a draft's lines: only the
+    writer's leading or trailing notes may be dropped. The list holds answer
+    lines found in no draft. Both are None when no sub-agent returned text.
+    """
+    if not drafts:
+        return None, None
+    lines = nonblank(final)
+    drafted = [nonblank(d) for d in drafts]
+    relayed = any(d[i:i + len(run)] == run
+                  for d in drafted for run in (lines, lines[:-1]) if run
+                  for i in range(len(d) - len(run) + 1))
+
+    def missing(draft: list[str]) -> list[str]:
+        known = set(draft)
+        absent = [line for line in lines if line not in known]
+        return absent[:-1] if absent and absent[-1] == lines[-1] else absent
+
+    return relayed, min((missing(d) for d in drafted), key=len)
+
+
 def check_user_permissions(settings: dict) -> None:
     # --allowedTools adds grants; it does not revoke user-level grants. Keep
     # model/auth settings, but refuse configurations that expand file access.
@@ -66,11 +102,14 @@ def summarize(events: list[dict]) -> dict:
     signatures = [json.dumps(c.get("input", {}), sort_keys=True) for c in remote]
     # Per sub-agent SIREN use lets review check that writers stayed off SIREN.
     siren_by_parent = Counter(parents[r["id"]] for r in remote)
+    agent_calls = [c for c in calls.values() if c["name"] in SUBAGENT_TOOLS]
     subagents = [{
         "description": c.get("input", {}).get("description"),
         "subagent_type": c.get("input", {}).get("subagent_type"),
         "siren_run_calls": siren_by_parent[c["id"]],
-    } for c in calls.values() if c["name"] in SUBAGENT_TOOLS]
+    } for c in agent_calls]
+    drafts = [result_text(results[c["id"]]) for c in agent_calls if c["id"] in results]
+    relayed, unrelayed = relay_check(final.get("result") or "", drafts)
     return {
         "completed": (final.get("subtype") == "success" and not final.get("is_error", True)
                       and bool(final.get("result")) and bool(remote)),
@@ -80,6 +119,8 @@ def summarize(events: list[dict]) -> dict:
         "siren_run_calls": len(remote),
         "exact_repeat_calls": len(signatures) - len(set(signatures)),
         "subagents": subagents,
+        "relayed_verbatim": relayed,
+        "unrelayed_lines": unrelayed,
         "siren_result_bytes": sum(
             len(json.dumps(results[c["id"]].get("content", ""), ensure_ascii=False).encode())
             for c in remote if c["id"] in results
@@ -95,7 +136,7 @@ def summarize(events: list[dict]) -> dict:
 
 
 def run(scenario_path: Path, skill: Path | None, output: Path, timeout: int,
-        subagents: bool = False) -> dict:
+        subagents: bool = True) -> dict:
     output = output.resolve()
     if output == ROOT or ROOT in output.parents:
         raise ValueError("output directory must be outside the repository")
@@ -246,8 +287,8 @@ def main() -> None:
     parser.add_argument("--without-skill", action="store_true")
     parser.add_argument("--output-dir", type=Path, required=True, help="new directory outside the repository")
     parser.add_argument("--timeout", type=int, default=600, help="wall-clock cap per run in seconds")
-    parser.add_argument("--subagents", action="store_true",
-                        help="expose the Task tool under the same grants so isolated verifier/writer paths run")
+    parser.add_argument("--no-subagents", action="store_true",
+                        help="withhold the Task tool so step 7 runs its inline fallback")
     args = parser.parse_args()
     output = args.output_dir.resolve()
     if output == ROOT or ROOT in output.parents:
@@ -255,7 +296,7 @@ def main() -> None:
     if args.timeout <= 0:
         parser.error("--timeout must be positive")
     summary = run(args.scenario.resolve(), None if args.without_skill else args.skill_dir.resolve(),
-                  output, args.timeout, args.subagents)
+                  output, args.timeout, not args.no_subagents)
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     raise SystemExit(0 if summary["completed"] else 1)
 

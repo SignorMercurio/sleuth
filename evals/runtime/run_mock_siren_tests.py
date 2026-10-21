@@ -545,6 +545,29 @@ def suite_drill_summary() -> Suite:
                 [{"description": "verify claims", "subagent_type": "general-purpose",
                   "siren_run_calls": 1}],
                 "SIREN calls are attributed to the sub-agent that made them")
+    suite.check(summarize([call, spawn, nested, result])["relayed_verbatim"] is None
+                and summarize([call, spawn, nested, result])["unrelayed_lines"] is None,
+                "a sub-agent without a returned draft is not judged")
+    # The CLI wraps hand-backs in a preamble and indents every report line.
+    hand_back = {"type": "user", "message": {"content": [{
+        "type": "tool_result", "tool_use_id": "agent", "content": [{"type": "text", "text":
+            "[Subagent hand-back] The report follows:\n  # 结论\n  \n  web01 已失陷（已确认）。\n"
+            "  外联持续性无法确认。\n  建议立即隔离。\n  \n  起草说明（交给编排者）：无。\nagentId: x"}]}]}}
+
+    def relay(answer: str) -> dict:
+        return summarize([call, spawn, hand_back, {**result, "result": answer}])
+
+    question = "\n\n是否需要生成正式报告？"
+    summary = relay("# 结论\n\nweb01 已失陷（已确认）。\n外联持续性无法确认。\n建议立即隔离。" + question)
+    suite.check(summary["relayed_verbatim"] is True and summary["unrelayed_lines"] == [],
+                "a relayed draft may drop writer notes and add one report question")
+    summary = relay("# 结论\n\nweb01 已失陷并持续外联（已确认）。\n外联持续性无法确认。\n建议立即隔离。" + question)
+    suite.check(summary["relayed_verbatim"] is False
+                and summary["unrelayed_lines"] == ["web01 已失陷并持续外联（已确认）。"],
+                "a rewritten line is flagged and listed for review")
+    summary = relay("# 结论\n\nweb01 已失陷（已确认）。\n建议立即隔离。" + question)
+    suite.check(summary["relayed_verbatim"] is False and summary["unrelayed_lines"] == [],
+                "dropping a hedge from the middle of the draft is not a verbatim relay")
     from run_agent_drill import check_user_permissions
     for unsafe in [
         {"permissions": {"allow": ["Read"]}},
@@ -573,7 +596,7 @@ def suite_drill_summary() -> Suite:
          patch.dict(drill.os.environ, {"CLAUDE_CONFIG_DIR": directory}):
         output = Path(directory) / "run"
 
-        def fake_run(run_dir: Path, stdout: str = "", subagents: bool = False):
+        def fake_run(run_dir: Path, stdout: str = "", subagents: bool = True):
             process = Mock(pid=123456789, returncode=0)
             process.stdout = io.StringIO(stdout)
             process.stdin = io.StringIO()
@@ -585,12 +608,14 @@ def suite_drill_summary() -> Suite:
 
         captured, flags = fake_run(output, "\n".join(json.dumps(e) for e in events) + "\n")
         suite.equal(captured["completed"], False, "missing findings cannot count as completed")
-        suite.check("Task" not in flags["--tools"], "sub-agents stay unavailable by default")
-        captured, flags = fake_run(Path(directory) / "agents", subagents=True)
         suite.check(flags["--tools"] == "Read,Write,Edit,Task"
                     and "Task" in flags["--allowedTools"].split(","),
-                    "--subagents adds only the Task tool")
+                    "sub-agents are on by default and add only the Task tool")
         suite.equal(captured["subagents_enabled"], True, "sub-agent exposure is recorded")
+        captured, flags = fake_run(Path(directory) / "inline", subagents=False)
+        suite.check(flags["--tools"] == "Read,Write,Edit"
+                    and "Task" not in flags["--allowedTools"].split(","),
+                    "--no-subagents removes the Task tool for the inline fallback")
         suite.check((output / "event_timings.jsonl").read_text().strip() != "",
                     "events retain arrival times without changing raw content")
         try:

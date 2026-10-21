@@ -12,7 +12,7 @@
 
 ### 新增
 
-- `run_agent_drill.py --subagents`：开放 `Task` 工具，子 agent 沿用同一组授权，summary 按子 agent 记录 SIREN 调用数。默认仍关闭，旧演练可比。原因：此前演练只能覆盖步骤 7 的内联降级，测不到独立核验与隔离结论起草的主路径。
+- `run_agent_drill.py` 默认开放 `Task` 工具，子 agent 沿用同一组授权，`--no-subagents` 才走步骤 7 的内联降级。summary 按子 agent 记录 SIREN 调用数，并用 `relayed_verbatim` / `unrelayed_lines` 判断最终回复是否原样转发了 writer 草稿（去掉末尾一行报告询问后须是草稿中连续的一段行）。原因：此前演练只能覆盖步骤 7 的内联降级，测不到独立核验与隔离结论起草的主路径；SKILL.md 步骤 7 要求有子 agent 就必须派 writer，默认关闭等于只测降级路径；SKILL.md 已变，旧演练本就不可直接比较。此前三轮演练里编排者改写草稿都靠人工通读发现，用这些演练的原始事件回放，新字段的判定与人工结论一致（r3/03 原样转发，其余改写）。
 
 ### 变更
 

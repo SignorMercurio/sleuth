@@ -8,7 +8,7 @@
   it invokes the user's configured Claude Code model service and writes a new,
   explicitly selected directory outside the repository. It exposes only mock
   SIREN and scoped local file tools to the model, plus the Task sub-agent tool
-  under the same grants when `--subagents` is passed; it is not run by CI or shipped
+  under the same grants unless `--no-subagents` is passed; it is not run by CI or shipped
   in the Skill. The trust generator records these capabilities and pins the
   reviewed runner digest. After editing it, review the capabilities and update
   that digest; do not describe the runner as offline.

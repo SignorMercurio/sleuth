@@ -43,7 +43,7 @@ SCHEMA_VERSION = 1
 # Deliberate online evaluation capability, reviewed independently of the offline
 # heuristic. A source change invalidates this approval until reviewed again.
 MODEL_DRILL_PATH = "evals/runtime/run_agent_drill.py"
-MODEL_DRILL_SHA256 = "9bb2ed6832f811eda306cecd6adc0285ba5fe08d47aec16602ba8cd42623a882"
+MODEL_DRILL_SHA256 = "b83337f677a0c39416a4056a97b01ab5fb283cef89c22a59efb2be53c8859f74"
 
 # All scan surfaces enumerate git-tracked files only. The report attests the
 # committed tree (what is actually shipped and what CI checks out); untracked
@@ -485,7 +485,7 @@ def analyze_script(path: Path) -> dict:
             "findings and metrics in a new caller-selected directory outside the repo. "
             "Reads configured model/auth, refuses ambient file grants and extra directories; disables hooks/plugins and live MCP. "
             "Model access is restricted to mock SIREN and scoped local file tools; "
-            "the opt-in --subagents flag adds only the Task tool under the same grants."
+            "the Task sub-agent tool runs under the same grants unless --no-subagents is passed."
         )
         ok = hashlib.sha256(path.read_bytes()).hexdigest() == MODEL_DRILL_SHA256
         if not ok:

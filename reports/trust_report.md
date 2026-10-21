@@ -1,6 +1,6 @@
 # SLEUTH 信任报告（Trust Report）
 
-生成时间：`2026-10-21T03:22:27Z`
+生成时间：`2026-10-21T03:22:43Z`
 
 总体结论：**通过**
 
@@ -34,7 +34,7 @@
 | `evals/runtime/mock_siren/scenario.py` | `evals/runtime/mock_siren/scenario.py (imported module, no CLI entry point found)` | 否 | 否 | no file-write call detected (static) |
 | `evals/runtime/mock_siren/server.py` | `python3 evals/runtime/mock_siren/server.py` | 否 | 否 | no file-write call detected (static) |
 | `evals/runtime/mock_siren/shell.py` | `evals/runtime/mock_siren/shell.py (imported module, no CLI entry point found)` | 否 | 否 | no file-write call detected (static) |
-| `evals/runtime/run_agent_drill.py` | `python3 evals/runtime/run_agent_drill.py` | 是 | 是 | Opt-in model drill: copies synthetic inputs and writes raw events, timing, findings and metrics in a new caller-selected directory outside the repo. Reads configured model/auth, refuses ambient file grants and extra directories; disables hooks/plugins and live MCP. Model access is restricted to mock SIREN and scoped local file tools; the opt-in --subagents flag adds only the Task tool under the same grants. |
+| `evals/runtime/run_agent_drill.py` | `python3 evals/runtime/run_agent_drill.py` | 是 | 是 | Opt-in model drill: copies synthetic inputs and writes raw events, timing, findings and metrics in a new caller-selected directory outside the repo. Reads configured model/auth, refuses ambient file grants and extra directories; disables hooks/plugins and live MCP. Model access is restricted to mock SIREN and scoped local file tools; the Task sub-agent tool runs under the same grants unless --no-subagents is passed. |
 | `evals/runtime/run_mock_siren_tests.py` | `python3 evals/runtime/run_mock_siren_tests.py` | 否 | 是 | write call present; resolves to a Python-managed temp directory (tempfile.*, ephemeral, deleted at context exit) -- not a persistent write outside reports/ or evals/ (static) |
 | `scripts/air_session_stats.py` | `python3 scripts/air_session_stats.py` | 否 | 否 | no file-write call detected (static) |
 | `scripts/gen_trust_report.py` | `python3 scripts/gen_trust_report.py` | 否 | 是 | write call present; resolves to reports/ (static) |

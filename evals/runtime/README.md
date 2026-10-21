@@ -284,10 +284,13 @@ python3 evals/runtime/run_agent_drill.py \
 Read/Write/Edit、工具通配授权或 additionalDirectories；遇到该配置应使用专用 CLI profile。
 这是 CLI 工具与权限隔离，不是操作系统沙箱，运行前还应核对所在环境的托管策略。
 只启用 mock SIREN 和受限的本地 Read/Write/Edit；禁止真实 MCP、联网调查工具、
-本地 shell 与插件/hooks。子 agent 默认关闭，此时步骤 7 的独立核验与结论起草走内联降级；
-加 `--subagents` 才开放 `Task` 工具，子 agent 沿用同一组授权，summary 的 `subagents`
-按子 agent 列出其 SIREN 调用数，用于检查结论 writer 是否越界。模型只能读该轮工作区并写
-`*.findings.md`。这用于主机调查路径，不覆盖 SAS/SLS/OOB 云侧查询或步骤 8 的隔离 writer。
+本地 shell 与插件/hooks。默认开放 `Task` 工具，子 agent 沿用同一组授权，走步骤 7 的独立核验
+与隔离结论起草主路径；加 `--no-subagents` 才测内联降级。summary 的 `subagents` 按子 agent
+列出其 SIREN 调用数，用于检查结论 writer 是否越界；`relayed_verbatim` 判断最终回复是否原样
+转发了某个子 agent 的草稿：去掉末尾一行报告询问后，回复须是草稿中连续的一段行（只比对去缩进后的
+非空行），因此只允许丢掉 writer 首尾的附注，中间删句、调序或改写都判为 `false`。`unrelayed_lines`
+列出不在任何草稿里的行；为 `false` 而列表为空，说明是删句或调序。没有子 agent 返回草稿时两者为 `null`。
+模型只能读该轮工作区并写 `*.findings.md`。这用于主机调查路径，不覆盖 SAS/SLS/OOB 云侧查询或步骤 8 的隔离 writer。
 
 产物包括 `events.jsonl` 原始会话、`event_timings.jsonl` 接收时间、`conclusion.md`、
 `workspace/*.findings.md`、`summary.json`，以及复现所用的场景与 Skill 副本。
