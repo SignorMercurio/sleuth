@@ -536,6 +536,15 @@ def suite_drill_summary() -> Suite:
         {**call["message"]["content"][0], "id": "two"}]}}
     suite.equal(summarize([call, repeated, result])["exact_repeat_calls"], 1,
                 "a new tool id with identical arguments counts as a repeated call")
+    spawn = {"type": "assistant", "message": {"content": [
+        {"type": "tool_use", "id": "agent", "name": "Task",
+         "input": {"description": "verify claims", "subagent_type": "general-purpose"}}]}}
+    nested = {"type": "assistant", "parent_tool_use_id": "agent", "message": {"content": [
+        {**call["message"]["content"][0], "id": "three"}]}}
+    suite.equal(summarize([call, spawn, nested, result])["subagents"],
+                [{"description": "verify claims", "subagent_type": "general-purpose",
+                  "siren_run_calls": 1}],
+                "SIREN calls are attributed to the sub-agent that made them")
     from run_agent_drill import check_user_permissions
     for unsafe in [
         {"permissions": {"allow": ["Read"]}},
@@ -563,13 +572,25 @@ def suite_drill_summary() -> Suite:
     with tempfile.TemporaryDirectory() as directory, \
          patch.dict(drill.os.environ, {"CLAUDE_CONFIG_DIR": directory}):
         output = Path(directory) / "run"
-        process = Mock(pid=123456789, returncode=0)
-        process.stdout = io.StringIO("\n".join(json.dumps(e) for e in events) + "\n")
-        process.stdin = io.StringIO()
-        with patch.object(drill.shutil, "which", return_value="fixture-cli"), \
-             patch.object(drill.subprocess, "Popen", return_value=process):
-            captured = drill.run(scenario_paths()[0], None, output, 1)
+
+        def fake_run(run_dir: Path, stdout: str = "", subagents: bool = False):
+            process = Mock(pid=123456789, returncode=0)
+            process.stdout = io.StringIO(stdout)
+            process.stdin = io.StringIO()
+            with patch.object(drill.shutil, "which", return_value="fixture-cli"), \
+                 patch.object(drill.subprocess, "Popen", return_value=process) as popen:
+                captured = drill.run(scenario_paths()[0], None, run_dir, 1, subagents)
+            command = popen.call_args.args[0]
+            return captured, {f: command[command.index(f) + 1] for f in ("--tools", "--allowedTools")}
+
+        captured, flags = fake_run(output, "\n".join(json.dumps(e) for e in events) + "\n")
         suite.equal(captured["completed"], False, "missing findings cannot count as completed")
+        suite.check("Task" not in flags["--tools"], "sub-agents stay unavailable by default")
+        captured, flags = fake_run(Path(directory) / "agents", subagents=True)
+        suite.check(flags["--tools"] == "Read,Write,Edit,Task"
+                    and "Task" in flags["--allowedTools"].split(","),
+                    "--subagents adds only the Task tool")
+        suite.equal(captured["subagents_enabled"], True, "sub-agent exposure is recorded")
         suite.check((output / "event_timings.jsonl").read_text().strip() != "",
                     "events retain arrival times without changing raw content")
         try:

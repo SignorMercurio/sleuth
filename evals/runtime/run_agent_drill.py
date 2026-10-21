@@ -9,6 +9,7 @@ is called a quality pass merely because the CLI exited successfully.
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import hashlib
 import json
 import os
@@ -23,6 +24,8 @@ import time
 
 ROOT = Path(__file__).resolve().parents[2]
 SERVER = Path(__file__).resolve().parent / "mock_siren" / "server.py"
+# The CLI reports its sub-agent tool as Task; newer releases also accept Agent.
+SUBAGENT_TOOLS = {"Task", "Agent"}
 
 
 def check_user_permissions(settings: dict) -> None:
@@ -39,6 +42,7 @@ def check_user_permissions(settings: dict) -> None:
 
 def summarize(events: list[dict]) -> dict:
     calls = {}
+    parents = {}
     results = {}
     final = {}
     model = None
@@ -55,10 +59,18 @@ def summarize(events: list[dict]) -> dict:
                 continue
             if block.get("type") == "tool_use":
                 calls[block["id"]] = block
+                parents[block["id"]] = event.get("parent_tool_use_id")
             elif block.get("type") == "tool_result":
                 results[block["tool_use_id"]] = block
     remote = [c for c in calls.values() if c["name"] == "mcp__siren__run"]
     signatures = [json.dumps(c.get("input", {}), sort_keys=True) for c in remote]
+    # Per sub-agent SIREN use lets review check that writers stayed off SIREN.
+    siren_by_parent = Counter(parents[r["id"]] for r in remote)
+    subagents = [{
+        "description": c.get("input", {}).get("description"),
+        "subagent_type": c.get("input", {}).get("subagent_type"),
+        "siren_run_calls": siren_by_parent[c["id"]],
+    } for c in calls.values() if c["name"] in SUBAGENT_TOOLS]
     return {
         "completed": (final.get("subtype") == "success" and not final.get("is_error", True)
                       and bool(final.get("result")) and bool(remote)),
@@ -67,6 +79,7 @@ def summarize(events: list[dict]) -> dict:
         "tool_calls": len(calls),
         "siren_run_calls": len(remote),
         "exact_repeat_calls": len(signatures) - len(set(signatures)),
+        "subagents": subagents,
         "siren_result_bytes": sum(
             len(json.dumps(results[c["id"]].get("content", ""), ensure_ascii=False).encode())
             for c in remote if c["id"] in results
@@ -81,7 +94,8 @@ def summarize(events: list[dict]) -> dict:
     }
 
 
-def run(scenario_path: Path, skill: Path | None, output: Path, timeout: int) -> dict:
+def run(scenario_path: Path, skill: Path | None, output: Path, timeout: int,
+        subagents: bool = False) -> dict:
     output = output.resolve()
     if output == ROOT or ROOT in output.parents:
         raise ValueError("output directory must be outside the repository")
@@ -126,11 +140,17 @@ def run(scenario_path: Path, skill: Path | None, output: Path, timeout: int) -> 
     allowed = [f"Read(/{workspace}/**)"]
     allowed += [f"{tool}(/{workspace}/*.findings.md)" for tool in ("Write", "Edit")]
     allowed += ["mcp__siren__ls", "mcp__siren__run"]
+    tools = "Read,Write,Edit"
+    if subagents:
+        # Sub-agents inherit the same scoped grants; nothing else is added.
+        allowed.append("Task")
+        tools += ",Task"
+    unavailable = "云侧工具与联网" if subagents else "云侧工具、联网与子 agent"
     prompt = (
         "请排查以下已授权主机的具体事件，交付证据支持的调查结论和 findings 工作底稿，"
         "不生成正式报告。已授权 Client ID："
         + ", ".join(str(c["id"]) for c in scenario["clients"])
-        + "。云侧工具、联网与子 agent 本次不可用；不要等待补充输入，按可用证据推进并披露缺口。\n"
+        + "。" + unavailable + "本次不可用；不要等待补充输入，按可用证据推进并披露缺口。\n"
         + scenario["prompt"]
     )
     if scenario.get("alarm"):
@@ -148,7 +168,7 @@ def run(scenario_path: Path, skill: Path | None, output: Path, timeout: int) -> 
         "--no-session-persistence", "--no-chrome", "--disable-slash-commands",
         "--strict-mcp-config", "--mcp-config", str(config),
         "--setting-sources", "user", "--settings", json.dumps(overrides),
-        "--system-prompt", system, "--tools", "Read,Write,Edit",
+        "--system-prompt", system, "--tools", tools,
         "--permission-mode", "dontAsk", "--allowedTools", ",".join(allowed),
     ]
     (output / "prompt.txt").write_text(prompt)
@@ -202,6 +222,7 @@ def run(scenario_path: Path, skill: Path | None, output: Path, timeout: int) -> 
         "scenario": scenario["id"],
         "scenario_sha256": hashlib.sha256(scenario_bytes).hexdigest(),
         "skill_sha256": skill_hash,
+        "subagents_enabled": subagents,
         "harness_sha256": harness_hash,
         "elapsed_seconds": round(time.monotonic() - started, 3),
         "exit_code": process.returncode,
@@ -225,6 +246,8 @@ def main() -> None:
     parser.add_argument("--without-skill", action="store_true")
     parser.add_argument("--output-dir", type=Path, required=True, help="new directory outside the repository")
     parser.add_argument("--timeout", type=int, default=600, help="wall-clock cap per run in seconds")
+    parser.add_argument("--subagents", action="store_true",
+                        help="expose the Task tool under the same grants so isolated verifier/writer paths run")
     args = parser.parse_args()
     output = args.output_dir.resolve()
     if output == ROOT or ROOT in output.parents:
@@ -232,7 +255,7 @@ def main() -> None:
     if args.timeout <= 0:
         parser.error("--timeout must be positive")
     summary = run(args.scenario.resolve(), None if args.without_skill else args.skill_dir.resolve(),
-                  output, args.timeout)
+                  output, args.timeout, args.subagents)
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     raise SystemExit(0 if summary["completed"] else 1)
 
