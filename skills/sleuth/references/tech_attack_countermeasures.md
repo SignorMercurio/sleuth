@@ -12,7 +12,7 @@
 ## 系统命令替换
 
 - **检测**：`rpm -V <包>` / `rpm -Va`（RHEL）或 `dpkg -V`（Debian）。**标记位含义**：`S` 大小、`M` 权限、`5` MD5、`D` 设备号、`L` 符号链接、`U` 属主、`G` 组、`T` 修改时间——命令被替换通常见 `S.5....T.`。
-- **恢复（⚠️ 客户执行）**：`yum/apt reinstall <包>`。**若文件被设不可变位**（`lsattr` 显示 `----i-`）需先 `chattr -ai`；**连 chattr 也被篡改时用 busybox 兜底**（`./busybox chattr -ai /usr/bin/<cmd>` 后再删并 reinstall）。
+- **恢复（⚠️ 客户执行）**：先用 `lsattr` 检查目标文件，**显示 `----i-`（不可变位）时先 `chattr -ai`**；**系统 `chattr` 也被篡改时改用 busybox**（`./busybox chattr -ai /usr/bin/<cmd>`）并删除该文件。然后执行 `yum/apt reinstall <包>`。
 
 ## Python 标准库注入
 

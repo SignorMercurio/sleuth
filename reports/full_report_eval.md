@@ -9,10 +9,10 @@ Complete-report contract regression for SLEUTH Step 8.
 
 | Case | Pass | Severity | Timeline | Actions | Visible Han chars |
 | --- | --- | --- | ---: | ---: | ---: |
-| simple-webshell | True | 高危 | 5 | 6 | 2177 |
-| no-current-intrusion | True | 低危 | 4 | 1 | 1737 |
-| complex-rce-credential | True | 高危 | 5 | 5 | 2362 |
-| multi-host-rce | True | 高危 | 5 | 7 | 2552 |
+| simple-webshell | True | 高危 | 5 | 8 | 2219 |
+| no-current-intrusion | True | 低危 | 4 | 2 | 1747 |
+| complex-rce-credential | True | 高危 | 5 | 8 | 2420 |
+| multi-host-rce | True | 高危 | 5 | 7 | 2564 |
 | bloated-revision | True | 高危 | 5 | 5 | 2644 |
 | bloated-revision-reviewed | True | 高危 | 5 | 5 | 2274 |
 
