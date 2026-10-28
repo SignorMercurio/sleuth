@@ -124,6 +124,7 @@ The companion skill `skills/ir-report-review/` reviews a finished `IR-….md` (a
 │       │   └── openai.yaml                 # Codex app metadata and SIREN MCP dependency hint
 │       ├── assets/
 │       │   ├── report.md                   # Markdown report template copied from dossier/report.md
+│       │   ├── report.en.md                # English report template copied from dossier/report.en.md
 │       │   └── style/                      # Sanitized writing sample: curated-ir-excerpts.md
 │       └── references/
 │           ├── workflow_recon.md           # Step 1-2: capabilities, mode routing, client/host list, first sweep
@@ -167,7 +168,7 @@ By default, the skill returns a concise verified investigation result and does n
 - `IR-20260417-db-prod-rce.md`: free-form mode
 - `IR-20260417-web01-multi3-miner-123456.md`: multi-host engagement (3 hosts, primary `web01`)
 
-Each report file is copied from `skills/sleuth/assets/report.md` in this repo and from the same relative path inside the installed skill, then filled for the specific incident.
+Each report file is copied from `skills/sleuth/assets/report.md` or `report.en.md` in this repo and from the same relative path inside the installed skill, then filled for the specific incident.
 
 Event-type slugs (e.g. `webshell`, `rce`, `unknown`) are documented in `skills/sleuth/references/report_naming.md`, the single source of truth for the full table.
 
@@ -191,7 +192,7 @@ The complete-report fixtures and mock SIREN suite are contract regressions. They
 
 ## Contributing
 
-Playbooks and tradecraft guides live in `skills/sleuth/references/`, and the report template lives in `skills/sleuth/assets/report.md`. Everything is plain Markdown. PRs adding new attack types or environment-specific tradecraft are welcome. Keep generic command recipes out of the references: the model already knows them, so the guides carry judgment rules, environment-specific gotchas, and concrete attacker indicators instead.
+Playbooks and tradecraft guides live in `skills/sleuth/references/`, and the report templates live in `skills/sleuth/assets/report.md` and `report.en.md`. Everything is plain Markdown. PRs adding new attack types or environment-specific tradecraft are welcome. Keep generic command recipes out of the references: the model already knows them, so the guides carry judgment rules, environment-specific gotchas, and concrete attacker indicators instead.
 
 Report-writing rules are layered, one authoritative home per rule: block-local fill rules live in the template's HTML comments, cross-cutting constraints in `skills/sleuth/references/report_writing_rules.md`, and prose style in `skills/sleuth/references/report_style.md`. Put a new rule in its matching layer rather than restating it across files. Template changes (including its comments) should be made in the upstream `dossier` project and then synced into this skill.
 

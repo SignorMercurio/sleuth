@@ -1,6 +1,6 @@
 # AGENTS.md
 
-sleuth is a security-investigation agent skill repository for read-only remote incident response via SIREN, ATT&CK-chain analysis, and Chinese IR reports.
+sleuth is a security-investigation agent skill repository for read-only remote incident response via SIREN, ATT&CK-chain analysis, and Chinese or English IR reports.
 
 ## Task-specific guidance
 

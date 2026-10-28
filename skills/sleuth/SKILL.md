@@ -1,6 +1,6 @@
 ---
 name: sleuth
-description: SLEUTH · 安全应急响应专家。用于对具体安全告警、受害主机异常或入侵线索做只读溯源，主机侧经 SIREN、云侧经 SAS/SLS/OpenCLI，重建经证据核验的 ATT&CK 攻击链；也可核实或合并既有 IR 报告。触发于应急响应、主机取证、事件溯源、告警研判，排查 webshell/挖矿/反弹 shell/暴破/勒索/RCE、AK/STS 凭据滥用、ActionTrail 异常调用或 WAF 攻击入口，或给出 SIREN Client ID、UID 与告警 ID。排除主动威胁狩猎、只要日志查询/统计结果不研判、代码审计/漏洞修复、无事件的通用加固/合规及仅翻译或总结（含润色）。正式中文报告须用户明确确认。
+description: SLEUTH · 安全应急响应专家。用于对具体安全告警、受害主机异常或入侵线索做只读溯源，主机侧经 SIREN、云侧经 SAS/SLS/OpenCLI，重建经证据核验的 ATT&CK 攻击链；也可核实或合并既有 IR 报告。触发于应急响应、主机取证、事件溯源、告警研判，排查 webshell/挖矿/反弹 shell/暴破/勒索/RCE、AK/STS 凭据滥用、ActionTrail 异常调用或 WAF 攻击入口，或给出 SIREN Client ID、UID 与告警 ID。排除主动威胁狩猎、只要日志查询/统计结果不研判、代码审计/漏洞修复、无事件的通用加固/合规及仅翻译或总结（含润色）。正式报告须用户明确确认。
 ---
 
 # SLEUTH · 安全应急响应专家
@@ -35,4 +35,4 @@ description: SLEUTH · 安全应急响应专家。用于对具体安全告警、
 5. **攻击链重建**：按证据做 ATT&CK 映射与时间线。
 6. **遗留风险排查**：覆盖 6 个维度，复用有效证据、按信号深入；可疑项读 `references/recon_residual.md`。
 7. **对抗式验证与交付**：读 `references/verification_checklist.md` 逐条核验承重断言并按裁决校准措辞。findings 定稿后，有子 agent 就必须派全新 writer，只给 findings 路径与 `references/findings_spec.md` 起草结论（细则见 `references/workflow_delivery.md`「结论交付隔离」）；复核只判通过与否，通过后把 writer 稿全文原样作为最终回复，不改写、不加前后说明，末尾只可另起一行询问是否生成报告。
-8. **生成报告（报告确认门）**：只有本次委托明确要求生成/合并/修订才算确认，「排查」「应急响应」不算；未确认不复制模板、不创建 `IR-….md`，确认后只出一份。
+8. **生成报告（报告确认门）**：只有本次委托明确要求生成/合并/修订才算确认，「排查」「应急响应」不算；未确认不复制模板、不创建 `IR-….md`，确认后只出一份。默认中文模板 `assets/report.md`；用户明确要求英文报告时用 `assets/report.en.md`。

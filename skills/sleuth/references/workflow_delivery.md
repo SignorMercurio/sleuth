@@ -31,7 +31,7 @@ SKILL.md 进入步骤 7 时加载本文件。报告确认门以 SKILL.md 为准�
 
 findings「入侵路径」有已验证步骤时，按 `references/runtime_compat.md`「生成图片」生成一张示意图，保存为 `<报告名>.assets/attack-chain.png`；多主机只画一张。
 
-- **内容**：只画已验证步骤，节点标签原样写 IP、路径、接口、进程、主机名等具体值；无法确认的后续环节画成灰色虚线框并注明未见记录。要求横向流程图、白底、扁平商务风格、16:9、简体中文。
+- **内容**：只画已验证步骤，节点标签原样写 IP、路径、接口、进程、主机名等具体值；无法确认的后续环节画成灰色虚线框并注明未见记录。要求横向流程图、白底、扁平商务风格、16:9，文字与报告同语言。
 - **提示词措辞**：按「防守方事件复盘流程图」描述，节点用「外部来源」「请求」「写入文件」「启动进程」等中性说法，不写「攻击」「利用」「webshell」「木马」这类词，否则容易被生图服务的内容审核拦截；被拒时改成中性说法重试一次。
 - **失败不阻塞**：工具不可用或仍被拒就不传路径，writer 用文字写入侵路径，交付时说明未生成示意图。
 
@@ -40,7 +40,7 @@ findings「入侵路径」有已验证步骤时，按 `references/runtime_compat
 运行时支持子 agent 时默认派生一个全新 writer 生成报告。只给 writer 以下文件路径，不传调查对话、工具输出、编排者推理或预期答案：
 
 - 全部 findings 文件
-- `assets/report.md`
+- 报告模板（SKILL.md 步骤 8 选定的一份）
 - `assets/style/curated-ir-excerpts.md`
 - `references/findings_spec.md`
 - `references/report_naming.md`
@@ -51,7 +51,7 @@ findings「入侵路径」有已验证步骤时，按 `references/runtime_compat
 writer 只读取这些文件（互不依赖的读取一次性并行发出），不调用 SIREN、SAS、SLS、OpenCLI 或联网工具：
 
 1. 按 `references/report_naming.md` 在当前工作目录确定 `IR-{YYYYMMDD}-{hostname}-{event_type}[-{event_id}].md`
-2. 将 `assets/report.md` 复制为该文件，只编辑该副本，按 `references/report_writing_rules.md` 逐块替换占位内容
+2. 将传入的模板复制为该文件，只编辑该副本，按 `references/report_writing_rules.md` 逐块替换占位内容；英文报告把中文 findings 译成英文，IP、路径、命令、日志原文等证据值原样保留
 3. 只交付这一份 Markdown：不创建报告目录、`index.html`、CSS/JS、字体资源或 dev server；`<报告名>.assets/` 由编排者产出，writer 不碰
 
 是否因字段缺失停止定稿，以 `references/findings_spec.md`「正式报告写作层使用规则」为准；区分漏填与编排者已核实的未知边界。
@@ -61,7 +61,7 @@ writer 完成后先自检，编排者再按相同边界复核：
 1. 按 `references/findings_spec.md` 检查事实边界、措辞等级、严重等级、影响统计口径与处置进展；数量和状态逐项核对来源，已核实的未知边界不能改写成确定结果
 2. 按模板 HTML 注释检查原有标题、`:::` 指令块、占位符和各块内容；图片引用逐条核对路径来自 findings 或编排者传入，且文件存在
 3. 按 `references/report_writing_rules.md` 检查跨章节分工、证据实体下限、内部标识、IoC、样本串案与重复
-4. 按 `references/report_style.md` 通读中文，清理不自然或机械化表达
+4. 按 `references/report_style.md` 通读中文，清理不自然或机械化表达；英文报告改按模板 Writing guide 注释通读
 5. 检查篇幅：概述字段按模板注释的字数上限，正文自然段按 `references/report_writing_rules.md` 的段落上限。超限时按该规则处理，不逐句缩写、不删具体证据值、不把段落挪进表格或列表，并在 QA 结果里写明每处超限的处理方式；修订模式另按 8.4 核对篇幅
 
 QA 结果只返回编排者。全部通过才交付报告；失败就修报告，事实或必填字段缺失则回到步骤 2–7。运行时不支持子 agent 时，编排者重新读取上述文件后内联写作，仍执行相同自检，不凭会话记忆补事实。

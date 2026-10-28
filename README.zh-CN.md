@@ -122,6 +122,7 @@ Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运�
 │       │   └── openai.yaml                 # Codex 应用元数据与 SIREN MCP 依赖提示
 │       ├── assets/
 │       │   ├── report.md                   # Markdown 报告模板（来自 dossier/report.md）
+│       │   ├── report.en.md                # 英文报告模板（来自 dossier/report.en.md）
 │       │   └── style/                      # 脱敏写作样本 curated-ir-excerpts.md
 │       └── references/
 │           ├── workflow_recon.md           # 步骤 1-2：能力确认、模式路由、client/主机清单、首轮扫描
@@ -165,7 +166,7 @@ Skill 默认返回简洁的已验证调查结论，不创建正式报告。用�
 - `IR-20260417-db-prod-rce.md`：自由排查模式
 - `IR-20260417-web01-multi3-miner-123456.md`：多主机委托（3 台主机，主机 `web01`）
 
-报告文件从 `skills/sleuth/assets/report.md` 复制后按事件填充。
+报告文件从 `skills/sleuth/assets/report.md` 或 `report.en.md` 复制后按事件填充。
 
 event_type slug（如 `webshell`、`rce`、`unknown`）的完整表见 `skills/sleuth/references/report_naming.md`。
 
@@ -189,7 +190,7 @@ git diff --check
 
 ## 贡献
 
-Playbook 和技术指南在 `skills/sleuth/references/`，报告模板在 `skills/sleuth/assets/report.md`，均为纯 Markdown。欢迎提交新攻击类型或环境特定指南的 PR。通用命令方法不要放进 references——模型已经知道这些，指南只承载判断规则、环境特定注意事项和具体攻击指标。
+Playbook 和技术指南在 `skills/sleuth/references/`，报告模板在 `skills/sleuth/assets/report.md` 与 `report.en.md`，均为纯 Markdown。欢迎提交新攻击类型或环境特定指南的 PR。通用命令方法不要放进 references——模型已经知道这些，指南只承载判断规则、环境特定注意事项和具体攻击指标。
 
 写作规则分层，每条规则只有一个权威归属：块级填写规则在模板的 HTML 注释中，横向约束在 `skills/sleuth/references/report_writing_rules.md`，行文风格在 `skills/sleuth/references/report_style.md`。新规则放在对应层，不跨文件重复。模板变更（含注释）应在上游 `dossier` 项目修改后同步到此 skill。
 

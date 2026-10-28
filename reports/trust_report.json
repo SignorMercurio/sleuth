@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-27T03:40:17Z",
+  "generated_at": "2026-10-28T02:41:36Z",
   "ok": true,
   "notes": [
     "Generated for the governed-release trust-report gate (reports/review_waivers.json, gate_key=trust-report).",
@@ -9,7 +9,7 @@
   "sections": {
     "secret_scan": {
       "ok": true,
-      "files_scanned": 108,
+      "files_scanned": 109,
       "files_skipped_binary": 0,
       "rules": [
         {
@@ -278,11 +278,11 @@
     "package_hash": {
       "ok": true,
       "package_root": "skills/sleuth",
-      "file_count": 22,
+      "file_count": 23,
       "files": [
         {
           "path": "skills/sleuth/SKILL.md",
-          "sha256": "8d97eda7b7f2bd39a4d329efd6a93630611fc3ef0a898888feeff18a213c1acc"
+          "sha256": "2523cd2d3b2c0a05b9fc04e9406924d3f18d0f09b8f07eb5c9d860320de14a86"
         },
         {
           "path": "skills/sleuth/agents/interface.yaml",
@@ -291,6 +291,10 @@
         {
           "path": "skills/sleuth/agents/openai.yaml",
           "sha256": "62e48fb1651498abb0742da66f944cf2adbaf1045fdcfc4959a20e26a87dbe63"
+        },
+        {
+          "path": "skills/sleuth/assets/report.en.md",
+          "sha256": "75fa8e7704f3f6b4c330e508fe873b6746ae3b5603861312746e0fdd501fcd36"
         },
         {
           "path": "skills/sleuth/assets/report.md",
@@ -326,7 +330,7 @@
         },
         {
           "path": "skills/sleuth/references/report_writing_rules.md",
-          "sha256": "a7b5f65aa3cac4aa34ca0e612e9c14fdfebfdede77d07d3ac1a80869a0ffdd46"
+          "sha256": "60b560f373da6eeedd0ffe3062dca5f4adb8f13580bc0c191fe024663db36ce0"
         },
         {
           "path": "skills/sleuth/references/runtime_compat.md",
@@ -358,7 +362,7 @@
         },
         {
           "path": "skills/sleuth/references/workflow_delivery.md",
-          "sha256": "af663b6a2223f7fe8899b123106e7b0c1ad39e78977022c25139e70c6f3eb374"
+          "sha256": "fa23966bfc5ccb363efd58a048138834e8242ef138202f0ba859adf3d648a1f5"
         },
         {
           "path": "skills/sleuth/references/workflow_recon.md",
@@ -369,7 +373,7 @@
           "sha256": "b6b1e7df2f09bbea903819ff3f5f9360bddfdfe59eef67f40968747ca26c6323"
         }
       ],
-      "aggregate_sha256": "884535f8c59d2d8f04e0f4c9b3fd0ee7a896ae30f9b027a98e3fa3451c804291",
+      "aggregate_sha256": "73ec21b9519535b3d57d6ffe971d6054b2d7cd7354f7105ff41f1d207115e98e",
       "aggregate_method": "sha256 of the concatenation of 'relpath:filehash\\n' for each file, sorted by relpath",
       "snapshot_note": "skills/sleuth/ may be modified by a parallel, unrelated task. This is a snapshot taken at generation time -- regenerate this report (without --check) as the final step before the trust-report waiver is closed, so the recorded hash matches the package actually being shipped."
     }

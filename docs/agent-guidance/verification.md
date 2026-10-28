@@ -27,8 +27,9 @@ bash "${HOME}/.agents/skills/health/scripts/check-doc-refs.sh" .
 
 ## Change-specific checks
 
-- After syncing the report template, run
-  `cmp -s skills/sleuth/assets/report.md ../dossier/report.md`.
+- After syncing the report templates, run
+  `cmp -s skills/sleuth/assets/report.md ../dossier/report.md` and
+  `cmp -s skills/sleuth/assets/report.en.md ../dossier/report.en.md`.
 - After changing report rules, regenerate the affected fixtures under
   `evals/output/fixtures/full_reports/` with an isolated SKILL Step 8 writer.
   Then run the applicable checks above, review the prose against
