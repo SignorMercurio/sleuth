@@ -76,11 +76,15 @@
     "skills/sleuth/references/workflow_tracing.md": [
       "调查闭环与停止条件",
       "不得为了凑满攻击链、CVE 或 ATT&CK 技术继续扩张调查",
-      "不得为了字段完整或告警名称强行匹配 CVE"
+      "不得为了字段完整或告警名称强行匹配 CVE",
+      "清单还有可执行项时不结束回合",
+      "不得因一项受阻停止整个调查",
+      "追加为新项"
     ],
     "skills/sleuth/references/findings_spec.md": [
       "未发现需要绑定的漏洞",
-      "不得为完整度强行匹配 CVE"
+      "不得为完整度强行匹配 CVE",
+      "每轮写回都更新最后更新时间、当前结论与清单状态"
     ]
   },
   "fallback_positive_concepts": [

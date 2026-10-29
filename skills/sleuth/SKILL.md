@@ -19,6 +19,8 @@ description: SLEUTH · 安全应急响应专家。用于对具体安全告警、
 
 独立命令并行发出：多主机同命令用 `run_batch`，单主机多条合并进一个 `run`，长命令用更长 `yield_time_ms` 一次等待。上下文压缩后先读 findings 工作区段，只按需重读当前步骤的单个 reference。推测须标注「推测」。工具映射、子 agent、exec 脚本与 SIREN 异常见 `references/runtime_compat.md`。
 
+**持续推进**：按 findings 的排查清单推进，清单还有可执行项时不结束回合，一项受阻不停止整个调查。推进、受阻与收尾规则见 `references/workflow_tracing.md`「调查闭环与停止条件」。
+
 ## 调查模式（自动判别，细则见步骤 1）
 
 - **一·告警驱动**：UID + 一个 SAS 选择器（告警 `Id`/资产 UUID/实例 ID）；缺一且问不到时转 **二·自由调查**，按用户描述的异常线索排查。
@@ -29,10 +31,10 @@ description: SLEUTH · 安全应急响应专家。用于对具体安全告警、
 ## 工作流程（默认止于步骤 7；细则读 `references/workflow_recon.md`（1–2）、`references/workflow_tracing.md`（3–6）、`references/workflow_delivery.md`（7–8））
 
 1. **判断模式并初始化**：确认可用能力与调查对象（主机/Client，云侧事件为身份与时间窗），建立 findings 并记录覆盖缺口；模式一用 `$sas` 取告警，模式二问异常现象。
-2. **初步信息收集**：先取易失证据，再做轻量基线，列出待证问题；多主机先覆盖已授权清单的最小快照。
-3. **深度溯源分析**：读 `references/playbooks.md` 对应小节，按待证问题补最短证据，需要时做云侧交叉验证。
+2. **初步信息收集**：先取易失证据，再做轻量基线，建立排查清单；多主机先覆盖已授权清单的最小快照。
+3. **深度溯源分析**：读 `references/playbooks.md` 对应小节，按排查清单逐项补最短证据，需要时做云侧交叉验证。
 4. **入口与漏洞定位**：按证据记录实际入口；只有证据指向漏洞利用才核对组件/版本、CVE 与修复方案，不强行绑定 CVE。
 5. **攻击链重建**：按证据做 ATT&CK 映射与时间线。
 6. **遗留风险排查**：覆盖 6 个维度，复用有效证据、按信号深入；可疑项读 `references/recon_residual.md`。
-7. **对抗式验证与交付**：读 `references/verification_checklist.md` 逐条核验承重断言并按裁决校准措辞。findings 定稿后，有子 agent 就必须派全新 writer，只给 findings 路径与 `references/findings_spec.md` 起草结论（细则见 `references/workflow_delivery.md`「结论交付隔离」）；复核只判通过与否，通过后把 writer 稿全文原样作为最终回复，不改写、不加前后说明，末尾只可另起一行询问是否生成报告。
+7. **对抗式验证与交付**：读 `references/verification_checklist.md` 逐条核验承重断言并按裁决校准措辞。findings 定稿后，有子 agent 就必须派全新 writer，只给 findings 路径与 `references/findings_spec.md` 起草结论（细则见 `references/workflow_delivery.md`「结论交付隔离」）；复核只判通过与否，通过后把 writer 稿全文原样作为最终回复，不改写、不加前后说明，末尾只可另起一行给出 findings 路径并询问是否生成报告。
 8. **生成报告（报告确认门）**：只有本次委托明确要求生成/合并/修订才算确认，「排查」「应急响应」不算；未确认不复制模板、不创建 `IR-….md`，确认后只出一份。默认中文模板 `assets/report.md`；用户明确要求英文报告时用 `assets/report.en.md`。

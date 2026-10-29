@@ -1,6 +1,6 @@
 # SLEUTH 信任报告（Trust Report）
 
-生成时间：`2026-10-28T02:41:36Z`
+生成时间：`2026-10-29T07:50:03Z`
 
 总体结论：**通过**
 
@@ -55,7 +55,7 @@
 
 - 包目录：`skills/sleuth`
 - 文件数：23
-- 聚合 SHA-256：`73ec21b9519535b3d57d6ffe971d6054b2d7cd7354f7105ff41f1d207115e98e`
+- 聚合 SHA-256：`91255fbd08c279ccacb90a013cdd7355f5373e71b202c34ccf4feb523d630261`
 - 聚合算法：sha256 of the concatenation of 'relpath:filehash\n' for each file, sorted by relpath
 - 说明：skills/sleuth/ may be modified by a parallel, unrelated task. This is a snapshot taken at generation time -- regenerate this report (without --check) as the final step before the trust-report waiver is closed, so the recorded hash matches the package actually being shipped.
 - 逐文件清单见 `reports/trust_report.json` 的 `sections.package_hash.files`。
