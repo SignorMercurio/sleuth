@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-29T07:50:03Z",
+  "generated_at": "2026-11-04T03:24:55Z",
   "ok": true,
   "notes": [
     "Generated for the governed-release trust-report gate (reports/review_waivers.json, gate_key=trust-report).",
@@ -282,7 +282,7 @@
       "files": [
         {
           "path": "skills/sleuth/SKILL.md",
-          "sha256": "999849799e4f0042581234dfea4dc85cb6004086b147300ff400a203f97ceb59"
+          "sha256": "9a2f7beebcec52064ffadb0c5647a1f9bef1bcb69c1623d493b058fc7911809d"
         },
         {
           "path": "skills/sleuth/agents/interface.yaml",
@@ -310,7 +310,7 @@
         },
         {
           "path": "skills/sleuth/references/findings_spec.md",
-          "sha256": "7578d41b04c1c34bbd333a86922e19a8058b4aaf24eef50b37f663cfab2d7589"
+          "sha256": "565dcd38ab8593593a7eeb88723a50b8a097ccbbdf8b061123d2c15c25b7f3f4"
         },
         {
           "path": "skills/sleuth/references/playbooks.md",
@@ -334,7 +334,7 @@
         },
         {
           "path": "skills/sleuth/references/runtime_compat.md",
-          "sha256": "0c7998711e10820cb386944310aad364ce8472b1e6eb9034318ef5a64e0d397f"
+          "sha256": "b8d9291e85e9bdf2cc66b68b640bbce8ec96de464c7d2b9c1fa2b0f778604f2a"
         },
         {
           "path": "skills/sleuth/references/sas_sls_host_telemetry.md",
@@ -362,18 +362,18 @@
         },
         {
           "path": "skills/sleuth/references/workflow_delivery.md",
-          "sha256": "ca80f291a59dae3d792d84162bb3a191ad8a69c27cde143f5f94c87f7f08e2c9"
+          "sha256": "0931118d1ecd5e034a03ae2a004b5c1e8e755b5b5a5244ede170b58bc84f42fc"
         },
         {
           "path": "skills/sleuth/references/workflow_recon.md",
-          "sha256": "c6b78c4e62fe114996af5376a7d83e52fde2909bd858dfa46a1b35d948cd4e86"
+          "sha256": "18c61ce30ff83c204e329a532cf3a7c30bd98d0c7d7f72a29210c9fa5778b565"
         },
         {
           "path": "skills/sleuth/references/workflow_tracing.md",
-          "sha256": "a0b2342be1f4b957238f4480af32d32246eadec8850d432096e0d89aac2a59ed"
+          "sha256": "b52b835419a493fd58a17922806870314228a642bf76b7c577dd9dab430063e0"
         }
       ],
-      "aggregate_sha256": "91255fbd08c279ccacb90a013cdd7355f5373e71b202c34ccf4feb523d630261",
+      "aggregate_sha256": "e1bb662985b859b8610a0b230c81be9f0bb255abd003723315fcd104876187b3",
       "aggregate_method": "sha256 of the concatenation of 'relpath:filehash\\n' for each file, sorted by relpath",
       "snapshot_note": "skills/sleuth/ may be modified by a parallel, unrelated task. This is a snapshot taken at generation time -- regenerate this report (without --check) as the final step before the trust-report waiver is closed, so the recorded hash matches the package actually being shipped."
     }
