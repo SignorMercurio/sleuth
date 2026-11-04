@@ -17,4 +17,5 @@
 ## 调用要点
 
 - 目标主机查询必须绑定已核对的实例/资产标识，结果保留该标识；PID、用户名、私网 IP 和进程名不单独作为跨记录关联键。跨资产扩展与单机取证分开，超出授权清单先确认。
-- `opencli-aliyun-ir` 只补充云防火墙、ACK/DAS、OSS/RDS/ECS/VPC/SLB、内部控制台、免费 ActionTrail 事件窗或其他直接工具覆盖缺口；前一层已完整回答时不重复调用。
+- `aliyun` 只查云控制面单点事实，如实例、安全组、RAM 用户、AccessKey 状态和 ActionTrail 事件；只在 `aliyun configure list` 有 profile 时使用，只读规则见 SKILL.md「`aliyun` 只读」。
+- `opencli-aliyun-ir` 补充专用适配器（云防火墙、ACK/DAS 等）、跨产品关联、内部控制台、控制台截图、免费 ActionTrail 事件窗或其他直接工具覆盖缺口；Project 没有 AccessKey 时也由它查控制面。前一层已完整回答时不重复调用。

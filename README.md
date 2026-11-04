@@ -30,7 +30,8 @@ Investigation outputs and optional reports are generated in Simplified Chinese b
 - **SIREN MCP server**: host investigation depends on SIREN list-client and remote-run tools (cloud-side investigation runs without them), usually exposed as `mcp__siren__ls` and `mcp__siren__run`. Configure SIREN as an MCP server in the client you use before running the skill.
 - **`$sas` skill**: required for alarm-driven lookup.
 - **Optional `sls` skill**: the first choice for WAF / SAS / ActionTrail cloud-log cross-validation.
-- **Optional `opencli-aliyun-ir` skill**: used after direct `sas` / `sls` for Alibaba Cloud control-plane state, dedicated adapters, internal consoles, cross-product correlation, and explicit coverage gaps.
+- **Optional `aliyun` CLI**: used for single read-only control-plane lookups when a SIREN AIR Project has AccessKeys.
+- **Optional `opencli-aliyun-ir` skill**: used after direct `sas` / `sls` for Alibaba Cloud control-plane state without AccessKeys, dedicated adapters, internal consoles, cross-product correlation, and explicit coverage gaps.
 
 ## Install
 

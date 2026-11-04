@@ -2,9 +2,9 @@
 
 Three rule families live here:
 
-1. Tool surface -- SLEUTH may drive victim hosts only through `mcp__siren__ls`
-   and `mcp__siren__run`, and must not fall back to a local shell or SSH for
-   host forensics.
+1. Tool surface -- SLEUTH may drive victim hosts only through the read-only
+   SIREN tools in `SIREN_ALLOWED_TOOLS`, and must not fall back to a local shell
+   or SSH for host forensics.
 2. Read-only guardrail -- every command sent through `run` must be read-only.
    The check is default-deny: a binary is allowed only if it is on the
    read-only allowlist, or on the guarded list and used with a read-only
@@ -13,7 +13,8 @@ Three rule families live here:
    cannot make that judgement, so the allowlist is the tractable approximation
    and is meant to be extended when a legitimate read-only command is missing.
 3. Cloud layering -- alarms go to `$sas`, delivered logs to `sls`, and only
-   then control-plane gaps to `opencli-aliyun-ir`. A call that skips a layer
+   then control-plane gaps to `aliyun` or `opencli-aliyun-ir`. Every `aliyun`
+   command must also call a read-only API. A call that skips a layer
    must carry a `fallback_reason` recording why the lower layer could not
    answer.
 
@@ -28,20 +29,28 @@ import re
 
 # -- tool surface -----------------------------------------------------------
 
-SIREN_ALLOWED_TOOLS = frozenset({"mcp__siren__ls", "mcp__siren__run"})
+SIREN_ALLOWED_TOOLS = frozenset(
+    {
+        "mcp__siren__ls",
+        "mcp__siren__run",
+        "mcp__siren__run_batch",
+        "mcp__siren__recon",
+        "mcp__siren__read_run_result",
+        "mcp__siren__search_run_result",
+        "mcp__siren__save_evidence",
+        "mcp__siren__case_read",
+        "mcp__siren__case_update",
+    }
+)
 SIREN_TOOL_PREFIXES = ("mcp__siren__", "siren__", "siren.")
 
-# Names agents are known to invent, or write tools the runtime may expose.
+# Tools that run a command, with the argument naming their target clients.
+SIREN_COMMAND_TOOLS = {"mcp__siren__run": "client_id", "mcp__siren__run_batch": "client_ids"}
+
+# Unprefixed names agents are known to invent. Any prefixed SIREN tool outside
+# SIREN_ALLOWED_TOOLS is already denied.
 SIREN_FORBIDDEN_TOOLS = frozenset(
     {
-        "mcp__siren__exec",
-        "mcp__siren__run_command",
-        "mcp__siren__deploy",
-        "mcp__siren__upload",
-        "mcp__siren__shell",
-        "mcp__siren__wait",
-        "mcp__siren__list_clients",
-        "mcp__siren__recon",
         "list_clients",
         "exec",
         "wait",
@@ -76,8 +85,13 @@ CLOUD_LAYERS = {
     "opencli-aliyun-ir": 3,
     "$opencli-aliyun-ir": 3,
     "opencli": 3,
+    "aliyun": 3,
 }
-LAYER_NAMES = {1: "$sas", 2: "sls", 3: "opencli-aliyun-ir"}
+LAYER_NAMES = {1: "$sas", 2: "sls", 3: "aliyun or opencli-aliyun-ir"}
+
+# SKILL.md "aliyun 只读": SIREN does not restrict Project AccessKeys.
+ALIYUN_READ_API_PREFIXES = ("describe", "list", "get", "query", "lookup", "search")
+ALIYUN_SECRET_API_MARKERS = ("secretvalue", "password", "accesskeysecret")
 
 WEB_TOOLS = frozenset({"websearch", "webfetch", "web_search", "browser"})
 

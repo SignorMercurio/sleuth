@@ -28,7 +28,8 @@
 - **SIREN MCP server**：主机侧调查依赖 SIREN 的 list-client 和 remote-run 工具（云侧调查不需要），通常暴露为 `mcp__siren__ls` 和 `mcp__siren__run`。使用前需在客户端配置 SIREN 为 MCP server。
 - **`$sas` skill**：告警驱动查询必需。
 - **可选 `sls` skill**：WAF / SAS / ActionTrail 云日志交叉验证的首选。
-- **可选 `opencli-aliyun-ir` skill**：在 `sas` / `sls` 之后用于阿里云控制面状态、专用适配器、内部控制台、跨产品关联及覆盖缺口。
+- **可选 `aliyun` CLI**：SIREN AIR 的 Project 配有 AccessKey 时，用于云控制面单点只读查询。
+- **可选 `opencli-aliyun-ir` skill**：在 `sas` / `sls` 之后用于没有 AccessKey 时的阿里云控制面状态、专用适配器、内部控制台、跨产品关联及覆盖缺口。
 
 ## 安装
 

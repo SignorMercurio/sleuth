@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-04T03:24:55Z",
+  "generated_at": "2026-11-04T04:29:03Z",
   "ok": true,
   "notes": [
     "Generated for the governed-release trust-report gate (reports/review_waivers.json, gate_key=trust-report).",
@@ -282,15 +282,15 @@
       "files": [
         {
           "path": "skills/sleuth/SKILL.md",
-          "sha256": "9a2f7beebcec52064ffadb0c5647a1f9bef1bcb69c1623d493b058fc7911809d"
+          "sha256": "21c8f31be4df7ebeef465be12f6d0d690c279f59c41f7e5a79babb53aced29ef"
         },
         {
           "path": "skills/sleuth/agents/interface.yaml",
-          "sha256": "94913012a8e077b0b3d1d562c8fa4dee187ccce78a6e9140dad81add8a866787"
+          "sha256": "583db0eddbdfe870c9e876eaaba1fbe87cdd860098cfdd403e5607cf7d6acb90"
         },
         {
           "path": "skills/sleuth/agents/openai.yaml",
-          "sha256": "62e48fb1651498abb0742da66f944cf2adbaf1045fdcfc4959a20e26a87dbe63"
+          "sha256": "c531fe6d1da003ff68ef7aaaa6cdd8022a4647c67a5a57a78af43ade82a0be79"
         },
         {
           "path": "skills/sleuth/assets/report.en.md",
@@ -306,11 +306,11 @@
         },
         {
           "path": "skills/sleuth/references/cloud_log_queries.md",
-          "sha256": "2d8ab4959630b4d17cec8e511c7ea5332b4cb8432cfd9d83b243da715b617636"
+          "sha256": "94823afb458c33fd7a0f8fbc864ad02bd35f022ee2dd1bc4e2a32daf11b72dc1"
         },
         {
           "path": "skills/sleuth/references/findings_spec.md",
-          "sha256": "565dcd38ab8593593a7eeb88723a50b8a097ccbbdf8b061123d2c15c25b7f3f4"
+          "sha256": "8e24ccb04d892aef6cefe43facf5bff418ac2b2483731373605b0a16fc2f8841"
         },
         {
           "path": "skills/sleuth/references/playbooks.md",
@@ -334,7 +334,7 @@
         },
         {
           "path": "skills/sleuth/references/runtime_compat.md",
-          "sha256": "b8d9291e85e9bdf2cc66b68b640bbce8ec96de464c7d2b9c1fa2b0f778604f2a"
+          "sha256": "7cdd78df103bc038bcbb9f06ab766c2f473a1c40187ea1429971b6c9ef1d6b6f"
         },
         {
           "path": "skills/sleuth/references/sas_sls_host_telemetry.md",
@@ -346,7 +346,7 @@
         },
         {
           "path": "skills/sleuth/references/tech_cloud.md",
-          "sha256": "28cc29559be24ce8d3d8c75dce3c16f2710c8c4b6463c2f040099df7c080a6b4"
+          "sha256": "c1fe9e9cedaca5a2a8191af7b1a8b3ae9c6c5308c5297f07101658909923c443"
         },
         {
           "path": "skills/sleuth/references/tech_log_analysis.md",
@@ -366,14 +366,14 @@
         },
         {
           "path": "skills/sleuth/references/workflow_recon.md",
-          "sha256": "18c61ce30ff83c204e329a532cf3a7c30bd98d0c7d7f72a29210c9fa5778b565"
+          "sha256": "cbe01671ce6c24e7dc4354cd0de938cae8e4972488b86332abf085a13ddeac25"
         },
         {
           "path": "skills/sleuth/references/workflow_tracing.md",
-          "sha256": "b52b835419a493fd58a17922806870314228a642bf76b7c577dd9dab430063e0"
+          "sha256": "fb004ffeeaa0cbc046e21fd13947830cf472c54137e1ab7c06bb127b029ad0dc"
         }
       ],
-      "aggregate_sha256": "e1bb662985b859b8610a0b230c81be9f0bb255abd003723315fcd104876187b3",
+      "aggregate_sha256": "dac0de1107e3ae1e87ef11718eba6b0b4b601afaeb1f26aec3b73ae5778cfc00",
       "aggregate_method": "sha256 of the concatenation of 'relpath:filehash\\n' for each file, sorted by relpath",
       "snapshot_note": "skills/sleuth/ may be modified by a parallel, unrelated task. This is a snapshot taken at generation time -- regenerate this report (without --check) as the final step before the trust-report waiver is closed, so the recorded hash matches the package actually being shipped."
     }

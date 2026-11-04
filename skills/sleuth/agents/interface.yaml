@@ -4,7 +4,7 @@
 interface:
   display_name: "SLEUTH"
   short_description: "Read-only host and cloud IR; reports require user confirmation."
-  default_prompt: "Use $sleuth to investigate this specific incident, on hosts through SIREN or in the cloud through SAS/SLS/OpenCLI, and return evidence-bounded verified findings. Do not generate a formal report unless I explicitly confirm it."
+  default_prompt: "Use $sleuth to investigate this specific incident, on hosts through SIREN or in the cloud through SAS/SLS/aliyun/OpenCLI, and return evidence-bounded verified findings. Do not generate a formal report unless I explicitly confirm it."
 
 compatibility:
   canonical_format: "agent-skills"

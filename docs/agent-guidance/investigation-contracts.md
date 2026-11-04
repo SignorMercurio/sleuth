@@ -16,7 +16,10 @@
   evals synchronized. Do not duplicate the CLI contract elsewhere.
 - Use direct `sas` first for alarms and direct `sls` for delivered
   WAF/SAS/ActionTrail logs.
-- Delegate Alibaba Cloud control-plane, dedicated-adapter, and cross-product
-  gaps to the read-only `opencli-aliyun-ir` workflow. Its project-local skill
+- Use `aliyun` directly for single control-plane lookups when the Project has
+  AccessKeys. SIREN does not restrict those keys, so SLEUTH owns the read-only
+  API rule; `evals/runtime/compliance/rules.py` mirrors it.
+- Delegate dedicated-adapter, cross-product, console, and remaining
+  control-plane gaps to the read-only `opencli-aliyun-ir` workflow. Its project-local skill
   and source of truth live in the `clis` repository. SLEUTH owns only scenario
   routing and the findings handoff; do not duplicate OpenCLI adapter contracts.

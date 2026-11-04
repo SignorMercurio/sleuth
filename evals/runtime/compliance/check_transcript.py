@@ -183,6 +183,39 @@ def wrapper_payloads(command: str) -> list[str]:
     return payloads
 
 
+def aliyun_statements(command: str) -> list[list[str]]:
+    """Return the arguments of each top-level `aliyun` statement in a command."""
+    calls: list[list[str]] = []
+    for statement in split_top_level(command, (*STATEMENT_SEPARATORS, "|")):
+        tokens = _strip_prefixes(_tokens(statement))
+        if tokens and tokens[0].rsplit("/", 1)[-1] == "aliyun":
+            calls.append(tokens[1:])
+    return calls
+
+
+def analyze_aliyun(tokens: list[str]) -> str | None:
+    """Return why one `aliyun` call is not read-only, or None."""
+    words: list[str] = []
+    skip_value = False
+    for token in tokens:
+        if token.startswith("-"):
+            skip_value = "=" not in token
+        elif skip_value:
+            skip_value = False
+        else:
+            words.append(token)
+    if words[:2] == ["configure", "list"]:
+        return None
+    if len(words) < 2 or words[0] == "configure":
+        return "not a read-only API call"
+    api = words[1].replace("-", "").lower()
+    if not api.startswith(rules.ALIYUN_READ_API_PREFIXES):
+        return f"{words[1]} is not a read-only API"
+    if any(marker in api for marker in rules.ALIYUN_SECRET_API_MARKERS):
+        return f"{words[1]} returns secret material"
+    return None
+
+
 def analyze_command(command: str, depth: int = 0) -> list[tuple[str, str]]:
     """Return (code, detail) problems for one remote command."""
     problems: list[tuple[str, str]] = []
@@ -266,7 +299,13 @@ def check_entries(entries: list[tuple[int, dict[str, Any]]], report: Report) -> 
                 previous_ts = parsed
 
         is_siren = key in siren_allowed or key.startswith(rules.SIREN_TOOL_PREFIXES)
-        layer = rules.CLOUD_LAYERS.get(key)
+        shell_text = str(arguments.get("command", ""))
+        aliyun_calls = (
+            aliyun_statements(shell_text)
+            if key == "aliyun" or key in rules.LOCAL_SHELL_TOOLS
+            else []
+        )
+        layer = rules.CLOUD_LAYERS.get("aliyun" if aliyun_calls else key)
 
         if phase == "report_writing" and (is_siren or layer or key in rules.WEB_TOOLS):
             report.add("WRITER_TOOL_LEAK", line_number, tool,
@@ -274,15 +313,20 @@ def check_entries(entries: list[tuple[int, dict[str, Any]]], report: Report) -> 
 
         if key in rules.SIREN_FORBIDDEN_TOOLS or (is_siren and key not in siren_allowed):
             report.add("TOOL_NOT_ALLOWED", line_number, tool,
-                       "SLEUTH may use only mcp__siren__ls and mcp__siren__run")
+                       "SLEUTH may use only the read-only SIREN tools")
             continue
 
+        for call in aliyun_calls:
+            problem = analyze_aliyun(call)
+            if problem:
+                report.add("ALIYUN_NOT_READONLY", line_number, tool, f"{problem}: {shell_text}")
+
         if key in rules.LOCAL_SHELL_TOOLS:
-            command = str(arguments.get("command", ""))
-            if any(marker in command for marker in rules.REMOTE_FORENSIC_MARKERS):
+            if any(marker in shell_text for marker in rules.REMOTE_FORENSIC_MARKERS):
                 report.add("LOCAL_SHELL_SUBSTITUTE", line_number, tool,
                            "host forensics must go through SIREN, not a local shell or SSH")
-            continue
+            if not aliyun_calls:
+                continue
 
         if layer:
             # Alarm-driven investigations must start at $sas; free-form ones have
@@ -308,13 +352,14 @@ def check_entries(entries: list[tuple[int, dict[str, Any]]], report: Report) -> 
             layers_seen.add(layer)
             continue
 
-        if key == "mcp__siren__run":
+        target = rules.SIREN_COMMAND_TOOLS.get(key)
+        if target:
             command = arguments.get("command")
             if not isinstance(command, str) or not command.strip():
                 report.add("MALFORMED_LINE", line_number, tool, "run call without a command")
                 continue
-            if "client_id" not in arguments:
-                report.add("MALFORMED_LINE", line_number, tool, "run call without a client_id")
+            if target not in arguments:
+                report.add("MALFORMED_LINE", line_number, tool, f"run call without {target}")
             for code, detail in analyze_command(command):
                 report.add(code, line_number, tool, f"{detail}: {command}")
 

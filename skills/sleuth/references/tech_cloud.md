@@ -63,7 +63,7 @@ systemctl status aliyun.service                          # systemd 单元
 
 ## ActionTrail 审计要点
 
-投递方式与查询语法见 `sls` skill，免费事件窗与控制台功能见 `opencli-aliyun-ir`；本节只写判读要点。
+投递方式与查询语法见 `sls` skill；Project 有 AccessKey 时可用 `aliyun actiontrail LookupEvents` 查事件；免费事件窗与控制台功能见 `opencli-aliyun-ir`。本节只写判读要点。
 
 - AccessKey 审计只记录每个云产品/API 的最后一次调用；完整调用列表靠事件查询（90 天内管控事件），更早或复杂关联需要已投递 SLS 的跟踪。
 - **无 `errorCode` 不等于成功**：部分 API（如 `DescribeInstances`）权限不足时直接返回空数据，需结合 AK 实际权限判断。

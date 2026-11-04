@@ -458,6 +458,49 @@ def suite_compliance_checker() -> Suite:
         )
         report = check_transcript.check_file(waived)
         suite.check(report.ok, f"free-form sls -> opencli is compliant: {report.codes()}")
+
+        def after_sls(name: str, *calls: tuple[str, dict]) -> check_transcript.Report:
+            path = Path(folder) / f"{name}.jsonl"
+            entries = [{"type": "meta", "investigation_mode": "free_form"},
+                       {"type": "call", "tool": "sls", "arguments": {}}]
+            entries += [{"type": "call", "tool": tool, "arguments": arguments}
+                        for tool, arguments in calls]
+            path.write_text("".join(json.dumps(item) + "\n" for item in entries), encoding="utf-8")
+            return check_transcript.check_file(path)
+
+        def shell(command: str) -> tuple[str, dict]:
+            return "bash", {"command": command}
+
+        report = after_sls(
+            "aliyun",
+            shell("aliyun configure list"),
+            shell("aliyun --profile 'a b' ecs DescribeInstances | jq ."),
+            shell("/usr/local/bin/aliyun ram ListUsers"),
+            ("aliyun", {"command": "aliyun actiontrail LookupEvents"}),
+            ("mcp__siren__recon", {"client_id": "1"}),
+            ("mcp__siren__save_evidence", {"audit_id": "a", "label": "b"}),
+            ("mcp__siren__run_batch", {"client_ids": ["1"], "command": "uname -a"}),
+        )
+        suite.check(report.ok, f"read-only cloud and SIREN tools are compliant: {report.codes()}")
+
+        report = after_sls(
+            "aliyun-write",
+            shell("aliyun ecs StopInstance --InstanceId i-1"),
+            shell("aliyun kms GetSecretValue --SecretName s"),
+            shell("aliyun configure set --profile a"),
+            shell("aliyun ecs DescribeInstances && aliyun ecs DeleteInstance --InstanceId i-1"),
+            shell("FOO=1 aliyun ecs StopInstance --InstanceId i-1"),
+        )
+        suite.equal([item.code for item in report.violations], ["ALIYUN_NOT_READONLY"] * 5,
+                    "non-read-only aliyun commands are violations")
+
+        report = after_sls(
+            "run-batch",
+            ("mcp__siren__run_batch", {"client_ids": ["1"], "command": "rm -f /tmp/a"}),
+            ("mcp__siren__run_batch", {"command": "uname -a"}),
+        )
+        suite.equal(report.codes(), ["MALFORMED_LINE", "WRITE_COMMAND"],
+                    "run_batch commands and targets are checked")
     return suite
 
 
