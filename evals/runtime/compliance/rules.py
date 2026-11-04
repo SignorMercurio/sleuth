@@ -47,6 +47,8 @@ SIREN_TOOL_PREFIXES = ("mcp__siren__", "siren__", "siren.")
 # Tools that run a command, with the argument naming their target clients.
 SIREN_COMMAND_TOOLS = {"mcp__siren__run": "client_id", "mcp__siren__run_batch": "client_ids"}
 
+CASE_UPDATE_TOOL = "mcp__siren__case_update"
+
 # Unprefixed names agents are known to invent. Any prefixed SIREN tool outside
 # SIREN_ALLOWED_TOOLS is already denied.
 SIREN_FORBIDDEN_TOOLS = frozenset(

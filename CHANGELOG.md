@@ -14,6 +14,7 @@
 
 - 工具边界新增 `case_read`/`case_update`。这两个工具只记录调查状态，不触碰主机，所以不改变只读原则；调查状态写入 Case Board 后，结论必须引用证据，覆盖情况和报告是否落后才可查。
 - 运行环境提供 `case_update` 时，排查清单只写 Case Board，不再维护 Markdown 表；没有该工具的运行时继续用 Markdown 清单。
+- 运行环境提供 `case_update` 时，攻击时间线写入 Case Board 的 `events`，findings §3、§5 在定稿时写快照。writer 隔离不变，所以报告仍只读 findings。`file_time` 和 `derived` 时间不能标为已确认，因为文件时间可被篡改，推出的时间也没有直接记录；这条规则由 SIREN 服务端校验。
 - 重跑命令前先用不带 `audit_id` 的 `search_run_result` 查已有结果。AIR 上下文压缩后常丢失 `audit_id` 而重复取证；这种搜索只查已缓存的结果，不在主机上执行命令，所以不改变只读原则。
 - 步骤 8 和 8.4 按写作前读取的证据版本登记报告，证据变化后 Case Board 标出需要复核的项。
 - 云侧分层加入 `aliyun`，规则由「不自行执行 CLI」改为「不用未列入分层的云 CLI」。SIREN v2.43.0 起 AIR 注入 Project AccessKey 的使用指令，旧规则与之冲突。`aliyun` 排在 `sls` 之后、`opencli-aliyun-ir` 之前，用于控制面单点查询，因为它不依赖浏览器登录态；专用适配器、跨产品关联和截图仍走 `opencli-aliyun-ir`，Raven 等没有 Project AccessKey 的运行时行为不变。

@@ -6,6 +6,7 @@ SKILL.md 进入步骤 7 时加载本文件。报告确认门以 SKILL.md 为准�
 
 **读取 `references/verification_checklist.md`** 并按其执行：承重断言范围、独立核验方式、裁决与措辞降级规则都以该清单为准；子 agent 派生与降级见 `references/runtime_compat.md`。
 
+- 运行环境提供 `case_update` 时，未过验证门的 `confirmed` 事件改为 `inferred` 或 `withdrawn`，然后按 `references/findings_spec.md`「攻击时间线位置」把事件快照写入 §3 和 §5。
 - 每台主机过完验证门后，把逐轮维护的 findings 标记为「已验证」，核对定稿断言与证据引用，未决问题保留在工作区段（结构见 `references/findings_spec.md`）。
 - **控制台截图**（可选）：按 `references/findings_spec.md`「证据截图」。
 - 多主机委托时继续下一台的定向调查，复用已采最小快照并补查可能已变化的状态；全部完成后统一交付。
@@ -27,7 +28,7 @@ SKILL.md 进入步骤 7 时加载本文件。报告确认门以 SKILL.md 为准�
 
 只有通过报告确认门后才执行。每次委托只在当前工作目录生成**一份** `IR-….md` 正式报告（findings 底稿不算交付物），写作只以 findings 为事实来源。
 
-运行环境提供 `case_read` 时，派 writer 前由编排者调用一次，记下返回的证据版本。报告通过 QA 后，编排者调用 `case_update`，传 `reports: [{path, evidence_version}]`，`path` 是 `IR-….md`，`evidence_version` 是写作前记下的版本，不用写完后的新版本。写作期间证据又有变化时，Case Board 会把这份报告标为落后，按 8.4 处理。
+运行环境提供 `case_read` 时，派 writer 前由编排者调用一次，记下返回的证据版本；事件与 findings §3、§5 不一致时，用这次读取的结果刷新快照。writer 仍只读 findings。报告通过 QA 后，编排者调用 `case_update`，传 `reports: [{path, evidence_version}]`，`path` 是 `IR-….md`，`evidence_version` 是写作前记下的版本，不用写完后的新版本。写作期间证据又有变化时，Case Board 会把这份报告标为落后，按 8.4 处理。
 
 ### 8.1 入侵路径示意图（派 writer 前，编排者执行）
 
@@ -79,4 +80,4 @@ QA 结果只返回编排者。全部通过才交付报告；失败就修报告�
 1. **裁决写回 findings**：原 findings 仍在时写回原 findings，不在时以报告当前版本为 findings 等价物（规则同合并模式），每条意见按 `references/verification_checklist.md` 过门，裁决为维持、降级、撤回或改正并附依据，写回对应断言。复核方只给裁决，不给行号和改写文本。
 2. **整章重写**：把受裁决影响的章节交给全新 writer，输入边界同 8.2，加上当前报告路径；writer 依据更新后的 findings 重写这些章节，未受影响的章节原样保留。不在原句后追加「但不能排除……」，撤回的结论直接删去，限定语仍按「证据边界只完整展开一次」只落一处。
 3. **版本与篇幅**：按模板 rev 注释递增 minor 版本。重写后的正文不应比上一版长，变长时交稿 QA 要说明新增的是哪个已确认阶段，否则删回。
-4. **登记版本**：运行环境提供 `case_read` 时，修订前调用一次，报告行列出的变更项就是要核对的范围；记下证据版本，修订通过 QA 后用该版本重新登记报告，规则同步骤 8 开头。
+4. **登记版本**：运行环境提供 `case_read` 时，修订前调用一次，报告行列出的 `Q`、`TL` 变更项就是要核对的范围；有 `TL` 项时先刷新 findings §3、§5 快照；记下证据版本，修订通过 QA 后用该版本重新登记报告，规则同步骤 8 开头。

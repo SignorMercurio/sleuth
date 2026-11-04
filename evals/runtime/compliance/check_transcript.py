@@ -50,6 +50,7 @@ VIOLATION_CODES = (
     "LAYER_SKIPPED",
     "WRITER_TOOL_LEAK",
     "TIMESTAMP_ORDER",
+    "CASE_TIMELINE_MISSING",
 )
 
 STATEMENT_SEPARATORS = (";", "&&", "||", "\n")
@@ -268,6 +269,8 @@ def check_entries(entries: list[tuple[int, dict[str, Any]]], report: Report) -> 
     layers_seen: set[int] = set()
     previous_ts: datetime | None = None
     siren_allowed = {name.lower() for name in rules.SIREN_ALLOWED_TOOLS}
+    events_written = False
+    report_line = 0
 
     for line_number, entry in entries:
         kind = entry.get("type", "call")
@@ -297,6 +300,11 @@ def check_entries(entries: list[tuple[int, dict[str, Any]]], report: Report) -> 
                     report.add("TIMESTAMP_ORDER", line_number, tool,
                                f"ts {timestamp} goes backwards")
                 previous_ts = parsed
+
+        if key == rules.CASE_UPDATE_TOOL:
+            events_written = events_written or bool(arguments.get("events"))
+            if arguments.get("reports") and not report_line:
+                report_line = line_number
 
         is_siren = key in siren_allowed or key.startswith(rules.SIREN_TOOL_PREFIXES)
         shell_text = str(arguments.get("command", ""))
@@ -362,6 +370,10 @@ def check_entries(entries: list[tuple[int, dict[str, Any]]], report: Report) -> 
                 report.add("MALFORMED_LINE", line_number, tool, f"run call without {target}")
             for code, detail in analyze_command(command):
                 report.add(code, line_number, tool, f"{detail}: {command}")
+
+    if report_line and not events_written:
+        report.add("CASE_TIMELINE_MISSING", report_line, rules.CASE_UPDATE_TOOL,
+                   "a report was recorded but no timeline event was written")
 
 
 def check_file(path: str | Path) -> Report:

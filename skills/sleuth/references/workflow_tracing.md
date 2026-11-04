@@ -32,6 +32,8 @@ SKILL.md 进入步骤 3 时加载本文件。安全护栏以 SKILL.md 为准，�
 
 按 ATT&CK 战术阶段映射并构建时间线。编号基准为 MITRE ATT&CK v18。优先用具体子技术编号；每条映射有证据支撑，同一行为可跨多个战术（如定时任务属执行/持久化/权限提升）；未涉及的战术在文字映射里省略（报告矩阵版式固定，见 `references/report_writing_rules.md`）。
 
+运行环境提供 `case_update` 时，时间节点和 ATT&CK 映射写入 Case Board 的 `events`，规则见 `references/findings_spec.md`「攻击时间线位置」。证据落地的当轮就写，不等到本步骤才集中补。进入步骤 6 前，Case Board 必须已有本次事件的时间节点；确实无法定时的问题留在清单并记为缺口。
+
 ## 步骤 6 遗留风险排查
 
 六维均需记录覆盖：恶意文件 / 定时任务 / 启动项与服务 / 账户与授权 / 网络连接 / 系统完整性。先复用步骤 2–5 仍有效的结果，再补缺；每维写检查对象、时间范围与结论，未查/失败/截断不能填成「未观察到」。Linux 轻量检查包括相关临时目录、全用户 crontab、systemd/rc.local/init.d、passwd/authorized_keys/sudoers.d、当前连接，以及 `ld.so.preload`/profile 中的 `LD_PRELOAD`，合并调用同步骤 2「调用效率」；Windows 与容器按等价维度，缺工具或权限则记录限制。云侧事件的六维改为：凭据（AK / STS / 控制台密码）/ RAM 用户与授权 / 角色与信任策略 / 新建或改动的云资源 / 网络与访问控制（安全组、WAF、白名单）/ 审计与日志完整性（Trail、LogStore 删改）；按 `references/tech_cloud.md`「AK 泄露利用方式总结」对应 API 核查，无可疑信号的维度只做最小核查（如 AK 最近使用）并写明范围。

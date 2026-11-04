@@ -483,6 +483,17 @@ def suite_compliance_checker() -> Suite:
         )
         suite.check(report.ok, f"read-only cloud and SIREN tools are compliant: {report.codes()}")
 
+        report_entry = {"reports": [{"path": "IR-a.md", "evidence_version": 1}]}
+        report = after_sls("no-timeline", ("mcp__siren__case_update", report_entry))
+        suite.equal(report.codes(), ["CASE_TIMELINE_MISSING"],
+                    "a recorded report needs timeline events")
+        report = after_sls(
+            "timeline",
+            ("mcp__siren__case_update", {"events": [{"kind": "attack"}]}),
+            ("mcp__siren__case_update", report_entry),
+        )
+        suite.check(report.ok, f"timeline events satisfy report recording: {report.codes()}")
+
         report = after_sls(
             "aliyun-write",
             shell("aliyun ecs StopInstance --InstanceId i-1"),
