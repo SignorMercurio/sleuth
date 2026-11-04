@@ -48,6 +48,10 @@
     {
       "text": "核实一下这份 IR 报告里的结论是否成立，有问题的逐条列出来",
       "family": "report_verify"
+    },
+    {
+      "text": "SLS 和 SAS 都查完了，写最终的 IR 交付报告，按入侵链路来写",
+      "family": "report_generate"
     }
   ],
   "should_not_trigger": [
