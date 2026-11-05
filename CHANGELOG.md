@@ -14,6 +14,7 @@
 
 - 本地长任务改为后台运行并逐页落盘。AIR 曾用同步脚本翻页 ActionTrail，7 次超时后没有留下结果，浪费约 32 分钟。
 - `LookupEvents` 大窗口扫描前先取一页，确认过滤生效并估算事件密度；过滤未生效或页数过多时优先查已投递 SLS 的跟踪。
+- Case Board 的 `answer` 只写查实的事实，查不实的内容留在 `next_action`；`open`、`active`、`blocked` 必须写 `next_action`。
 
 ## 2026-11-04
 

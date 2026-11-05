@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-04T09:05:54Z",
+  "generated_at": "2026-11-05T00:55:17Z",
   "ok": true,
   "notes": [
     "Generated for the governed-release trust-report gate (reports/review_waivers.json, gate_key=trust-report).",
@@ -310,7 +310,7 @@
         },
         {
           "path": "skills/sleuth/references/findings_spec.md",
-          "sha256": "681b5205c53972760cad8fbbf979bd80a945d46d86df7fbb647d7e725f6b6cdb"
+          "sha256": "694ea518793fe4e7d7006776bf4c44f82323967a16d4cc19ffdb4ee835765071"
         },
         {
           "path": "skills/sleuth/references/playbooks.md",
@@ -334,7 +334,7 @@
         },
         {
           "path": "skills/sleuth/references/runtime_compat.md",
-          "sha256": "7cdd78df103bc038bcbb9f06ab766c2f473a1c40187ea1429971b6c9ef1d6b6f"
+          "sha256": "ccf382d90c0ca7fa62c5b0241350a5b457d54822926a781d8c6feea984aba502"
         },
         {
           "path": "skills/sleuth/references/sas_sls_host_telemetry.md",
@@ -346,7 +346,7 @@
         },
         {
           "path": "skills/sleuth/references/tech_cloud.md",
-          "sha256": "c1fe9e9cedaca5a2a8191af7b1a8b3ae9c6c5308c5297f07101658909923c443"
+          "sha256": "f631729ef4e8dd0bcabcf6540afa30e526a8dc3483fdaf67f3db2696d5852218"
         },
         {
           "path": "skills/sleuth/references/tech_log_analysis.md",
@@ -373,7 +373,7 @@
           "sha256": "4a5e58574e6066e50dba64023a96fbb720f5683b61f830ec463d7ffdd3c03f45"
         }
       ],
-      "aggregate_sha256": "d8cd44cb983cad8957a2449fdc240e28b4de052e786b18b12b14aa90d22db500",
+      "aggregate_sha256": "938c0a2e1888ebc7e3816a54a862c863463be9db766612ca43ba19d6821e6ab6",
       "aggregate_method": "sha256 of the concatenation of 'relpath:filehash\\n' for each file, sorted by relpath",
       "snapshot_note": "skills/sleuth/ may be modified by a parallel, unrelated task. This is a snapshot taken at generation time -- regenerate this report (without --check) as the final step before the trust-report waiver is closed, so the recorded hash matches the package actually being shipped."
     }

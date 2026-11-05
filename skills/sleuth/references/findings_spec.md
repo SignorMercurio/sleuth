@@ -29,9 +29,13 @@ findings 是内部工作底稿；正式报告仍按原命名规则只交付一�
 写回规则：
 
 - 每轮把变化的项合并成一次调用。新项不传 `id`，以返回的 `Q` 编号继续更新。
-- 定性或影响判断变化时，同一次调用传 `summary`：用一至三句写目前的定性与影响判断，未过步骤 7 验证门的内容标「推测」或「待证」。
-- `question` 只写问题，不写结果。`answer` 用一两句写证据显示了什么，`confirmed`、`refuted`、`gap` 必填。
-- `next_action` 只用于 `open`、`active`、`blocked`。项关闭时不传 `next_action`，SIREN 会清空旧值；还有后续工作就新建一项。
+- 定性或影响判断变化时，同一次调用传 `summary`：用一至三句写已确定的定性与影响，再用一句写还没验证的内容。未过步骤 7 验证门的内容标「推测」或「待证」。
+- Case Board 把 `answer` 显示为发现，把 `next_action` 显示为下一步，`question` 只在展开后显示。`question` 只写问题，不写结果。
+- `answer` 写已查实的事实，`confirmed`、`refuted`、`gap` 必填。用一两句陈述谁在什么时间对什么对象做了什么，写具体的主机、账号、路径、时间和数量。
+- `answer` 不写「可能」「疑似」「暂未发现」「不能排除」「建议进一步」。查不实的内容不写进 `answer`：保持 `open` 或 `active`，在 `next_action` 写怎么查实。已查实一部分时，新建一项记为 `confirmed`，原项继续查。
+- `refuted` 的 `answer` 写排除了什么，以及查过的范围。例如：web-02 在 11-01 至 11-03 的 SSH 登录全部来自堡垒机，没有来自 web-01 的登录。
+- `gap` 的 `answer` 写缺什么，以及因此定不了哪个结论。例如：11-01 前的 auth 日志已轮转，入口时间定不了。
+- `next_action` 写一个具体动作，写明对象和数据源，`open`、`active`、`blocked` 必填。例如：查 web-02 11-01 至 11-03 的 sshd 日志，确认 10.0.0.5 是否登录。不写「继续排查」。项关闭时不传 `next_action`，SIREN 会清空旧值；还有后续工作就新建一项。
 - `entities`、`evidence`、`tried_sources` 只传新增内容，SIREN 追加到已有列表。要去掉时用 `remove_entities`、`remove_evidence` 传编号。
 - 返回末尾的 `Remaining` 列出未结项，`Dimensions with no items` 列出还没有项的维度，据此选下一项。
 - `Repeated direction` 表示同一实体的同一维度已有三项查无结果，且仍有项未结。下一步换证据源或假设；没有新角度就把未结项记为缺口，转查别的项。它只是提示，不限制查询次数，也不是停止条件。
