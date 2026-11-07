@@ -40,6 +40,7 @@ SIREN_ALLOWED_TOOLS = frozenset(
         "mcp__siren__save_evidence",
         "mcp__siren__case_read",
         "mcp__siren__case_update",
+        "mcp__siren__case_handoff",
     }
 )
 SIREN_TOOL_PREFIXES = ("mcp__siren__", "siren__", "siren.")

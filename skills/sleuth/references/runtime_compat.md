@@ -10,7 +10,7 @@
 
 - **读取本 skill 文件**：用本地文件读取工具读相对 skill 根目录的 `references/...` 或 `assets/...`。
 - **SIREN MCP**：使用环境实际暴露的 list client / remote run 等价工具；名称与只读边界以 SKILL.md 为准。
-- **Case Board**：`case_read`/`case_update` 只在 SIREN AIR 的 Project 端点提供；Raven 等其他运行时没有这两个工具，按 `references/findings_spec.md`「排查清单位置」使用 Markdown 清单。
+- **Case Board**：`case_read`/`case_update`/`case_handoff` 只在 SIREN AIR 的 Project 端点提供（`case_handoff` 仅 Case Run 的 worker 会话可用，见「多 Agent 角色」）；Raven 等其他运行时没有这些工具，按 `references/findings_spec.md`「排查清单位置」使用 Markdown 清单。
 - **主机快照**：`recon` 由运行环境提供时按 `references/workflow_recon.md` 步骤 2 使用；`hunt` Profile 只有操作者能在 WebUI 运行。
 - **证据保存**：`save_evidence` 把 `audit_id` 对应的结果原样存入 Project 的 `evidence/`，只在 SIREN AIR 的 Project 端点提供；其他运行时把决定性原文写进 findings 证据记录。
 - **跨结果搜索**：`search_run_result` 不带 `audit_id` 时，只有 SIREN 的 Project 端点支持，返回 24 小时内的 run 摘要；其他端点按已记录的 `audit_id` 读取。
@@ -18,6 +18,14 @@
 - **联网查询**：需要查 CVE、Exploit 或修复方案时，使用运行环境提供的搜索工具、浏览器或官方/可信来源检索工具；不可联网时说明该部分未做外部验证。
 - **生成图片**：Codex 用内置图片生成工具，生成后复制到目标路径；Claude Code 在本地用 `codex exec --skip-git-repo-check -s workspace-write -C <工作目录> "<提示词>"` 转调，提示词里写明保存路径。
 - **派生子 agent**：隔离大输出（步骤 3）、独立核验与结论交付（步骤 7）或隔离写作（步骤 8）时用运行环境的 subagent / 委托机制。调查与核验子 agent 同受只读护栏约束，能访问 SIREN 就让它跑定向只读命令，不能就只处理传入的证据文本；writer 不得访问 SIREN。运行时不提供子 agent 时按各节的内联方式降级，不跳过对应步骤。
+
+## 多 Agent 角色（SIREN Case Run）
+
+SIREN 以 Case Run 方式启动调查时，会话的首条提示注明角色。角色由 SIREN 分派，会话自己不切换角色，也不替其他角色推进。角色会话按本节收尾，不按 `references/workflow_tracing.md`「调查闭环与停止条件」。
+
+- **Lead**：kickoff 回合只做步骤 1–2：用 `case_update` 建清单、写 summary，给每项指定 `owner`（`entry`/`host`/`cloud`），只有必须由 Lead 裁决的项才留 `lead`；要等别的项先有结果的项按 worker 的规则标 `blocked`。清单建好就结束回合。所有 worker 都停下后 SIREN 用新提示唤醒 Lead：先 `case_read`，逐项核对 confirmed/refuted 的证据是否支撑结论，只裁决不取证；证据不够的项改回 `open`、`owner` 指回对应 worker 并在 `next_action` 写明还缺什么，然后结束回合，等 SIREN 再次唤醒；没有退回时改写 summary，写 findings 并交付。
+- **Entry / Host / Cloud worker**：同一角色可能有几个会话并行，每个会话分到最多两项。只改分给自己的项（改别的会话的项会被拒绝），自己新建的项归自己；按步骤 2–6 取证，不写 summary，不生成报告。每一项一有结果就立刻用 `case_update` 写回状态、证据和 `reason`，不攒到回合末：只有 Board 上的内容能传给 Lead 和接手的新会话，回合超时或会话关闭后没写回的全部丢失。发现属于其他维度的线索时，新建项并把 `owner` 指给对应 worker；工具、凭据、环境问题只在自己的项上标 `gap` 或 `blocked` 并写 `reason`，不为此新建 lead 项。标 `blocked` 时 `reason` 写等什么；等的是 Board 上另一项就把那项编号写进 `blocked_by`，那项关闭后 SIREN 自动改回 `open` 再派回来；只等操作员的 blocked 项交给 Lead。每项推进到无法再前进（confirmed、refuted、gap、blocked）后调用 `case_handoff(note, remaining)` 写一句收尾和剩余项编号，然后结束回合，收尾后不开始新工作。回合快到时间上限时 SIREN 会插入收尾提醒：收到后停止取证，把手头证据写回 Board，`case_handoff` 并结束回合。
+- **再次唤醒**：worker 会话独立调度，不等其他角色。回合结束后，Board 有进展（有项改变了状态或 owner）且你仍有 open/active 项时，SIREN 在原会话里再次唤醒你，已取过的证据不用重取；只追加证据或改写 `next_action` 不算进展。blocked 项不会派给 worker。一个回合做不完就如实 handoff，下次唤醒接着做。
 
 ## 重输出隔离（调查子 agent）
 
@@ -42,5 +50,6 @@
 ## SIREN 异常处理
 
 - SIREN 超时/失败：简化命令重试一次，仍失败则跳过并记录为证据缺口；不换写法反复跑同一重扫描
+- Client busy：多个会话同查一台主机时，`run`/`run_batch` 排队最多 90 秒才报 busy；隔一会儿重试同一命令，不简化、不换写法重扫
 - 客户端断线：告知用户，等待重连或切换备用客户端
 - 日志被清除：标注后转向其他证据源（进程、网络、文件时间戳）

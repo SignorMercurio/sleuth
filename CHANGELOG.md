@@ -8,6 +8,13 @@
 
 本文件建立之前的变更历史，见仓库 `git log`。
 
+## 2026-11-07
+
+### 变更
+
+- 工具边界新增 `case_handoff`。SIREN Case Run 的 worker 会话用它结束自己负责的部分，它只记录交接说明，不触碰主机，所以不改变只读原则。
+- `runtime_compat.md` 新增「多 Agent 角色」：Lead 建清单并裁决，Entry/Host/Cloud worker 只改分给自己的项，每项一有结果就写回 Case Board。会话可能超时或被关闭，只有写进 Board 的证据能传给 Lead 和接手的会话。角色会话按该节收尾，不受「清单还有可执行项时不结束回合」约束。
+
 ## 2026-11-05
 
 ### 变更
