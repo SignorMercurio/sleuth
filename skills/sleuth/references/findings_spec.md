@@ -36,6 +36,9 @@ findings 是内部工作底稿；正式报告仍按原命名规则只交付一�
 - `refuted` 的 `answer` 写排除了什么，以及查过的范围。例如：web-02 在 11-01 至 11-03 的 SSH 登录全部来自堡垒机，没有来自 web-01 的登录。
 - `gap` 的 `answer` 写缺什么，以及因此定不了哪个结论。例如：11-01 前的 auth 日志已轮转，入口时间定不了。
 - `next_action` 写一个具体动作，写明对象和数据源，`open`、`active`、`blocked` 必填。例如：查 web-02 11-01 至 11-03 的 sshd 日志，确认 10.0.0.5 是否登录。不写「继续排查」。项关闭时不传 `next_action`，SIREN 会清空旧值；还有后续工作就新建一项。
+- 按状态补齐字段：`confirmed` 需要实体和 `role: supports` 证据，`refuted` 需要实体和 `role: refutes` 证据；`gap` 需要 `tried_sources`；`blocked` 和 `not_applicable` 需要 `reason`，受阻的 `reason` 写需要谁提供什么或在等哪一项。
+- `blocked_by` 只用于 `blocked` 项，填它在等的 `Q` 编号，传入时整体替换。所列项都进入 `confirmed`、`refuted`、`gap` 或 `not_applicable` 后，SIREN 把该项改回 `open`。
+- `owner` 取 `lead`、`entry`、`host`、`cloud`，只在 SIREN Case Run 中决定由哪个角色推进该项，角色规则见 `references/runtime_compat.md`「多 Agent 角色」。
 - `entities`、`evidence`、`tried_sources` 只传新增内容，SIREN 追加到已有列表。要去掉时用 `remove_entities`、`remove_evidence` 传编号。
 - 返回末尾的 `Remaining` 列出未结项，`Dimensions with no items` 列出还没有项的维度，据此选下一项。
 - `Repeated direction` 表示同一实体的同一维度已有三项查无结果，且仍有项未结。下一步换证据源或假设；没有新角度就把未结项记为缺口，转查别的项。它只是提示，不限制查询次数，也不是停止条件。

@@ -14,6 +14,7 @@
 
 - 工具边界新增 `case_handoff`。SIREN Case Run 的 worker 会话用它结束自己负责的部分，它只记录交接说明，不触碰主机，所以不改变只读原则。
 - `runtime_compat.md` 新增「多 Agent 角色」：Lead 建清单并裁决，Entry/Host/Cloud worker 只改分给自己的项，每项一有结果就写回 Case Board。会话可能超时或被关闭，只有写进 Board 的证据能传给 Lead 和接手的会话。角色会话按该节收尾，不受「清单还有可执行项时不结束回合」约束。
+- 对齐 SIREN v2.46.0 的 Case Board 校验：写回规则补齐各状态必填字段（`confirmed`/`refuted` 的实体与证据角色、`gap` 的 `tried_sources`、`blocked`/`not_applicable` 的 `reason`），新增 `owner`、`blocked_by`。worker 把线索交给其他角色时必须新建 `dimension: lead` 的项，SIREN 拒绝其他移交方式；旧写法会让 worker 反复校验失败。
 
 ## 2026-11-05
 

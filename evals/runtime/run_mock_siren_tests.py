@@ -479,6 +479,7 @@ def suite_compliance_checker() -> Suite:
             ("aliyun", {"command": "aliyun actiontrail LookupEvents"}),
             ("mcp__siren__recon", {"client_id": "1"}),
             ("mcp__siren__save_evidence", {"audit_id": "a", "label": "b"}),
+            ("mcp__siren__case_handoff", {"note": "n", "remaining": []}),
             ("mcp__siren__run_batch", {"client_ids": ["1"], "command": "uname -a"}),
         )
         suite.check(report.ok, f"read-only cloud and SIREN tools are compliant: {report.codes()}")
