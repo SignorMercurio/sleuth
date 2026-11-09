@@ -12,6 +12,10 @@
 
 ### 变更
 
+- 对齐 SIREN 删除 Case Run：多 Agent 改为 Lead 会话调用 `delegate` 工具。Lead 自己建清单、指派 `owner`，`delegate` 立即返回；每项一个只跑一轮的 worker，新建的项归 Lead；结果作为新消息回到 Lead。删除 `case_handoff` 与 `blocked_by`。原因：服务端编排的 run 线上一次起了 14 个会话、1 小时没有交付，且只用过 2 次。worker 同受只读护栏，工具边界只增 `delegate`，不触碰主机。
+- `delegate` 对齐后台子 agent：一次调用派一项（`item` + `prompt`），并行就同一回合多次调用，同时最多 6 个运行，不再限制派出次数；每个 worker 结束各自回报，带结束方式、项状态和最终回复。停止改由 Lead 判断：同一项再派也拿不到新数据时记 `gap` 或 `blocked` 并交付。原因：用户要求与子 agent 用法一致，并能看到 worker 进展。
+- Case Board 状态只剩 `open`、`confirmed`、`refuted`、`gap`、`blocked`，删除 `active`、`not_applicable`、`reason`、`tried_sources`、证据 `role` 和 Repeated direction 提示；`blocked` 的 `next_action` 写谁要提供什么，`gap` 的 `answer` 写缺什么。原因：`case_update` 被拒率 29%，多为这些字段的组合要求。
+- Case Board 字数上限：`summary` ≤ 200 字、`answer` ≤ 120 字、`next_action` ≤ 80 字，细节写进证据文件。原因：`answer` 平均 507 字，Board 无法扫读。
 - 报告侧拆出 sleuth：生成、合并、修订、审校正式报告改由 dossier 仓库的 `dossier` skill 负责（`../dossier/skills/dossier/`）。sleuth 止于步骤 7 交付结论，步骤 8 只剩一行交接；报告确认门改为 dossier 的触发边界，sleuth 不复制模板、不创建 `IR-….md`，也不主动调用 dossier。原因：报告规则已有两个消费者（步骤 8 与 ir-report-review）却只有一个归属，模板源本来就在 dossier；SKILL.md 的报告侧触发词让「应急响应」一句话就可能出报告，需要在排查 skill 里设防。
 - 删除 `references/report_style.md`、`report_writing_rules.md`、`report_naming.md`、`assets/report.md`、`report.en.md`、`assets/style/`、`skills/ir-report-review/`、`evals/output/` 与 `docs/agent-guidance/report-writing.md`，内容原样迁入 dossier。`findings_spec.md` 吸收事件类型 slug 表，删去「正式报告写作层使用规则」「多主机合并规则」两节；其「文件命名」「内容结构」「结论交付层使用规则」成为 dossier 读取的跨仓库契约。
 - 既有报告模式只保留核实：裁决写回 findings，合并与修订转 dossier。护栏不变：只读原则、状态变更禁令、处置命令不经 SIREN、`aliyun` 只读、证据信任边界均保留；步骤 7 结论 writer 的隔离不变。

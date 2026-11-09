@@ -44,31 +44,29 @@ findings 是内部工作底稿，去留由用户决定。正式报告名由 doss
 
 ### 排查清单位置
 
-运行环境提供 `case_update` 时，清单只写 Case Board，工作区段只留一行 `排查清单：Case Board`，不再维护 Markdown 表，避免两份清单不一致。没有该工具时，在工作区段维护 Markdown 表 `编号 | 问题或待证断言 | 维度 | 状态 | 回答 | 支持/反驳证据编号 | 下一步动作 | 受阻原因与已试来源`。调查中途工具不可用时，把 `case_read` 最后读到的未结项转入 Markdown 表继续。
+运行环境提供 `case_update` 时，清单只写 Case Board，工作区段只留一行 `排查清单：Case Board`，不再维护 Markdown 表，避免两份清单不一致。没有该工具时，在工作区段维护 Markdown 表 `编号 | 问题或待证断言 | 维度 | 状态 | 回答 | 证据编号 | 下一步动作`。调查中途工具不可用时，把 `case_read` 最后读到的未结项转入 Markdown 表继续。
 
-状态只用：待查、进行中、已确认、已反驳、缺口、受阻、不适用；「缺口」写明已试的证据源，「受阻」写明需要谁提供什么。
+状态只用：待查、已确认、已反驳、缺口、受阻；「缺口」的回答写缺什么，「受阻」的下一步动作写需要谁提供什么。不适用的项直接记为已反驳，回答写为什么不适用。
 
-`case_update` 的状态依次对应 `open`、`active`、`confirmed`、`refuted`、`gap`、`blocked`、`not_applicable`；维度「入口、凭据或权限来源、执行与持久化、横向与关联资产、影响范围与数据、处置状态」依次对应 `entry`、`credentials`、`execution_persistence`、`lateral_assets`、`impact_data`、`response_status`，事件线索引出的待证问题用 `lead`。
+`case_update` 的状态依次对应 `open`、`confirmed`、`refuted`、`gap`、`blocked`；维度「入口、凭据或权限来源、执行与持久化、横向与关联资产、影响范围与数据、处置状态」依次对应 `entry`、`credentials`、`execution_persistence`、`lateral_assets`、`impact_data`、`response_status`，事件线索引出的待证问题用 `lead`。
 
 写回规则：
 
 - 每轮把变化的项合并成一次调用。新项不传 `id`，以返回的 `Q` 编号继续更新。
-- 定性或影响判断变化时，同一次调用传 `summary`：用一至三句写已确定的定性与影响，再用一句写还没验证的内容。未过步骤 7 验证门的内容标「推测」或「待证」。
+- 定性或影响判断变化时，同一次调用传 `summary`：先写已确定的定性与影响，再写还没验证的内容，合计不超过 200 字。未过步骤 7 验证门的内容标「推测」或「待证」。
 - Case Board 把 `answer` 显示为发现，把 `next_action` 显示为下一步，`question` 只在展开后显示。`question` 只写问题，不写结果。
-- `answer` 写已查实的事实，`confirmed`、`refuted`、`gap` 必填。用一两句陈述谁在什么时间对什么对象做了什么，写具体的主机、账号、路径、时间和数量。
-- `answer` 不写「可能」「疑似」「暂未发现」「不能排除」「建议进一步」。查不实的内容不写进 `answer`：保持 `open` 或 `active`，在 `next_action` 写怎么查实。已查实一部分时，新建一项记为 `confirmed`，原项继续查。
+- `answer` 写已查实的事实，`confirmed`、`refuted`、`gap` 必填。用一句陈述谁在什么时间对什么对象做了什么，写具体的主机、账号、路径、时间和数量，不超过 120 字；编号清单、逐项数字和取证过程写进证据文件，SIREN 拒绝超长的 `answer`。
+- `answer` 不写「可能」「疑似」「暂未发现」「不能排除」「建议进一步」。查不实的内容不写进 `answer`：保持 `open`，在 `next_action` 写怎么查实。已查实一部分时，新建一项记为 `confirmed`，原项继续查。
 - `refuted` 的 `answer` 写排除了什么，以及查过的范围。例如：web-02 在 11-01 至 11-03 的 SSH 登录全部来自堡垒机，没有来自 web-01 的登录。
 - `gap` 的 `answer` 写缺什么，以及因此定不了哪个结论。例如：11-01 前的 auth 日志已轮转，入口时间定不了。
-- `next_action` 写一个具体动作，写明对象和数据源，`open`、`active`、`blocked` 必填。例如：查 web-02 11-01 至 11-03 的 sshd 日志，确认 10.0.0.5 是否登录。不写「继续排查」。项关闭时不传 `next_action`，SIREN 会清空旧值；还有后续工作就新建一项。
-- 按状态补齐字段：`confirmed` 需要实体和 `role: supports` 证据，`refuted` 需要实体和 `role: refutes` 证据；`gap` 需要 `tried_sources`；`blocked` 和 `not_applicable` 需要 `reason`，受阻的 `reason` 写需要谁提供什么或在等哪一项。
-- `blocked_by` 只用于 `blocked` 项，填它在等的 `Q` 编号，传入时整体替换。所列项都进入 `confirmed`、`refuted`、`gap` 或 `not_applicable` 后，SIREN 把该项改回 `open`。
-- `owner` 取 `lead`、`entry`、`host`、`cloud`，只在 SIREN Case Run 中决定由哪个角色推进该项，角色规则见 `references/runtime_compat.md`「多 Agent 角色」。
-- `entities`、`evidence`、`tried_sources` 只传新增内容，SIREN 追加到已有列表。要去掉时用 `remove_entities`、`remove_evidence` 传编号。
+- `next_action` 写一个具体动作，写明对象和数据源，不超过 80 字，`open`、`blocked` 必填；`blocked` 的 `next_action` 写需要谁提供什么。例如：查 web-02 11-01 至 11-03 的 sshd 日志，确认 10.0.0.5 是否登录；受阻时写：客户导出 11-01 至 11-03 的 ActionTrail。不写「继续排查」。项关闭时不传 `next_action`，SIREN 会清空旧值；还有后续工作就新建一项。
+- 按状态补齐字段：`confirmed` 和 `refuted` 需要证据；`confirmed`、`refuted`、`gap` 需要 `answer`；`open`、`blocked` 需要 `next_action`。项没有 `reason`、`tried_sources` 和证据 `role` 字段，传了会被拒绝。
+- `owner` 取 `lead`、`entry`、`host`、`cloud`，决定 `delegate` 把该项交给哪个 worker，规则见 `references/runtime_compat.md`「多 Agent 分工」。
+- `entities`、`evidence` 只传新增内容，SIREN 追加到已有列表。要去掉时用 `remove_entities`、`remove_evidence` 传编号。
 - 返回末尾的 `Remaining` 列出未结项，`Dimensions with no items` 列出还没有项的维度，据此选下一项。
-- `Repeated direction` 表示同一实体的同一维度已有三项查无结果，且仍有项未结。下一步换证据源或假设；没有新角度就把未结项记为缺口，转查别的项。它只是提示，不限制查询次数，也不是停止条件。
 - 证据优先传 run 的 `audit_id` 加 `label`，SIREN 原样保存；`sls -save` 等已落盘文件传 `evidence/<文件>#L<n>-L<m>`；复用时传 `CE` 编号。
 - 主机实体用 `kind: host` 加 SIREN Client ID；其他实体用 `ip`、`domain`、`identity`、`file`、`resource`，或复用 `A` 编号。
-- 证据链接变化，或项进入、离开 `open`/`active` 以外的状态，或这些状态下的 `answer` 变化时，证据版本递增；已登记的报告随之标为落后。登记由 dossier skill 在报告通过 QA 后完成。
+- 证据链接变化，或项进入、离开 `open` 以外的状态，或这些状态下的 `answer` 变化时，证据版本递增；已登记的报告随之标为落后。登记由 dossier skill 在报告通过 QA 后完成。
 - 校验失败时按错误补齐字段后重试。不要为通过校验改写结论或状态；证据确实不足就保持原状态或记为缺口。
 
 Case Board 的状态不代替步骤 7 验证门；`CE` 编号也不代替底稿证据编号，底稿引用时写全 `CE01`。
@@ -85,7 +83,7 @@ Case Board 的状态不代替步骤 7 验证门；`CE` 编号也不代替底稿�
 - `original_time` 保留来源原文。`precision` 取 `second`、`minute`、`hour`、`day`，按来源实际精度填，不用补零冒充更细的精度。
 - `clock_note` 写时区假设、syslog 年份推断和主机时钟偏差。`from`、`to` 不自动校正主机时钟偏差。
 - `time_basis` 取 `record`（日志、审计、告警时间戳）、`process_start`、`file_time`（文件 mtime、ctime、birth time）、`derived`（由其他事件推出）。`file_time` 和 `derived` 只能配 `inferred`；有日志佐证时改用日志时间和 `record`。不把 ctime 当创建时间。
-- `status` 取 `confirmed`、`inferred`、`withdrawn`。`confirmed` 需要实体和 `supports` 证据；`inferred` 需要证据和 `reason`；`withdrawn` 需要 `reason`，用于被推翻、重复或误写的事件。事件不能删除。
+- `status` 取 `confirmed`、`inferred`、`withdrawn`。`confirmed` 需要实体和证据；`inferred` 需要证据和 `reason`；`withdrawn` 需要 `reason`，用于被推翻、重复或误写的事件。事件不能删除。
 - `attack` 只用于 `kind: attack`，每条传 `tactic` 和 `technique`，同一行为可跨多个战术。`tactic` 用 `initial_access`、`command_and_control` 这类下划线枚举值，编号基准见 `references/workflow_tracing.md` 步骤 5。
 - 事件内容变化时证据版本递增，已登记的报告随之标为落后。校验失败时不要为通过校验改写事实，证据不足就保持 `inferred`。
 

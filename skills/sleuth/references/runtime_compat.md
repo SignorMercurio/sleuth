@@ -10,7 +10,7 @@
 
 - **读取本 skill 文件**：用本地文件读取工具读相对 skill 根目录的 `references/...` 或 `assets/...`。
 - **SIREN MCP**：使用环境实际暴露的 list client / remote run 等价工具；名称与只读边界以 SKILL.md 为准。
-- **Case Board**：`case_read`/`case_update`/`case_handoff` 只在 SIREN AIR 的 Project 端点提供（`case_handoff` 仅 Case Run 的 worker 会话可用，见「多 Agent 角色」）；Raven 等其他运行时没有这些工具，按 `references/findings_spec.md`「排查清单位置」使用 Markdown 清单。
+- **Case Board**：`case_read`/`case_update` 只在 SIREN AIR 的 Project 端点提供；Raven 等其他运行时没有这些工具，按 `references/findings_spec.md`「排查清单位置」使用 Markdown 清单。
 - **主机快照**：`recon` 由运行环境提供时按 `references/workflow_recon.md` 步骤 2 使用；`hunt` Profile 只有操作者能在 WebUI 运行。
 - **证据保存**：`save_evidence` 把 `audit_id` 对应的结果原样存入 Project 的 `evidence/`，只在 SIREN AIR 的 Project 端点提供；其他运行时把决定性原文写进 findings 证据记录。
 - **跨结果搜索**：`search_run_result` 不带 `audit_id` 时，只有 SIREN 的 Project 端点支持，返回 24 小时内的 run 摘要；其他端点按已记录的 `audit_id` 读取。
@@ -18,13 +18,16 @@
 - **联网查询**：需要查 CVE、Exploit 或修复方案时，使用运行环境提供的搜索工具、浏览器或官方/可信来源检索工具；不可联网时说明该部分未做外部验证。
 - **派生子 agent**：隔离大输出（步骤 3）或独立核验与结论交付（步骤 7）时用运行环境的 subagent / 委托机制。调查与核验子 agent 同受只读护栏约束，能访问 SIREN 就让它跑定向只读命令，不能就只处理传入的证据文本；结论 writer 不得访问 SIREN。运行时不提供子 agent 时按各节的内联方式降级，不跳过对应步骤。
 
-## 多 Agent 角色（SIREN Case Run）
+## 多 Agent 分工（SIREN `delegate`）
 
-SIREN 以 Case Run 方式启动调查时，会话的首条提示注明角色。角色由 SIREN 分派，会话自己不切换角色，也不替其他角色推进。角色会话按本节收尾，不按 `references/workflow_tracing.md`「调查闭环与停止条件」。
+运行环境提供 `delegate` 工具时，本会话是 Lead，可以把清单项交给 SIREN 起的 worker 会话并行取证，用法同后台子 agent。worker 由 SIREN 启动和关闭，用户能看它的进展，但用户和 Lead 都不能与它对话。首条提示写明「Lead 派出的 worker」的会话按下面的 worker 规则收尾，不按 `references/workflow_tracing.md`「调查闭环与停止条件」。
 
-- **Lead**：kickoff 回合只做步骤 1–2：用 `case_update` 建清单、写 summary，给每项指定 `owner`（`entry`/`host`/`cloud`），只有必须由 Lead 裁决的项才把 `owner` 留为 `lead`；要等别的项先有结果的项按 worker 的规则标 `blocked`。清单建好就结束回合。所有 worker 都停下后 SIREN 用新提示唤醒 Lead：先 `case_read`，逐项核对 confirmed/refuted 的证据是否支撑结论，只裁决不取证；证据不够的项改回 `open`、`owner` 指回对应 worker 并在 `next_action` 写明还缺什么，然后结束回合，等 SIREN 再次唤醒；没有退回时改写 summary，写 findings 并交付。
-- **Entry / Host / Cloud worker**：同一角色可能有几个会话并行，每个会话分到最多两项。只改分给自己的项，同角色其他会话正在推进的项会被拒绝，自己新建的项归自己；按步骤 2–6 取证，不写 summary，不生成报告。每一项一有结果就立刻用 `case_update` 写回状态和证据，按 `references/findings_spec.md`「写回规则」补齐该状态要求的字段，不攒到回合末：只有 Board 上的内容能传给 Lead 和接手的新会话，回合超时或会话关闭后没写回的全部丢失。发现属于其他角色的线索时，新建一项，`dimension` 用 `lead`，`owner` 指给对应 worker；不能把自己的项改给别的角色。工具、凭据、环境问题只在自己的项上记 `gap` 或 `blocked`，不为此新建 `owner` 为 `lead` 的项。等的是 Board 上另一项时把那项编号写进 `blocked_by`，那项结束后 SIREN 会把本项派回来；只等操作员的 blocked 项交给 Lead。每项推进到无法再前进（confirmed、refuted、gap、blocked）后调用 `case_handoff(note, remaining)` 写一句收尾和剩余项编号，然后结束回合，收尾后不开始新工作。回合快到时间上限时 SIREN 会插入收尾提醒：收到后停止取证，把手头证据写回 Board，`case_handoff` 并结束回合。
-- **再次唤醒**：worker 会话独立调度，不等其他角色。回合结束后，Board 有进展（有项改变了状态或 owner）且你仍有 open/active 项时，SIREN 在原会话里再次唤醒你，已取过的证据不用重取；只追加证据或改写 `next_action` 不算进展。blocked 项不会派给 worker。一个回合做不完就如实 handoff，下次唤醒接着做。
+- **何时派**：清单里有几项互不依赖、各自要较多取证的项时派。一两项的小调查、要等别的项先有结果的项、需要 Lead 自己裁决的项不派。
+- **怎么派**：先用 `case_update` 把要派的项设为 `open`，`owner` 指给 `entry`（初始入口、利用方式、复现）、`host`（主机侧取证）或 `cloud`（云侧分层），`next_action` 写明要查什么。再每项调用一次 `delegate`：`item` 传 `Q` 编号，`prompt` 写这个 worker 要查清什么，并给出调查对象、时间窗和已知关键事实，不超过 2000 字。要并行就在同一回合里连续调用，同时最多 6 个在运行。worker 只看得到 prompt 和 Board，看不到本会话的对话。
+- **派出之后**：`delegate` 立即返回，不等 worker。期间继续推进 `owner` 为 `lead` 的项，或结束回合；不要自己推进已派出的项。每个 worker 结束后，SIREN 在本会话不在回合中时以一条新消息发来结果：结束方式、项的当前状态和 worker 的最终回复；同时结束的几个合成一条。
+- **收到结果后**：先 `case_read`。只裁决不替 worker 补证：逐项核对 `confirmed`、`refuted` 的证据是否撑得住结论，撑不住就改回 `open` 或记为 `gap`；`owner` 为 `lead` 的新线索由 Lead 判断。然后改写 summary。还有 worker 在运行就等它们的结果；全部回来后，还要再查的项按上面再派，不需要再查就交付。
+- **何时停**：同一项派过一次仍未结、再派也拿不到新数据时不再派，记为 `gap` 或 `blocked`，写明缺什么或谁要提供什么，然后交付。
+- **Entry / Host / Cloud worker**：每个会话只负责一项、只跑一个回合，回合结束会话即关闭。只改分给自己的那一项，改别的项会被拒绝；按步骤 2–6 取证，不写 summary，不生成报告，不向用户提问。一有结果就立刻用 `case_update` 写回状态和证据，按 `references/findings_spec.md`「写回规则」补齐该状态要求的字段，不攒到回合末：回合超时或会话关闭后没写回的全部丢失。发现值得追的新线索时新建一项，写清 `question` 和 `next_action`；新项一律归 Lead。工具、凭据、环境问题只在本项上记 `gap` 或 `blocked`，不为此新建项。本项推进到无法再前进（confirmed、refuted、gap、blocked）后结束回合；最后一条回复会原样转给 Lead，用几句话写清结论、关键证据和还缺什么。回合快到时间上限时 SIREN 会插入收尾提醒：收到后停止取证，把手头证据写回 Board 并结束回合。
 
 ## 重输出隔离（调查子 agent）
 
