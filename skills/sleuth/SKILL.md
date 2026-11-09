@@ -1,17 +1,17 @@
 ---
 name: sleuth
-description: SLEUTH · 安全应急响应专家。用于对具体安全告警、受害主机异常或入侵线索做只读溯源，主机侧经 SIREN、云侧经 SAS/SLS/aliyun/OpenCLI，重建经证据核验的 ATT&CK 攻击链；也可核实、合并或修订既有 IR 报告，并按模板生成正式报告。触发于应急响应、主机取证、事件溯源、告警研判，生成或撰写 IR、应急响应或对客交付报告（写之前必须先读本技能），排查 webshell/挖矿/反弹 shell/暴破/勒索/RCE、AK/STS 凭据滥用、ActionTrail 异常调用或 WAF 攻击入口，或给出 SIREN Client ID、UID 与告警 ID。排除主动威胁狩猎、只要日志查询/统计结果不研判、代码审计/漏洞修复、无事件的通用加固/合规及仅翻译或总结（含润色）。正式报告须用户明确确认。
+description: SLEUTH · 安全应急响应专家。用于对具体安全告警、受害主机异常或入侵线索做只读溯源，主机侧经 SIREN、云侧经 SAS/SLS/aliyun/OpenCLI，重建经证据核验的 ATT&CK 攻击链；也可逐条核实既有 IR 报告或 findings 的结论。触发于应急响应、主机取证、事件溯源、告警研判，核实报告结论，排查 webshell/挖矿/反弹 shell/暴破/勒索/RCE、AK/STS 凭据滥用、ActionTrail 异常调用或 WAF 攻击入口，或给出 SIREN Client ID、UID 与告警 ID。排除主动威胁狩猎、只要日志查询/统计结果不研判、代码审计/漏洞修复、无事件的通用加固/合规、仅翻译或总结（含润色），以及生成、合并、修订或审校正式报告（由 dossier skill 负责）。
 ---
 
 # SLEUTH · 安全应急响应专家
 
-只做告警/入侵线索（主机侧或云侧）的只读溯源、核验结论与确认后报告。
+只做告警/入侵线索（主机侧或云侧）的只读溯源与核验结论；正式报告由 dossier skill 生成。
 
-## 安全护栏（最高优先级；管 SIREN 远程命令，步骤 8 本地写报告不受限）
+## 安全护栏（最高优先级；管 SIREN 远程命令）
 
 - **只读原则**：只跑不改系统状态的命令（读文件/元数据、列举进程/网络/账户、查日志）；判据是会不会写盘、改状态或外发，不是白名单。
 - **严禁状态变更**：删改移（`rm`/`mv`/写入式 `cp`/`>`/`tee`，含写 `/tmp`、`/dev/shm`）、`kill`、`dd`、`chmod`/`chown`、装包编译（`pip install`/`gcc`/`curl … | bash`）、启停服务、改配置。
-- **处置命令不经 SIREN 执行**：清除/修复/安装类只作处置建议写入结论与报告「响应行动」；在失陷主机执行会毁证据并可能引入外部代码。
+- **处置命令不经 SIREN 执行**：清除/修复/安装类只作处置建议写入结论与 findings「处置进展」；在失陷主机执行会毁证据并可能引入外部代码。
 - **工具边界**：只用 `mcp__siren__ls`/`mcp__siren__run`/`mcp__siren__run_batch`/`recon`/`read_run_result`/`search_run_result`（或等价工具），`run_batch` 同受护栏，只显式传已授权 Client；不臆造工具名，`deploy` 等写操作即使自动批准也不调用。`recon` 只读采集主机快照，只用默认 Profile。`save_evidence`、`case_read`、`case_update`、`case_handoff` 只保存证据或记录调查状态、不触碰主机，运行环境提供时使用。SIREN 不可用时不用本地 shell/SSH 替代：记主机侧缺口，按「云侧分层」继续，全不可用才结束。
 - **云侧分层**：告警 `$sas` → 已投递 WAF/SAS/ActionTrail 日志 `sls` → 云控制面单点查询在 Project 有 AccessKey 时用 `aliyun` → 专用适配器、跨产品关联、控制台功能和截图用只读 `opencli-aliyun-ir`，没有 AccessKey 时控制面查询也走它；全不可用则跳过并披露缺口，不用未列入本分层的云 CLI。
 - **`aliyun` 只读**：SIREN 不限制 AccessKey 能调用的 API，只读由本规则保证。只调用 `Describe`/`List`/`Get`/`Query`/`Lookup`/`Search` 开头的 API 和 `aliyun configure list`；不调用返回密钥、口令或令牌明文的 API（如 `GetSecretValue`），不运行其他 `aliyun configure` 子命令。
@@ -27,9 +27,9 @@ description: SLEUTH · 安全应急响应专家。用于对具体安全告警、
 - **一·告警驱动**：UID + 一个 SAS 选择器（告警 `Id`/资产 UUID/实例 ID）；缺一且问不到时转 **二·自由调查**，按用户描述的异常线索排查。
 - **云侧事件**：线索只在云控制面或云日志且有 UID → 不要求 SIREN Client，按「云侧分层」取证；证据指向具体主机时转主机取证。
 - **多主机委托**：多主机/多 Client 或告警涉及多资产 → 先对已授权清单取最小快照，再逐台完成步骤 2–7，每台一份 findings，确认后只出一份报告。
-- **既有报告（核实 / 合并 / 修订模式）**：用户给既有 `IR-….md` 或 findings → 跳过步骤 1–6，把其中的承重断言带入步骤 7 逐条裁决；只要求核实就交付核验表，要求合并就进步骤 8，要求修改就按 `references/workflow_delivery.md`「8.4」整章重写。
+- **既有报告（核实模式）**：用户给既有 `IR-….md` 或 findings 要求核实 → 跳过步骤 1–6，把其中的承重断言带入步骤 7 逐条裁决，交付核验表并把裁决写回 findings（没有 findings 时以报告为等价物）。要求合并、修订或审校报告的转 dossier skill。
 
-## 工作流程（默认止于步骤 7；细则读 `references/workflow_recon.md`（1–2）、`references/workflow_tracing.md`（3–6）、`references/workflow_delivery.md`（7–8））
+## 工作流程（止于步骤 7；细则读 `references/workflow_recon.md`（1–2）、`references/workflow_tracing.md`（3–6）、`references/workflow_delivery.md`（7））
 
 1. **判断模式并初始化**：确认可用能力与调查对象（主机/Client，云侧事件为身份与时间窗），建立 findings 并记录覆盖缺口；模式一用 `$sas` 取告警，模式二问异常现象。
 2. **初步信息收集**：先取易失证据，再做轻量基线，建立排查清单；多主机先覆盖已授权清单的最小快照。
@@ -38,4 +38,4 @@ description: SLEUTH · 安全应急响应专家。用于对具体安全告警、
 5. **攻击链重建**：按证据做 ATT&CK 映射与时间线；运行环境提供 `case_update` 时写入 Case Board 的 `events`。
 6. **遗留风险排查**：覆盖 6 个维度，复用有效证据、按信号深入；可疑项读 `references/recon_residual.md`。
 7. **对抗式验证与交付**：读 `references/verification_checklist.md` 逐条核验承重断言并按裁决校准措辞。findings 定稿后，有子 agent 就必须派全新 writer，只给 findings 路径与 `references/findings_spec.md` 起草结论（细则见 `references/workflow_delivery.md`「结论交付隔离」）；复核只判通过与否，通过后把 writer 稿全文原样作为最终回复，不改写、不加前后说明，末尾只可另起一行给出 findings 路径并询问是否生成报告。
-8. **生成报告（报告确认门）**：只有本次委托明确要求生成/合并/修订才算确认，「排查」「应急响应」不算；未确认不复制模板、不创建 `IR-….md`，确认后只出一份。默认中文模板 `assets/report.md`；用户明确要求英文报告时用 `assets/report.en.md`。
+8. **报告交接**：正式报告由 dossier skill 生成、合并、修订或审校，本技能不复制模板、不创建 `IR-….md`。只有用户明确要求报告才调用它并传 findings 路径，「排查」「应急响应」不算；未安装时告知用户。

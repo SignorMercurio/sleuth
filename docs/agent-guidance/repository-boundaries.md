@@ -1,18 +1,15 @@
 # Repository Boundaries
 
-- The installable skill package is `skills/sleuth/`: `SKILL.md`, `agents/`,
-  `assets/`, and `references/`.
-- `skills/ir-report-review/` is a companion package that reviews and simplifies
-  finished reports. It reads sleuth's `report_style.md` and
-  `report_writing_rules.md` through `../sleuth/references/`, so install both
-  side by side; its `scripts/check_report.py` ships with it and stays
-  read-only.
+- The installable skill package is `skills/sleuth/`: `SKILL.md`, `agents/`, and
+  `references/`. It carries no report template, style sample, or writing rule.
+- Report generation, merging, revision, and review belong to the `dossier`
+  skill in the sibling repository (`../dossier/skills/dossier/`), which also
+  owns the report templates. Install both skills in the same skills directory:
+  `dossier` reads `../sleuth/references/findings_spec.md` across packages at
+  write time; sleuth never reads `dossier`.
+- `skills/sleuth/references/findings_spec.md` is therefore a cross-repository
+  contract. Its 「文件命名」, 「内容结构」, and 「结论交付层使用规则」 sections
+  are what the `dossier` writer relies on; after changing them, run the dossier
+  repository's checks (see the verification guide).
 - Repo-level `scripts/`, `evals/`, and `reports/` are validation and evidence
   surfaces; they are not part of the installed skill package.
-- `skills/sleuth/assets/report.md` and `report.en.md` are deployed copies of
-  the same-named files in `../dossier/`, synced together by the dossier repo's
-  deploy target. Do not hand-edit them; change the dossier source and re-sync
-  with dossier's project-local `report-sync` skill.
-- `skills/sleuth/assets/style/` is part of the tracked skill package. Add only
-  sanitized samples safe for public distribution. Prefer
-  `curated-ir-excerpts.md` as the Step 8 style source.

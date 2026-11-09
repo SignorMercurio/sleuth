@@ -12,6 +12,10 @@
   never with `--delete`.
 - After syncing, run `chown -R root:root` on the deployed skill, keep
   directories `0755` and files `0644`, and compare local and remote file hashes.
+- The `dossier` skill is deployed beside it the same way, from the dossier
+  repository's `skills/dossier/` to `/opt/raven-skills/dossier` with the
+  `/root/.agents/skills/dossier` symlink. Deploy both when a change to the
+  findings contract spans the two skills.
 
 ## Git remotes
 

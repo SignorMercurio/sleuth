@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-07T15:02:33Z",
+  "generated_at": "2026-11-09T02:46:32Z",
   "ok": true,
   "notes": [
     "Generated for the governed-release trust-report gate (reports/review_waivers.json, gate_key=trust-report).",
@@ -9,7 +9,7 @@
   "sections": {
     "secret_scan": {
       "ok": true,
-      "files_scanned": 109,
+      "files_scanned": 83,
       "files_skipped_binary": 0,
       "rules": [
         {
@@ -43,21 +43,8 @@
     },
     "script_surface": {
       "ok": true,
-      "script_count": 18,
+      "script_count": 16,
       "scripts": [
-        {
-          "path": "evals/output/validate_full_reports.py",
-          "entry_point": "python3 evals/output/validate_full_reports.py",
-          "network_access": false,
-          "network_indicators_matched": [],
-          "subprocess_execution": false,
-          "subprocess_patterns_matched": [],
-          "file_write_scopes": [
-            "reports"
-          ],
-          "write_summary": "write call present; resolves to reports/ (static)",
-          "ok": true
-        },
         {
           "path": "evals/runtime/compliance/__init__.py",
           "entry_point": "evals/runtime/compliance/__init__.py (imported module, no CLI entry point found)",
@@ -247,17 +234,6 @@
           "file_write_scopes": [],
           "write_summary": "no file-write call detected (static)",
           "ok": true
-        },
-        {
-          "path": "skills/ir-report-review/scripts/check_report.py",
-          "entry_point": "python3 skills/ir-report-review/scripts/check_report.py",
-          "network_access": false,
-          "network_indicators_matched": [],
-          "subprocess_execution": false,
-          "subprocess_patterns_matched": [],
-          "file_write_scopes": [],
-          "write_summary": "no file-write call detected (static)",
-          "ok": true
         }
       ],
       "conclusion": "Offline check scripts show no network egress; writes resolve to reports/, evals/ or temporary artifacts (static heuristic). Exception: the digest-reviewed, opt-in run_agent_drill.py invokes the configured model service and writes a new explicit output directory outside the repo. It is not part of CI or the installed Skill.",
@@ -278,31 +254,19 @@
     "package_hash": {
       "ok": true,
       "package_root": "skills/sleuth",
-      "file_count": 23,
+      "file_count": 17,
       "files": [
         {
           "path": "skills/sleuth/SKILL.md",
-          "sha256": "75654697e1c46908ef5befa73cc8b45f30f34dd3a7a3ea680bd85fd89a529690"
+          "sha256": "a4abf066ac2b1998dd88f4f01fd1c3c3955cfa0f3a28ab4e13b78c673b602a90"
         },
         {
           "path": "skills/sleuth/agents/interface.yaml",
-          "sha256": "583db0eddbdfe870c9e876eaaba1fbe87cdd860098cfdd403e5607cf7d6acb90"
+          "sha256": "0a69bd8c202df94b8481ddd3d51d1cf1f8c68da9fd6351f827e81ba783d37e7f"
         },
         {
           "path": "skills/sleuth/agents/openai.yaml",
-          "sha256": "c531fe6d1da003ff68ef7aaaa6cdd8022a4647c67a5a57a78af43ade82a0be79"
-        },
-        {
-          "path": "skills/sleuth/assets/report.en.md",
-          "sha256": "75fa8e7704f3f6b4c330e508fe873b6746ae3b5603861312746e0fdd501fcd36"
-        },
-        {
-          "path": "skills/sleuth/assets/report.md",
-          "sha256": "66d532303d9f99c82709c3e81e7c074d74c50dda67076cf7c587d2625728b6dc"
-        },
-        {
-          "path": "skills/sleuth/assets/style/curated-ir-excerpts.md",
-          "sha256": "8373684e0899b64e26f2117f9f6339c96487f82b37232fd074f803da3c31cfdd"
+          "sha256": "32ebb7f1dca0f81380d5d92def5431fdb761b16fd82421c18aab243e2be3d76b"
         },
         {
           "path": "skills/sleuth/references/cloud_log_queries.md",
@@ -310,7 +274,7 @@
         },
         {
           "path": "skills/sleuth/references/findings_spec.md",
-          "sha256": "59ce4cdd7eefb73bf88cbfae049d88ad45c45ed09433d327338623c8f24754ed"
+          "sha256": "b6af7347de023628391c07101f46b2d9140bf78793381a5783e9a03629572512"
         },
         {
           "path": "skills/sleuth/references/playbooks.md",
@@ -321,20 +285,8 @@
           "sha256": "6af0fae1e5995e030f664be5c072d20efaaa2b251cd343ad9973a051431ccd8d"
         },
         {
-          "path": "skills/sleuth/references/report_naming.md",
-          "sha256": "79af0bf966a6d297a11c45e925146bb5c0b417c7914a6d78ae9a21c1579a4823"
-        },
-        {
-          "path": "skills/sleuth/references/report_style.md",
-          "sha256": "b1e1cd819a9912fbaa9eb55998263ff1ecaf370670995c24a6128beed3a852d2"
-        },
-        {
-          "path": "skills/sleuth/references/report_writing_rules.md",
-          "sha256": "8d3f3db8adb1475e498fe6adaafb80ffe5962ff9805a0ef41f9fe21fe52b935d"
-        },
-        {
           "path": "skills/sleuth/references/runtime_compat.md",
-          "sha256": "cb8d4fd9bc896e2cf8d701c139d6bbdda40c57b2d2c2b4f8a638aa293872372d"
+          "sha256": "e969654da5fe24dfacae932098af0a436249043564c02e58151530a17231750b"
         },
         {
           "path": "skills/sleuth/references/sas_sls_host_telemetry.md",
@@ -362,18 +314,18 @@
         },
         {
           "path": "skills/sleuth/references/workflow_delivery.md",
-          "sha256": "ddce378e788e7c0415aaf4eca0e628d7346bd056aabddfa81c252a397d3a499e"
+          "sha256": "f00d2312aa8ff6efd7cf7821cc7c46c2f7f93b549bc86bc3f71568cd6df27134"
         },
         {
           "path": "skills/sleuth/references/workflow_recon.md",
-          "sha256": "cbe01671ce6c24e7dc4354cd0de938cae8e4972488b86332abf085a13ddeac25"
+          "sha256": "cd4cbedc862ad464bed87ef9babc1e43cb28ddd35cb80b493cca50d33665054c"
         },
         {
           "path": "skills/sleuth/references/workflow_tracing.md",
-          "sha256": "14da7aef8e116846c552eb292d298f4beba9a749259e250c9744f3131066d074"
+          "sha256": "31a17a88b05a0efc418c590cfdc9c1daf305178c4debfcaa9f65246b245d2f33"
         }
       ],
-      "aggregate_sha256": "7ce6662461dec8a8a907de936213860091b7f1f448ea011da1a5f05b86e997eb",
+      "aggregate_sha256": "50447e38ff63ea1724d92a02b24ff02a6917628f007bb82d7b84e3303f227c1f",
       "aggregate_method": "sha256 of the concatenation of 'relpath:filehash\\n' for each file, sorted by relpath",
       "snapshot_note": "skills/sleuth/ may be modified by a parallel, unrelated task. This is a snapshot taken at generation time -- regenerate this report (without --check) as the final step before the trust-report waiver is closed, so the recorded hash matches the package actually being shipped."
     }

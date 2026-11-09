@@ -11,7 +11,7 @@ None currently. All three waivers below were resolved on 2026-08-26; see "Closed
 These stay warnings until fixed or explicitly accepted here:
 
 - **`output-lab` — refreshed blind review pending.** The 2026-07-31 rubric and output pairs changed, so the previous five reviewer choices were cleared. `reports/output_review_decisions.json` is now a blank template and the answer key remains hidden by the adjudication output until a new blind review is recorded.
-- **`output-lab` — no current paired model holdout.** Four current full reports now exercise simple, no-current-intrusion, complex, and multi-host cases, but they are skill-only forward tests. They prove contract compliance, not causal improvement against a no-skill baseline.
+- **`output-lab` — no current paired model holdout.** Four current full reports now exercise simple, no-current-intrusion, complex, and multi-host cases, but they are skill-only forward tests. They prove contract compliance, not causal improvement against a no-skill baseline. Since 2026-11-09 the complete-report fixtures and `validate_full_reports.py` live in the dossier repository (`evals/output/`), next to the `dossier` skill that writes reports; the pending blind review moves with them.
 
 ## Closed since last review
 

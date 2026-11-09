@@ -16,8 +16,7 @@
 - **跨结果搜索**：`search_run_result` 不带 `audit_id` 时，只有 SIREN 的 Project 端点支持，返回 24 小时内的 run 摘要；其他端点按已记录的 `audit_id` 读取。
 - **调用云侧 skill**：只调用已安装的 skill，路由与委派契约见 `references/workflow_tracing.md` 步骤 3.2；参数格式、默认值、分页和支持区域由对应 skill 管理。`aliyun` 是命令行工具，不是 skill：先运行 `aliyun configure list`，空列表表示当前 Project 没有 AccessKey；有多个 profile 时每条命令带 `--profile <名称>`。Raven 等没有 Project AccessKey 的运行时跳过这一层。全部不可用则记录覆盖缺口，不用未列入 SKILL.md「云侧分层」的云 CLI。模式一缺 `$sas` 时向用户索取告警摘要，区分用户提供与独立核验的事实；拿不到摘要则按模式二继续。
 - **联网查询**：需要查 CVE、Exploit 或修复方案时，使用运行环境提供的搜索工具、浏览器或官方/可信来源检索工具；不可联网时说明该部分未做外部验证。
-- **生成图片**：Codex 用内置图片生成工具，生成后复制到目标路径；Claude Code 在本地用 `codex exec --skip-git-repo-check -s workspace-write -C <工作目录> "<提示词>"` 转调，提示词里写明保存路径。
-- **派生子 agent**：隔离大输出（步骤 3）、独立核验与结论交付（步骤 7）或隔离写作（步骤 8）时用运行环境的 subagent / 委托机制。调查与核验子 agent 同受只读护栏约束，能访问 SIREN 就让它跑定向只读命令，不能就只处理传入的证据文本；writer 不得访问 SIREN。运行时不提供子 agent 时按各节的内联方式降级，不跳过对应步骤。
+- **派生子 agent**：隔离大输出（步骤 3）或独立核验与结论交付（步骤 7）时用运行环境的 subagent / 委托机制。调查与核验子 agent 同受只读护栏约束，能访问 SIREN 就让它跑定向只读命令，不能就只处理传入的证据文本；结论 writer 不得访问 SIREN。运行时不提供子 agent 时按各节的内联方式降级，不跳过对应步骤。
 
 ## 多 Agent 角色（SIREN Case Run）
 

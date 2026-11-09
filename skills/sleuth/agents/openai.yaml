@@ -1,8 +1,8 @@
 interface:
   display_name: "SLEUTH"
-  short_description: "Read-only host and cloud IR; reports require user confirmation."
+  short_description: "Read-only host and cloud IR; formal reports are written by the dossier skill."
   brand_color: "#0F766E"
-  default_prompt: "Use $sleuth to investigate this specific incident, on hosts through SIREN or in the cloud through SAS/SLS/aliyun/OpenCLI, and return evidence-bounded verified findings. Do not generate a formal report unless I explicitly confirm it."
+  default_prompt: "Use $sleuth to investigate this specific incident, on hosts through SIREN or in the cloud through SAS/SLS/aliyun/OpenCLI, and return evidence-bounded verified findings. Formal reports are written by the dossier skill, only when I explicitly ask for one."
 
 policy:
   allow_implicit_invocation: true

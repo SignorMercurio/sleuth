@@ -2,7 +2,7 @@
 
 [English](README.md) | 中文
 
-面向 Claude Code 和 Codex 的安全应急响应 agent skill。通过 SIREN MCP server 在失陷主机上执行只读取证命令，重建攻击链，交付经对抗验证的 MITRE ATT&CK 映射结论。正式中文事件报告仅在用户明确请求或确认后生成。
+面向 Claude Code 和 Codex 的安全应急响应 agent skill。通过 SIREN MCP server 在失陷主机上执行只读取证命令，重建攻击链，交付经对抗验证的 MITRE ATT&CK 映射结论。正式事件报告由配套的 `dossier` skill 从已验证 findings 写出，只在用户明确要求时进行。
 
 ## 功能
 
@@ -15,16 +15,16 @@
 - **对抗验证门**：所有承重断言在交付前经独立反驳（子 agent 或内联），防止错误归因
 - **证据触发的漏洞归因**：仅在证据指向漏洞利用时调查 CVE；凭证滥用、配置暴露等非漏洞入口按实际路径报告，不为字段完整强行绑定 CVE
 - **持续排查**：按排查清单逐项推进，清单有可执行项时不结束回合；单项受阻只挂起该项，其他项继续。SIREN AIR 把清单和当前结论写入 Case Board，其他运行时写入 findings，会话结束前即可查看进展
-- **报告确认门**：调查默认止于已验证结论；正式 `IR-....md` 报告仅在用户明确请求或确认后生成
-- **隔离写手**：子 agent 可用时，步骤 7 的交付结论由一个全新写手只看已验证 findings 起草，主调度只判通过与否，通过稿原样发送；确认报告后，再由一个全新写手只看 findings、模板和写作规则。写手均无法访问 SIREN 或调查上下文，写手与主调度均执行同一套交付前检查
+- **报告交接**：调查止于已验证结论；正式 `IR-....md` 报告由配套的 `dossier` skill（同级 `dossier` 仓库的 `skills/dossier/`）从 findings 写出，只在用户明确要求时进行
+- **隔离写手**：子 agent 可用时，步骤 7 的交付结论由一个全新写手只看已验证 findings 起草，主调度只判通过与否，通过稿原样发送。写手无法访问 SIREN 或调查上下文
 - **上下文隔离子 agent**：大输出由子 agent（或内联）收窄，回传决定性证据、范围及截断信息，保持主调度上下文精简
-- **多主机委托**：先对已授权主机取最小易失证据快照，再逐台深入；每台持续维护一份 findings，交付前验证；确认报告后合并为一份（见下文*多主机与合并*）
-- **可选 Markdown 事件报告**：确认后从内置 Dossier 风格模板生成一份命名的 `IR-....md`，以 findings 工作表为唯一事实来源；已验证的云侧事实可由 `opencli-aliyun-ir` 只读截取控制台截图，报告按路径引用；入侵路径按已验证步骤经 Codex 生图能力画出攻击链示意图，无法生成时保留占位
-- **自然写作风格**：报告行文遵循 `skills/sleuth/references/report_style.md` 和内置的脱敏写作样本
+- **多主机委托**：先对已授权主机取最小易失证据快照，再逐台深入；每台持续维护一份 findings，交付前验证；用户要求时由 `dossier` skill 合并为一份报告（见下文*多主机与合并*）
+- **控制台截图证据**：已验证的云侧事实可由 `opencli-aliyun-ir` 只读截取控制台截图，记入 findings 并由报告按路径引用
 
 ## 前置条件
 
-- **Claude Code 或 Codex**：最新稳定版。skill 遵循开放 agent skills 格式，位于 `skills/sleuth/`（`SKILL.md` + 可选的 `references/`、`assets/`、`agents/openai.yaml`）。
+- **Claude Code 或 Codex**：最新稳定版。skill 遵循开放 agent skills 格式，位于 `skills/sleuth/`（`SKILL.md` + `references/`、`agents/`）。
+- **dossier skill**（出正式报告时需要）：把同级 `dossier` 仓库的 `dossier` skill 装进同一个 skills 目录。它从 sleuth 的 findings 生成、合并、修订和审校 `IR-….md`，并读取旁边 sleuth 包里的 `skills/sleuth/references/findings_spec.md`。
 - **SIREN MCP server**：主机侧调查依赖 SIREN 的 list-client 和 remote-run 工具（云侧调查不需要），通常暴露为 `mcp__siren__ls` 和 `mcp__siren__run`。使用前需在客户端配置 SIREN 为 MCP server。
 - **`$sas` skill**：告警驱动查询必需。
 - **可选 `sls` skill**：WAF / SAS / ActionTrail 云日志交叉验证的首选。
@@ -88,7 +88,7 @@ rsync -avz ./sleuth/skills/sleuth/ \
 
 Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运行匹配的 playbook。
 
-资产 UUID 和 ECS 实例选择器返回告警列表。SLEUTH 整体使用返回的告警集，按请求范围继续分页，仅在调查需要时按数字 `Id` 查询单条告警详情。多条告警不需要选定主告警。确认报告后仍产出一份事件报告；列表范围的报告文件名省略 `event_id`。
+资产 UUID 和 ECS 实例选择器返回告警列表。SLEUTH 整体使用返回的告警集，按请求范围继续分页，仅在调查需要时按数字 `Id` 查询单条告警详情。多条告警不需要选定主告警。仍只产出一组 findings；列表范围的 findings 文件名省略 `event_id`。
 
 ### 自由排查模式
 
@@ -96,11 +96,11 @@ Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运�
 
 ### 多主机与合并
 
-指定多台主机 / Client ID（或指向涉及多资产的告警），skill 先对已授权主机取最小快照，再逐台深挖；每个 Client 的工作底稿逐轮更新，复查不覆盖旧轮次，默认返回已验证结论而不创建报告。确认后合并为一份报告（`IR-{date}-{primary-host}-multiN-{type}.md`）。递交多份已有 `IR-*.md` 报告并明确要求合并视同报告确认，触发纯合并模式：跳过步骤 1-6，以已有报告作为 findings 输入，对跨报告新断言执行步骤 7 验证，然后产出一份合并报告。
+指定多台主机 / Client ID（或指向涉及多资产的告警），skill 先对已授权主机取最小快照，再逐台深挖；每个 Client 的工作底稿逐轮更新，复查不覆盖旧轮次，返回已验证结论。把多份底稿合并为一份报告（`IR-{date}-{primary-host}-multiN-{type}.md`），以及合并多份已有 `IR-*.md` 报告，都由 `dossier` skill 完成；合并产生跨报告新断言时，先由 sleuth 核实模式执行步骤 7 并把裁决写回 findings。
 
-### 报告审校
+### 报告
 
-配套 skill `skills/ir-report-review/` 审校已成稿的 `IR-….md`（SIREN 上的 Dossier 链接或本地路径），按客户可读性改写，事实、判断强度和处置状态不变。它的 `scripts/check_report.py` 先标出超出字数上限的块和高密度句子，改写后再核对结构是否变动、攻击者 IoC 或哈希是否被删、是否出现原稿没有的具体值，PDF 中打不开的链接（如指向附件的相对链接）一律报 FAIL；只有报告哈希与取稿时一致才写回。它从 `../sleuth/references/` 读取 sleuth 的写作规则，两个 skill 需装在同一目录下。补充新证据或修改结论仍走 sleuth 的修订模式。
+正式报告的生成、合并、修订和审校都在 `dossier` skill（同级 `dossier` 仓库的 `skills/dossier/`，报告模板和写作规则也在那里）。两个 skill 装在同一个 skills 目录：`dossier` 读取旁边 sleuth 包里的 `skills/sleuth/references/findings_spec.md` 理解 findings，sleuth 不读 `dossier`。补充新证据或改变结论一律先走 sleuth 核实模式，裁决写回 findings 后再由 `dossier` 重写受影响章节。
 
 ## 目录结构
 
@@ -114,29 +114,19 @@ Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运�
 │   ├── agent-guidance/                     # AI agent 协作本仓库的分任务指南
 │   └── sleuth-design-principles.*          # 设计原则（HTML + PDF）
 ├── skills/
-│   ├── ir-report-review/
-│   │   ├── SKILL.md                        # 审校并精简已成稿报告，面向客户可读性
-│   │   └── scripts/check_report.py         # 密度线索，以及新稿的结构、IoC 与具体值核对
 │   └── sleuth/
-│       ├── SKILL.md                        # 常驻层：安全护栏、模式路由、8 步骨架、报告确认门
+│       ├── SKILL.md                        # 常驻层：安全护栏、模式路由、8 步骨架、报告交接
 │       ├── agents/
 │       │   ├── interface.yaml              # 跨平台接口契约
 │       │   └── openai.yaml                 # Codex 应用元数据与 SIREN MCP 依赖提示
-│       ├── assets/
-│       │   ├── report.md                   # Markdown 报告模板（来自 dossier/report.md）
-│       │   ├── report.en.md                # 英文报告模板（来自 dossier/report.en.md）
-│       │   └── style/                      # 脱敏写作样本 curated-ir-excerpts.md
 │       └── references/
 │           ├── workflow_recon.md           # 步骤 1-2：能力确认、模式路由、client/主机清单、首轮扫描
 │           ├── workflow_tracing.md         # 步骤 3-6 细则：playbook 路由、云侧交叉验证、ATT&CK、残留风险
-│           ├── workflow_delivery.md        # 步骤 7-8 细则：验证门交接、结论与报告 writer 隔离
+│           ├── workflow_delivery.md        # 步骤 7 细则：验证门交接与结论 writer 隔离
 │           ├── playbooks.md                # 步骤 3 分类型调查指南与技巧路由表
 │           ├── tech_*.md                   # 4 个横向技术指南
 │           ├── runtime_compat.md           # 跨客户端工具映射、子 agent、上下文预算、SIREN 异常
-│           ├── report_naming.md            # IR-….md 文件名格式、event_type slug、多主机规则
-│           ├── findings_spec.md            # 每主机 findings 工作表：调查→报告交接
-│           ├── report_writing_rules.md     # 模板逐块填写规则 + 项目约束
-│           ├── report_style.md             # 写作风格指南（来自手写文章提炼）
+│           ├── findings_spec.md            # 每主机 findings 工作表：命名、slug、结构；dossier 据此写报告
 │           ├── cloud_log_queries.md        # WAF / SAS / ActionTrail 日志路由
 │           ├── sas_sls_host_telemetry.md   # SAS 主机遥测：字段坑、w3wp.exe、SSH 登录归因、OOB/DNSLog
 │           ├── recon_residual.md           # 六轴扫描后的残留风险跟进
@@ -151,26 +141,20 @@ Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运�
 │   ├── semantic_config.json                # 语义评估配置
 │   ├── blind_holdout/                      # 人工盲审 trigger cases
 │   ├── dev/                                # 开发用 trigger cases
-│   ├── output/                             # 报告契约 fixture 与结构验证器
-│   │   └── fixtures/                       # Findings 工作表与完整报告 fixture
 │   └── runtime/                            # Mock SIREN、场景、转录合规与故障测试
 └── reports/                                # 信任证据、评分卡、盲审与 waiver
 ```
 
-加载分两阶段。`SKILL.md` 是唯一常驻层：安全护栏、调查模式路由、8 步骨架和报告确认门。`skills/sleuth/references/` 下的其余内容按需加载——进入某阶段时读取对应 `workflow_*.md`，playbook、技术指南和写作规则仅在当前告警或场景需要时加载，保持初始上下文精简。
+加载分两阶段。`SKILL.md` 是唯一常驻层：安全护栏、调查模式路由、8 步骨架和报告交接。`skills/sleuth/references/` 下的其余内容按需加载——进入某阶段时读取对应 `workflow_*.md`，playbook 和技术指南仅在当前告警或场景需要时加载，保持初始上下文精简。
 
-## 报告输出示例
+## Findings 输出
 
-Skill 默认返回简洁的已验证调查结论，不创建正式报告。用户明确请求或确认后，在 cwd 写入一份 Markdown 报告：
+Skill 返回简洁的已验证调查结论，并在 cwd 为每台主机维护一份 findings 底稿：
 
-- `IR-20260417-web01-webshell-123456.md`：告警驱动，告警 `Id` `123456`
-- `IR-20260417-web01-webshell.md`：资产或实例范围的告警集
-- `IR-20260417-db-prod-rce.md`：自由排查模式
-- `IR-20260417-web01-multi3-miner-123456.md`：多主机委托（3 台主机，主机 `web01`）
+- `IR-20260417-web01-webshell-123456-client7.findings.md`：告警驱动，告警 `Id` `123456`，SIREN client 7
+- `IR-20260417-uid1234567890-akabuse-123456.findings.md`：没有 SIREN client 的云侧事件
 
-报告文件从 `skills/sleuth/assets/report.md` 或 `report.en.md` 复制后按事件填充。
-
-event_type slug（如 `webshell`、`rce`、`unknown`）的完整表见 `skills/sleuth/references/report_naming.md`。
+命名字段和 event_type slug（如 `webshell`、`rce`、`unknown`）见 `skills/sleuth/references/findings_spec.md`「文件命名」。`dossier` skill 从 findings 名推导正式报告名 `IR-….md`。
 
 ## 验证
 
@@ -181,19 +165,16 @@ python3 -m pip install -r requirements.txt
 python3 scripts/validate.py
 python3 scripts/permission_probe.py
 python3 scripts/gen_trust_report.py --check
-python3 evals/output/validate_full_reports.py
 python3 evals/runtime/run_mock_siren_tests.py
 git diff --check
 ```
 
 `scripts/gen_trust_report.py --check` 为只读模式。如果在包、脚本、依赖或跟踪文件变更后报告证据过时，运行一次 `python3 scripts/gen_trust_report.py` 并提交刷新的 `reports/trust_report.json` 和 `reports/trust_report.md`。
 
-完整报告 fixture 与 mock SIREN 套件是契约回归测试，验证报告结构、样本文字泄漏、运行时策略、场景证据、故障处理、转录合规和并发，但不证明 agent 能得出正确结论。使用[隔离模型演练](evals/runtime/README.md)采集真实输出与成本，再做[事实复核](evals/output/review.md)。演练运行器需要显式启动，会调用已配置的模型服务并写入仓库外的新目录，不进入离线 CI；人工盲评仍单独进行。
+mock SIREN 套件是契约回归测试，验证运行时策略、场景证据、故障处理、转录合规和并发，但不证明 agent 能得出正确结论。使用[隔离模型演练](evals/runtime/README.md)采集真实输出与成本，再按 dossier 仓库的 `evals/output/review.md` 做事实复核。演练运行器需要显式启动，会调用已配置的模型服务并写入仓库外的新目录，不进入离线 CI；人工盲评仍单独进行。
 
 ## 贡献
 
-Playbook 和技术指南在 `skills/sleuth/references/`，报告模板在 `skills/sleuth/assets/report.md` 与 `report.en.md`，均为纯 Markdown。欢迎提交新攻击类型或环境特定指南的 PR。通用命令方法不要放进 references——模型已经知道这些，指南只承载判断规则、环境特定注意事项和具体攻击指标。
+Playbook 和技术指南在 `skills/sleuth/references/`，均为纯 Markdown。欢迎提交新攻击类型或环境特定指南的 PR。通用命令方法不要放进 references——模型已经知道这些，指南只承载判断规则、环境特定注意事项和具体攻击指标。
 
-写作规则分层，每条规则只有一个权威归属：块级填写规则在模板的 HTML 注释中，横向约束在 `skills/sleuth/references/report_writing_rules.md`，行文风格在 `skills/sleuth/references/report_style.md`。新规则放在对应层，不跨文件重复。模板变更（含注释）应在上游 `dossier` 项目修改后同步到此 skill。
-
-变更报告规则后，通过隔离的步骤 8 写手重新生成 `evals/output/fixtures/full_reports/` 下受影响的 fixture，运行上述验证命令，并手动对照风格指南审查中文行文。
+报告模板、写作规则和完整报告 fixture 在 `dossier` 仓库。`skills/sleuth/references/findings_spec.md` 中 `dossier` 写手读取的几节（文件命名、内容结构、结论交付层规则）是跨仓库契约，改动后也要跑那个仓库的检查。

@@ -8,6 +8,14 @@
 
 本文件建立之前的变更历史，见仓库 `git log`。
 
+## 2026-11-09
+
+### 变更
+
+- 报告侧拆出 sleuth：生成、合并、修订、审校正式报告改由 dossier 仓库的 `dossier` skill 负责（`../dossier/skills/dossier/`）。sleuth 止于步骤 7 交付结论，步骤 8 只剩一行交接；报告确认门改为 dossier 的触发边界，sleuth 不复制模板、不创建 `IR-….md`，也不主动调用 dossier。原因：报告规则已有两个消费者（步骤 8 与 ir-report-review）却只有一个归属，模板源本来就在 dossier；SKILL.md 的报告侧触发词让「应急响应」一句话就可能出报告，需要在排查 skill 里设防。
+- 删除 `references/report_style.md`、`report_writing_rules.md`、`report_naming.md`、`assets/report.md`、`report.en.md`、`assets/style/`、`skills/ir-report-review/`、`evals/output/` 与 `docs/agent-guidance/report-writing.md`，内容原样迁入 dossier。`findings_spec.md` 吸收事件类型 slug 表，删去「正式报告写作层使用规则」「多主机合并规则」两节；其「文件命名」「内容结构」「结论交付层使用规则」成为 dossier 读取的跨仓库契约。
+- 既有报告模式只保留核实：裁决写回 findings，合并与修订转 dossier。护栏不变：只读原则、状态变更禁令、处置命令不经 SIREN、`aliyun` 只读、证据信任边界均保留；步骤 7 结论 writer 的隔离不变。
+
 ## 2026-11-07
 
 ### 变更

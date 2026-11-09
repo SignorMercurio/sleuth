@@ -1,6 +1,6 @@
 # SLEUTH 信任报告（Trust Report）
 
-生成时间：`2026-11-07T15:02:33Z`
+生成时间：`2026-11-09T02:46:32Z`
 
 总体结论：**通过**
 
@@ -9,7 +9,7 @@
 
 ## 1. 密钥与凭据扫描（secret scan）
 
-- 扫描文件数：109（跳过二进制/不可解码文件 0 个）
+- 扫描文件数：83（跳过二进制/不可解码文件 0 个）
 - 规则：
   - `aliyun_ak_sk`：Aliyun AccessKeyId: LTAI prefix followed by 12-30 alnum chars
   - `private_key_block`：PEM private key BEGIN marker (RSA/EC/DSA/OPENSSH/ENCRYPTED)
@@ -23,7 +23,6 @@
 
 | 脚本 | 入口 | 网络访问 | 子进程 | 文件写入范围 |
 | --- | --- | --- | --- | --- |
-| `evals/output/validate_full_reports.py` | `python3 evals/output/validate_full_reports.py` | 否 | 否 | write call present; resolves to reports/ (static) |
 | `evals/runtime/compliance/__init__.py` | `evals/runtime/compliance/__init__.py (imported module, no CLI entry point found)` | 否 | 否 | no file-write call detected (static) |
 | `evals/runtime/compliance/check_transcript.py` | `python3 evals/runtime/compliance/check_transcript.py` | 否 | 否 | no file-write call detected (static) |
 | `evals/runtime/compliance/rules.py` | `evals/runtime/compliance/rules.py (imported module, no CLI entry point found)` | 否 | 否 | no file-write call detected (static) |
@@ -40,7 +39,6 @@
 | `scripts/gen_trust_report.py` | `python3 scripts/gen_trust_report.py` | 否 | 是 | write call present; resolves to reports/ (static) |
 | `scripts/permission_probe.py` | `python3 scripts/permission_probe.py` | 否 | 否 | no file-write call detected (static) |
 | `scripts/validate.py` | `python3 scripts/validate.py (flat script, executes at import time, no __main__ guard)` | 否 | 否 | no file-write call detected (static) |
-| `skills/ir-report-review/scripts/check_report.py` | `python3 skills/ir-report-review/scripts/check_report.py` | 否 | 否 | no file-write call detected (static) |
 
 - 结论：Offline check scripts show no network egress; writes resolve to reports/, evals/ or temporary artifacts (static heuristic). Exception: the digest-reviewed, opt-in run_agent_drill.py invokes the configured model service and writes a new explicit output directory outside the repo. It is not part of CI or the installed Skill.
 - 方法说明：Static heuristic scan plus an exact-source-digest review of the opt-in model runner; not a sandbox or full data-flow analysis. Network access: real Python networking modules are matched on an actual import/connect statement anywhere in the file; command-line network tools (curl/wget/ssh/scp/rsync/netcat) count only when they appear as an argument inside an actual subprocess/os.system/os.popen/os.exec* call (.py) or as a shell-script line (.sh) -- a policy table or test-fixture string that merely names one of these tools is not a call site. File writes: a best-effort constant-propagation pass resolves a write call's target through named constants, one argparse-default hop, and tempfile.*/`with ... as` bindings (tagged as an ephemeral temp-dir, not a persistent write).
@@ -54,8 +52,8 @@
 ## 4. 安装包哈希（package hash）
 
 - 包目录：`skills/sleuth`
-- 文件数：23
-- 聚合 SHA-256：`7ce6662461dec8a8a907de936213860091b7f1f448ea011da1a5f05b86e997eb`
+- 文件数：17
+- 聚合 SHA-256：`50447e38ff63ea1724d92a02b24ff02a6917628f007bb82d7b84e3303f227c1f`
 - 聚合算法：sha256 of the concatenation of 'relpath:filehash\n' for each file, sorted by relpath
 - 说明：skills/sleuth/ may be modified by a parallel, unrelated task. This is a snapshot taken at generation time -- regenerate this report (without --check) as the final step before the trust-report waiver is closed, so the recorded hash matches the package actually being shipped.
 - 逐文件清单见 `reports/trust_report.json` 的 `sections.package_hash.files`。

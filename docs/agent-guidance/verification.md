@@ -13,7 +13,6 @@ changes, select the applicable checks:
 - Trust-report inputs (tracked files, scripts, dependencies or the Skill package):
   `python3 scripts/gen_trust_report.py --check`; regenerate evidence as described in
   [Runtime governance](runtime-governance.md).
-- Report contracts: `python3 evals/output/validate_full_reports.py`.
 - SIREN tool workflow or runtime compatibility: `python3 evals/runtime/run_mock_siren_tests.py`.
 
 Combine relevant checks when surfaces overlap. Operational rules written in Markdown
@@ -27,19 +26,8 @@ bash "${HOME}/.agents/skills/health/scripts/check-doc-refs.sh" .
 
 ## Change-specific checks
 
-- After syncing the report templates, run
-  `cmp -s skills/sleuth/assets/report.md ../dossier/report.md` and
-  `cmp -s skills/sleuth/assets/report.en.md ../dossier/report.en.md`.
-- After changing report rules, regenerate the affected fixtures under
-  `evals/output/fixtures/full_reports/` with an isolated SKILL Step 8 writer.
-  Then run the applicable checks above, review the prose against
-  `skills/sleuth/references/report_style.md`, and have the writer report any rule
-  conflicts.
-- After changing `skills/ir-report-review/`, run its check on the fixture pair
-  `python3 skills/ir-report-review/scripts/check_report.py evals/output/fixtures/full_reports/bloated-revision.md evals/output/fixtures/full_reports/bloated-revision-reviewed.md`
-  (must exit 0) and `python3 evals/output/validate_full_reports.py`. When its
-  review rules change, regenerate `bloated-revision-reviewed.md` by running the
-  skill in a fresh agent on `bloated-revision.md`.
-- Treat complete-report fixtures as synthetic contract regression only. They do
-  not replace blind human review or prove causal improvement over a no-skill
-  baseline.
+- After changing the sections of `skills/sleuth/references/findings_spec.md`
+  that the `dossier` writer reads (「文件命名」, 「内容结构」, 「结论交付层使用规则」)
+  or the step-7 handoff wording, run the dossier repository's checks from
+  `../dossier`: `npm run check` and `python3 evals/output/validate_full_reports.py`.
+  Report fixtures and templates live there, not here.

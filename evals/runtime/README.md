@@ -1,7 +1,6 @@
 # 运行时回归测试集（带 mock SIREN）
 
-`scripts/validate.py` 只做语法与链接检查，`evals/output/` 只比对合成文本，二者都碰不到
-SIREN 相关的工程路径。本目录补上这一段：用一个可执行的 mock SIREN 服务器把命令正确性、
+`scripts/validate.py` 只做语法与链接检查，碰不到 SIREN 相关的工程路径。本目录补上这一段：用一个可执行的 mock SIREN 服务器把命令正确性、
 超时重试、断线、日志被清后的证据源切换、输出截断、并发这些路径变成能跑的回归。
 
 本目录属于仓库级校验面，**不进 `skills/sleuth/` 安装包**（见
@@ -292,7 +291,7 @@ Read/Write/Edit、工具通配授权或 additionalDirectories；遇到该配置�
 转发了某个子 agent 的草稿：去掉末尾一行报告询问后，回复须是草稿中连续的一段行（只比对去缩进后的
 非空行），因此只允许丢掉 writer 首尾的附注，中间删句、调序或改写都判为 `false`。`unrelayed_lines`
 列出不在任何草稿里的行；为 `false` 而列表为空，说明是删句或调序。没有子 agent 返回草稿时两者为 `null`。
-模型只能读该轮工作区并写 `*.findings.md`。这用于主机调查路径，不覆盖 SAS/SLS/OOB 云侧查询或步骤 8 的隔离 writer。
+模型只能读该轮工作区并写 `*.findings.md`。这用于主机调查路径，不覆盖 SAS/SLS/OOB 云侧查询或 dossier 的报告 writer。
 
 产物包括 `events.jsonl` 原始会话、`event_timings.jsonl` 接收时间、`conclusion.md`、
 `workspace/*.findings.md`、`summary.json`，以及复现所用的场景与 Skill 副本。

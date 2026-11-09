@@ -1,6 +1,6 @@
-# 步骤 7–8：对抗式验证、结论交付与报告生成
+# 步骤 7：对抗式验证与结论交付
 
-SKILL.md 进入步骤 7 时加载本文件。报告确认门以 SKILL.md 为准，本文只写操作细则。
+SKILL.md 进入步骤 7 时加载本文件。报告交接以 SKILL.md 步骤 8 为准，本文只写操作细则。
 
 ## 步骤 7 结论对抗式验证与交付
 
@@ -22,62 +22,4 @@ SKILL.md 进入步骤 7 时加载本文件。报告确认门以 SKILL.md 为准�
 
 运行时不支持子 agent 时，编排者重新读取全部 findings 后内联起草，只用文件内容，不凭会话记忆补事实或改措辞，再做同一复核。
 
-进入步骤 8 前，按 `references/findings_spec.md` 的定稿条件核对必填信息和已核实的未知边界，不把缺口留给写作层猜测。
-
-## 步骤 8 经用户确认后生成 Markdown 应急响应报告
-
-只有通过报告确认门后才执行。每次委托只在当前工作目录生成**一份** `IR-….md` 正式报告（findings 底稿不算交付物），写作只以 findings 为事实来源。
-
-运行环境提供 `case_read` 时，派 writer 前由编排者调用一次，记下返回的证据版本；事件与 findings §3、§5 不一致时，用这次读取的结果刷新快照。writer 仍只读 findings。报告通过 QA 后，编排者调用 `case_update`，传 `reports: [{path, evidence_version}]`，`path` 是 `IR-….md`，`evidence_version` 是写作前记下的版本，不用写完后的新版本。写作期间证据又有变化时，Case Board 会把这份报告标为落后，按 8.4 处理。
-
-### 8.1 入侵路径示意图（派 writer 前，编排者执行）
-
-findings「入侵路径」有已验证步骤时，按 `references/runtime_compat.md`「生成图片」生成一张示意图，保存为 `<报告名>.assets/attack-chain.png`；多主机只画一张。
-
-- **内容**：只画已验证步骤，节点标签原样写 IP、路径、接口、进程、主机名等具体值；无法确认的后续环节画成灰色虚线框并注明未见记录。要求横向流程图、白底、扁平商务风格、16:9，文字与报告同语言。
-- **提示词措辞**：按「防守方事件复盘流程图」描述，节点用「外部来源」「请求」「写入文件」「启动进程」等中性说法，不写「攻击」「利用」「webshell」「木马」这类词，否则容易被生图服务的内容审核拦截；被拒时改成中性说法重试一次。
-- **失败不阻塞**：工具不可用或仍被拒就不传路径，writer 用文字写入侵路径，交付时说明未生成示意图。
-
-### 8.2 报告写作隔离
-
-运行时支持子 agent 时默认派生一个全新 writer 生成报告。只给 writer 以下文件路径，不传调查对话、工具输出、编排者推理或预期答案：
-
-- 全部 findings 文件
-- 报告模板（SKILL.md 步骤 8 选定的一份）
-- `assets/style/curated-ir-excerpts.md`
-- `references/findings_spec.md`
-- `references/report_naming.md`
-- `references/report_style.md`
-- `references/report_writing_rules.md`
-- 入侵路径示意图路径（生成成功时）
-
-writer 只读取这些文件（互不依赖的读取一次性并行发出），不调用 SIREN、SAS、SLS、OpenCLI 或联网工具：
-
-1. 按 `references/report_naming.md` 在当前工作目录确定 `IR-{YYYYMMDD}-{hostname}-{event_type}[-{event_id}].md`
-2. 将传入的模板复制为该文件，只编辑该副本，按 `references/report_writing_rules.md` 逐块替换占位内容；英文报告把中文 findings 译成英文，IP、路径、命令、日志原文等证据值原样保留
-3. 只交付这一份 Markdown：不创建报告目录、`index.html`、CSS/JS、字体资源或 dev server；`<报告名>.assets/` 由编排者产出，writer 不碰
-
-是否因字段缺失停止定稿，以 `references/findings_spec.md`「正式报告写作层使用规则」为准；区分漏填与编排者已核实的未知边界。
-
-writer 完成后先自检，编排者再按相同边界复核：
-
-1. 按 `references/findings_spec.md` 检查事实边界、措辞等级、严重等级、影响统计口径与处置进展；数量和状态逐项核对来源，已核实的未知边界不能改写成确定结果
-2. 按模板 HTML 注释检查原有标题、`:::` 指令块、占位符和各块内容；图片引用逐条核对路径来自 findings 或编排者传入，且文件存在
-3. 按 `references/report_writing_rules.md` 检查跨章节分工、证据实体下限、内部标识、IoC、样本串案与重复
-4. 按 `references/report_style.md` 通读中文，清理不自然或机械化表达；英文报告改按模板 Writing guide 注释通读
-5. 检查篇幅：概述字段按模板注释的字数上限，正文自然段按 `references/report_writing_rules.md` 的段落上限。超限时按该规则处理，不逐句缩写、不删具体证据值、不把段落挪进表格或列表，并在 QA 结果里写明每处超限的处理方式；修订模式另按 8.4 核对篇幅
-
-QA 结果只返回编排者。全部通过才交付报告；失败就修报告，事实或必填字段缺失则回到步骤 2–7。运行时不支持子 agent 时，编排者重新读取上述文件后内联写作，仍执行相同自检，不凭会话记忆补事实。
-
-### 8.3 多主机合并
-
-多主机委托与合并模式按 `references/findings_spec.md`「多主机合并规则」块级合并；单主机跳过。
-
-### 8.4 修订已交付报告
-
-复核意见、新证据或用户指出的错误都按同一流程进入已交付报告：
-
-1. **裁决写回 findings**：原 findings 仍在时写回原 findings，不在时以报告当前版本为 findings 等价物（规则同合并模式），每条意见按 `references/verification_checklist.md` 过门，裁决为维持、降级、撤回或改正并附依据，写回对应断言。复核方只给裁决，不给行号和改写文本。
-2. **整章重写**：把受裁决影响的章节交给全新 writer，输入边界同 8.2，加上当前报告路径；writer 依据更新后的 findings 重写这些章节，未受影响的章节原样保留。不在原句后追加「但不能排除……」，撤回的结论直接删去，限定语仍按「证据边界只完整展开一次」只落一处。
-3. **版本与篇幅**：按模板 rev 注释递增 minor 版本。重写后的正文不应比上一版长，变长时交稿 QA 要说明新增的是哪个已确认阶段，否则删回。
-4. **登记版本**：运行环境提供 `case_read` 时，修订前调用一次，报告行列出的 `Q`、`TL` 变更项就是要核对的范围；有 `TL` 项时先刷新 findings §3、§5 快照；记下证据版本，修订通过 QA 后用该版本重新登记报告，规则同步骤 8 开头。
+交付前核对 findings §2 的严重等级、§9 的当前事件状态与处置进展已填写或已核实为未知，不把缺口留给 dossier 的写作层猜测。

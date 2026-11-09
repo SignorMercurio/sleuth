@@ -1,6 +1,6 @@
 {
   "optimizer_hints": {
-    "capability": "Read-only incident response on hosts over SIREN and in Alibaba Cloud through SAS/SLS/aliyun/OpenCLI, delivering verified ATT&CK-mapped findings and optional user-confirmed Chinese IR reports",
+    "capability": "Read-only incident response on hosts over SIREN and in Alibaba Cloud through SAS/SLS/aliyun/OpenCLI, delivering verified ATT&CK-mapped findings; formal IR reports are handed to the dossier skill",
     "inputs": [
       "security alerts",
       "host anomalies",
@@ -26,13 +26,10 @@
       "investigate a security alert",
       "respond to a host intrusion",
       "trace an attack chain",
-      "produce an incident response report",
-      "merge IR reports",
       "应急响应",
       "查告警",
       "排查这台主机",
       "事件溯源",
-      "合并报告",
       "investigate AccessKey or STS abuse",
       "triage a WAF attack",
       "verify an existing IR report",
@@ -49,13 +46,13 @@
       "主动威胁狩猎",
       "纯代码审查",
       "无事件的通用安全建议",
-      "报告润色"
+      "报告润色",
+      "generating, merging, revising or reviewing a formal IR report (dossier skill)",
+      "生成/合并/修订/审校正式报告"
     ],
     "artifacts": [
-      "IR-*.md report",
       "*.findings.md worksheet",
-      "ATT&CK mapping",
-      "应急响应报告"
+      "ATT&CK mapping"
     ]
   },
   "frontmatter_contract": {
@@ -64,7 +61,8 @@
       "只要日志查询/统计结果不研判",
       "代码审计/漏洞修复",
       "无事件的通用加固/合规",
-      "仅翻译或总结"
+      "仅翻译或总结",
+      "生成、合并、修订或审校正式报告"
     ]
   },
   "workflow_contract": {
