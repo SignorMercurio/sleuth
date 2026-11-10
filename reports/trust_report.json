@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-09T02:46:32Z",
+  "generated_at": "2026-11-10T12:10:40Z",
   "ok": true,
   "notes": [
     "Generated for the governed-release trust-report gate (reports/review_waivers.json, gate_key=trust-report).",
@@ -258,7 +258,7 @@
       "files": [
         {
           "path": "skills/sleuth/SKILL.md",
-          "sha256": "a4abf066ac2b1998dd88f4f01fd1c3c3955cfa0f3a28ab4e13b78c673b602a90"
+          "sha256": "464baa84b1d7d5255c9ea4b4953f5e322457d725e2aaf3327f247b6ff9dab84f"
         },
         {
           "path": "skills/sleuth/agents/interface.yaml",
@@ -274,7 +274,7 @@
         },
         {
           "path": "skills/sleuth/references/findings_spec.md",
-          "sha256": "b6af7347de023628391c07101f46b2d9140bf78793381a5783e9a03629572512"
+          "sha256": "025442aec2ea08e8ce3064dbb2cfca0b3d349fdd5fb1299e86a528a703d433db"
         },
         {
           "path": "skills/sleuth/references/playbooks.md",
@@ -286,7 +286,7 @@
         },
         {
           "path": "skills/sleuth/references/runtime_compat.md",
-          "sha256": "e969654da5fe24dfacae932098af0a436249043564c02e58151530a17231750b"
+          "sha256": "e02884a821af7404cfcd2f7de0e425d8af5087955ee7bc92db561ca22a115924"
         },
         {
           "path": "skills/sleuth/references/sas_sls_host_telemetry.md",
@@ -318,14 +318,14 @@
         },
         {
           "path": "skills/sleuth/references/workflow_recon.md",
-          "sha256": "cd4cbedc862ad464bed87ef9babc1e43cb28ddd35cb80b493cca50d33665054c"
+          "sha256": "5f9144402b18ad499151f45fb1a4cf986b087107cdcb50529da97acf7b4e899c"
         },
         {
           "path": "skills/sleuth/references/workflow_tracing.md",
-          "sha256": "31a17a88b05a0efc418c590cfdc9c1daf305178c4debfcaa9f65246b245d2f33"
+          "sha256": "510daedd908ed0cf61abc0d810c5c93859b953e1eb16f6d471c4df1f1ee05b95"
         }
       ],
-      "aggregate_sha256": "50447e38ff63ea1724d92a02b24ff02a6917628f007bb82d7b84e3303f227c1f",
+      "aggregate_sha256": "d8f50070d855551d1c5733b7b8becd5f56e890be138ccd5803f227dd6ae55a94",
       "aggregate_method": "sha256 of the concatenation of 'relpath:filehash\\n' for each file, sorted by relpath",
       "snapshot_note": "skills/sleuth/ may be modified by a parallel, unrelated task. This is a snapshot taken at generation time -- regenerate this report (without --check) as the final step before the trust-report waiver is closed, so the recorded hash matches the package actually being shipped."
     }

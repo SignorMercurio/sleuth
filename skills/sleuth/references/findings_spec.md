@@ -66,6 +66,7 @@ findings 是内部工作底稿，去留由用户决定。正式报告名由 doss
 - 返回末尾的 `Remaining` 列出未结项，`Dimensions with no items` 列出还没有项的维度，据此选下一项。
 - 证据优先传 run 的 `audit_id` 加 `label`，SIREN 原样保存；`sls -save` 等已落盘文件传 `evidence/<文件>#L<n>-L<m>`；复用时传 `CE` 编号。
 - 主机实体用 `kind: host` 加 SIREN Client ID；其他实体用 `ip`、`domain`、`identity`、`file`、`resource`，或复用 `A` 编号。
+- 文件路径、本机账号、本机资源所在的主机是 SIREN client 时，实体加 `host` 传该主机的 Client ID。`value` 只写路径或账号名，不写主机名前缀。同一路径或账号在两台主机上是两个实体。文件哈希、云账号、云资源不传 `host`。
 - 证据链接变化，或项进入、离开 `open` 以外的状态，或这些状态下的 `answer` 变化时，证据版本递增；已登记的报告随之标为落后。登记由 dossier skill 在报告通过 QA 后完成。
 - 校验失败时按错误补齐字段后重试。不要为通过校验改写结论或状态；证据确实不足就保持原状态或记为缺口。
 
