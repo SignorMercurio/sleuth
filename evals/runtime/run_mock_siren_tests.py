@@ -166,7 +166,7 @@ def suite_mcp_protocol() -> Suite:
     suite.equal(run_result.get("isError"), False, "successful run is not an error")
     structured = run_result.get("structuredContent", {})
     for key in ("audit_id", "outcome", "complete", "truncated", "original_bytes",
-                "returned_bytes", "preview_strategy", "created_at", "expires_at"):
+                "returned_bytes", "preview_strategy", "created_at"):
         suite.check(key in structured, f"run structured content carries {key}")
     suite.equal(structured.get("outcome"), "success", "run outcome")
     suite.equal(structured.get("text"), "web01",

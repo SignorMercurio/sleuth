@@ -63,6 +63,12 @@ TOOL_DEFINITIONS = [
                     "description": "auto previews results over 8 KiB; full returns everything",
                     "enum": ["auto", "full"],
                 },
+                "timeout_seconds": {
+                    "type": "integer",
+                    "description": "Seconds the command may run (default 30, max 120); the mock ignores it",
+                    "minimum": 1,
+                    "maximum": 120,
+                },
             },
             "required": ["client_id", "command"],
         },

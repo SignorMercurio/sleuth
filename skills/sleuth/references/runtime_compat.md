@@ -13,7 +13,7 @@
 - **Case Board**：`case_read`/`case_update` 只在 SIREN AIR 的 Project 端点提供；Raven 等其他运行时没有这些工具，按 `references/findings_spec.md`「排查清单位置」使用 Markdown 清单。
 - **主机快照**：`recon` 由运行环境提供时按 `references/workflow_recon.md` 步骤 2 使用；`hunt` Profile 只有操作者能在 WebUI 运行。
 - **证据保存**：`save_evidence` 把 `audit_id` 对应的结果原样存入 Project 的 `evidence/`，只在 SIREN AIR 的 Project 端点提供；其他运行时把决定性原文写进 findings 证据记录。
-- **跨结果搜索**：`search_run_result` 不带 `audit_id` 时，只有 SIREN 的 Project 端点支持，返回 24 小时内的 run 摘要；其他端点按已记录的 `audit_id` 读取。
+- **run 结果文件**：SIREN 的 Project 端点把每次有输出的 run 存为 Project 目录的 `runs/<audit_id>.txt`，文件头记录主机、命令和时间，之后是完整输出；用本地文件工具读取和搜索。其他端点不保存完整输出，超出预览的部分用完整输出模式或缩小命令重取。
 - **调用云侧 skill**：只调用已安装的 skill，路由与委派契约见 `references/workflow_tracing.md` 步骤 3.2；参数格式、默认值、分页和支持区域由对应 skill 管理。`aliyun` 是命令行工具，不是 skill：先运行 `aliyun configure list`，空列表表示当前 Project 没有 AccessKey；有多个 profile 时每条命令带 `--profile <名称>`。Raven 等没有 Project AccessKey 的运行时跳过这一层。全部不可用则记录覆盖缺口，不用未列入 SKILL.md「云侧分层」的云 CLI。模式一缺 `$sas` 时向用户索取告警摘要，区分用户提供与独立核验的事实；拿不到摘要则按模式二继续。
 - **联网查询**：需要查 CVE、Exploit 或修复方案时，使用运行环境提供的搜索工具、浏览器或官方/可信来源检索工具；不可联网时说明该部分未做外部验证。
 - **派生子 agent**：隔离大输出（步骤 3）或独立核验与结论交付（步骤 7）时用运行环境的 subagent / 委托机制。调查与核验子 agent 同受只读护栏约束，能访问 SIREN 就让它跑定向只读命令，不能就只处理传入的证据文本；结论 writer 不得访问 SIREN。运行时不提供子 agent 时按各节的内联方式降级，不跳过对应步骤。
@@ -38,7 +38,7 @@
 ## 上下文预算
 
 - **exec 脚本**：Codex 经 exec 脚本调工具时只取 `structuredContent` 中需要的字段（如 `outcome`、`truncated`、`omitted_ranges`、`audit_id` 与所需输出片段），不 `text()` 整个结果；首行声明 `// @exec: {"max_output_tokens": N}`。
-- **大输出**：`run_batch` 每台预览 1 KiB；`audit_id` 用 `search_run_result` 定位、`read_run_result` 按字节范围补读，结果 24 小时后过期，SIREN 服务重启后清空。需保留的大段原文按运行环境既有证据规则落盘（如 AIR 的 `evidence/`），之后用 `grep`/`sed -n` 读片段，不整文件回读。
+- **大输出**：`run_batch` 每台预览 1 KiB；结果被截断时返回 `path`（`runs/<audit_id>.txt`）和正文起始行 `body_start_line`，按此读文件，不为补读重跑命令。需保留的大段原文按运行环境既有证据规则落盘（如 AIR 的 `evidence/`），之后用 `grep`/`sed -n` 读片段，不整文件回读。
 - **图片**：需读小字才用 `view_image` 的 `original`，且一次一张。
 
 ## 本地长任务
@@ -51,7 +51,7 @@
 
 ## SIREN 异常处理
 
-- SIREN 超时/失败：简化命令重试一次，仍失败则跳过并记录为证据缺口；不换写法反复跑同一重扫描
-- Client busy：多个会话同查一台主机时，`run`/`run_batch` 排队最多 90 秒才报 busy；隔一会儿重试同一命令，不简化、不换写法重扫
+- SIREN 超时/失败：简化命令重试一次，仍失败则跳过并记录为证据缺口；不换写法反复跑同一重扫描。命令默认 30 秒超时；大目录 `find`、大日志 `journalctl`/`zgrep` 这类确实需要更久的扫描，先缩小范围，仍不够再用 `timeout_seconds`（上限 120）重试一次。客户端一次只跑一条命令，长命令会让其他会话排队
+- Client busy：多个会话同查一台主机时，`run`/`run_batch` 排队约两分钟才报 busy；隔一会儿重试同一命令，不简化、不换写法重扫
 - 客户端断线：告知用户，等待重连或切换备用客户端
 - 日志被清除：标注后转向其他证据源（进程、网络、文件时间戳）

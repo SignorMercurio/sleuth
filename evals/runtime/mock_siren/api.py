@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import threading
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from typing import Any
 
 from .faults import FaultEngine
@@ -28,7 +28,6 @@ INLINE_MAX_BYTES = 8 << 10
 PREVIEW_HEAD_BYTES = 4 << 10
 PREVIEW_TAIL_BYTES = 4 << 10
 MAX_COMMAND_BYTES = 50 << 10
-RESULT_TTL = timedelta(hours=1)
 
 OUTPUT_MODES = ("auto", "full")
 
@@ -232,7 +231,6 @@ class MockSirenSession:
             "shown_ranges": shown,
             "omitted_ranges": omitted,
             "created_at": created.isoformat(),
-            "expires_at": (created + RESULT_TTL).isoformat(),
         }
 
     def _error(self, audit_id: str, client_id: str, outcome: str, message: str) -> RunResult:

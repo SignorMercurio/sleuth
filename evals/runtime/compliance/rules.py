@@ -35,8 +35,6 @@ SIREN_ALLOWED_TOOLS = frozenset(
         "mcp__siren__run",
         "mcp__siren__run_batch",
         "mcp__siren__recon",
-        "mcp__siren__read_run_result",
-        "mcp__siren__search_run_result",
         "mcp__siren__save_evidence",
         "mcp__siren__case_read",
         "mcp__siren__case_update",
