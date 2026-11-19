@@ -117,7 +117,7 @@ Report generation, merging, revision, and review live in the `dossier` skill (`s
 │   └── sleuth-design-principles.*          # Design principles (HTML + PDF)
 ├── skills/
 │   └── sleuth/
-│       ├── SKILL.md                        # Resident layer: safety rails, mode routing, 8-step skeleton, report handoff
+│       ├── SKILL.md                        # Resident layer: safety rails, mode routing, 8-step skeleton, stop rules, delegation and verdicts
 │       ├── agents/
 │       │   ├── interface.yaml              # Canonical cross-target interface contract
 │       │   └── openai.yaml                 # Codex app metadata and SIREN MCP dependency hint
@@ -147,7 +147,7 @@ Report generation, merging, revision, and review live in the `dossier` skill (`s
 └── reports/                                # Generated trust evidence, scorecards, blind review, and waivers
 ```
 
-Loading is two-phase. `SKILL.md` is the only resident layer: safety rails, investigation-mode routing, the 8-step skeleton, and the report handoff. Everything else under `skills/sleuth/references/` is loaded on demand. The skill reads the relevant `workflow_*.md` file when a phase starts and loads playbooks and tradecraft guides only when the current alarm or scenario needs them. This keeps the initial context small.
+Loading is two-phase. `SKILL.md` is the only resident layer: safety rails, investigation-mode routing, the 8-step skeleton, the report handoff, and the rules each step must follow (the investigation loop and stop conditions, when to delegate, and verdict rules). A model that reads only `SKILL.md` can still run a full investigation. Everything else under `skills/sleuth/references/` holds detail and is loaded on demand. Each step names the `workflow_*.md` file to read when it starts. Playbooks and tradecraft guides load only when the current alarm or scenario needs them. This keeps the initial context small.
 
 ## Findings output
 

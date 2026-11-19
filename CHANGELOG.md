@@ -8,6 +8,16 @@
 
 本文件建立之前的变更历史，见仓库 `git log`。
 
+## 2026-11-19
+
+### 变更
+
+- SKILL.md 收入每步必须遵守的核心规则：步骤 2 排查清单六维、「调查闭环与停止条件」、「多 Agent 分工」何时派、步骤 6 六维名称、「核验裁决」口径（没查到≠不存在，时间或路径对应≠已证实，得手与归因需两类独立证据）。原因：SIREN 实测 Pi + DeepSeek V4.1 Flash 当 Lead 的 44 个会话平均只读 1.8 个 reference，workflow_tracing 6%、verification_checklist 4%、runtime_compat 13%，从不委派；括号里的「细则读 references/x.md」它不读，点名要读时会读。
+- 「细则读」括号改为各步骤开头的「先读 X」，开头写明 references 不会自动加载、读过的不重读。步骤 1 只点名 `findings_spec.md`「排查清单位置」，不整读 18 KB 的全文。
+- 调查模式新增「worker 会话」：首条提示为「Lead 派出的 worker」时先读 `runtime_compat.md`「多 Agent 分工」，只推进自己的一项，不向用户提问，不交付结论。原因：worker 也读同一份 SKILL.md，新写进正文的 Lead 收尾规则与 worker 规则相反。
+- `workflow_tracing.md`「调查闭环与停止条件」、`runtime_compat.md`「多 Agent 分工」、`verification_checklist.md`、`workflow_delivery.md` 和 `recon_residual.md` 改为以 SKILL.md 为准，只留细则；`evals/semantic_config.json` 的对应契约标记移到 SKILL.md。README 的常驻层说明同步更新。
+- 为把 SKILL.md 控制在 8 KiB 内，删去护栏里的两句理由（处置命令会毁证据、SIREN 不限制 AccessKey 的 API），护栏规则本身不变；图片 `detail: "low"`、核实模式无 findings 时以报告为等价物移到 references。
+
 ## 2026-11-12
 
 ### 变更

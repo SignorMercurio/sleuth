@@ -1,6 +1,6 @@
 # 遗留风险排查 — 可疑项的下一步
 
-步骤 6 的六维覆盖与成本分级以 `references/workflow_tracing.md` 为准。任一维返回可疑项时，按下表启动深入排查：
+步骤 6 的六维以 SKILL.md 为准，覆盖与成本分级见 `references/workflow_tracing.md`。任一维返回可疑项时，按下表启动深入排查：
 
 | 可疑发现 | 下一步 |
 |---|---|

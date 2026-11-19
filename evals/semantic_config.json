@@ -66,6 +66,16 @@
     ]
   },
   "workflow_contract": {
+    "skills/sleuth/SKILL.md": [
+      "references 不会自动加载",
+      "调查闭环与停止条件",
+      "清单还有可执行项时不结束回合",
+      "单项受阻时标「受阻」",
+      "不为凑满攻击链、CVE 或 ATT&CK 扩张调查",
+      "互不依赖、各需多轮取证的项时就派",
+      "没查到≠不存在",
+      "时间或路径对应≠已证实"
+    ],
     "skills/sleuth/references/workflow_recon.md": [
       "待证问题",
       "最短必要证据",
@@ -73,10 +83,7 @@
     ],
     "skills/sleuth/references/workflow_tracing.md": [
       "调查闭环与停止条件",
-      "不得为了凑满攻击链、CVE 或 ATT&CK 技术继续扩张调查",
       "不得为了字段完整或告警名称强行匹配 CVE",
-      "清单还有可执行项时不结束回合",
-      "不得因一项受阻停止整个调查",
       "追加为新项"
     ],
     "skills/sleuth/references/findings_spec.md": [

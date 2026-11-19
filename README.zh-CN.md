@@ -115,7 +115,7 @@ Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运�
 │   └── sleuth-design-principles.*          # 设计原则（HTML + PDF）
 ├── skills/
 │   └── sleuth/
-│       ├── SKILL.md                        # 常驻层：安全护栏、模式路由、8 步骨架、报告交接
+│       ├── SKILL.md                        # 常驻层：安全护栏、模式路由、8 步骨架、闭环与停止条件、委派与核验裁决
 │       ├── agents/
 │       │   ├── interface.yaml              # 跨平台接口契约
 │       │   └── openai.yaml                 # Codex 应用元数据与 SIREN MCP 依赖提示
@@ -145,7 +145,7 @@ Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运�
 └── reports/                                # 信任证据、评分卡、盲审与 waiver
 ```
 
-加载分两阶段。`SKILL.md` 是唯一常驻层：安全护栏、调查模式路由、8 步骨架和报告交接。`skills/sleuth/references/` 下的其余内容按需加载——进入某阶段时读取对应 `workflow_*.md`，playbook 和技术指南仅在当前告警或场景需要时加载，保持初始上下文精简。
+加载分两阶段。`SKILL.md` 是唯一常驻层：安全护栏、调查模式路由、8 步骨架、报告交接，以及每步必须遵守的规则（调查闭环与停止条件、多 Agent 何时派、核验裁决口径），只读 SKILL.md 的模型也能走完一次排查。`skills/sleuth/references/` 下的其余内容只放细则，按需加载——每步开头写明先读哪个 `workflow_*.md`，playbook 和技术指南仅在当前告警或场景需要时加载，保持初始上下文精简。
 
 ## Findings 输出
 

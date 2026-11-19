@@ -20,9 +20,8 @@
 
 ## 多 Agent 分工（SIREN `delegate`）
 
-运行环境提供 `delegate` 工具时，本会话是 Lead，可以把清单项交给 SIREN 起的 worker 会话并行取证，用法同后台子 agent。worker 由 SIREN 启动和关闭，用户能看它的进展，但用户和 Lead 都不能与它对话。首条提示写明「Lead 派出的 worker」的会话按下面的 worker 规则收尾，不按 `references/workflow_tracing.md`「调查闭环与停止条件」。
+运行环境提供 `delegate` 工具时，本会话是 Lead，可以把清单项交给 SIREN 起的 worker 会话并行取证，用法同后台子 agent。worker 由 SIREN 启动和关闭，用户能看它的进展，但用户和 Lead 都不能与它对话。首条提示写明「Lead 派出的 worker」的会话按下面的 worker 规则收尾，不按 SKILL.md「调查闭环与停止条件」。何时派、派前设置与收到结果后的核对以 SKILL.md「多 Agent 分工」为准，下面写细则。
 
-- **何时派**：清单里有几项互不依赖、各自要较多取证的项时派。一两项的小调查、要等别的项先有结果的项、需要 Lead 自己裁决的项不派。
 - **怎么派**：先用 `case_update` 把要派的项设为 `open`，`owner` 指给 `entry`（初始入口、利用方式、复现）、`host`（主机侧取证）或 `cloud`（云侧分层），`next_action` 写明要查什么。再每项调用一次 `delegate`：`item` 传 `Q` 编号，`prompt` 写这个 worker 要查清什么，并给出调查对象、时间窗和已知关键事实，不超过 2000 字。要并行就在同一回合里连续调用，同时最多 6 个在运行。worker 只看得到 prompt 和 Board，看不到本会话的对话。
 - **派出之后**：`delegate` 立即返回，不等 worker。期间继续推进 `owner` 为 `lead` 的项，或结束回合；不要自己推进已派出的项。每个 worker 结束后，SIREN 在本会话不在回合中时以一条新消息发来结果：结束方式、项的当前状态和 worker 的最终回复；同时结束的几个合成一条。
 - **收到结果后**：先 `case_read`。逐项核对 `confirmed`、`refuted` 的证据是否撑得住结论。差一两步就能定论的，Lead 自己补查并写回；还要多步取证的改回 `open` 再派，拿不到数据的记为 `gap`。worker 没登记的实体、没写的时间线事件由 Lead 补全。`owner` 为 `lead` 的新线索由 Lead 判断。然后改写 summary。还有 worker 在运行就等它们的结果；全部回来后，还要再查的项按上面再派，不需要再查就交付。
@@ -39,7 +38,7 @@
 
 - **exec 脚本**：Codex 经 exec 脚本调工具时只取 `structuredContent` 中需要的字段（如 `outcome`、`truncated`、`omitted_ranges`、`audit_id` 与所需输出片段），不 `text()` 整个结果；首行声明 `// @exec: {"max_output_tokens": N}`。
 - **大输出**：`run_batch` 每台预览 1 KiB；结果被截断时返回 `path`（`runs/<audit_id>.txt`）和正文起始行 `body_start_line`，按此读文件，不为补读重跑命令。需保留的大段原文按运行环境既有证据规则落盘（如 AIR 的 `evidence/`），之后用 `grep`/`sed -n` 读片段，不整文件回读。
-- **图片**：需读小字才用 `view_image` 的 `original`，且一次一张。
+- **图片**：默认 `detail: "low"`；需读小字才用 `view_image` 的 `original`，且一次一张。
 
 ## 本地长任务
 
