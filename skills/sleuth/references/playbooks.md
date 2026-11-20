@@ -1,18 +1,6 @@
 # 调查指南与实战技巧（步骤 3）
 
-按告警类型或异常现象读对应小节；模式二按用户描述推断最可能的类型。命令只是参考，按实际线索调整参数。判读边界统一见 `references/verification_checklist.md`，云侧证据源按 `references/cloud_log_queries.md` 路由表选择。
-
-## 实战技巧路由
-
-| 场景 | 参考 |
-|---|---|
-| 找不到 Web 日志、只有应用日志、正向证据链断裂、WAF 来源归因 | `references/tech_log_analysis.md` |
-| AK/STS 滥用、云助手、ActionTrail 异常调用，或进程父链含 `aliyun-service` / `AliyunService.exe` | `references/tech_cloud.md`（审计看「ActionTrail 审计要点」「AK 泄露利用方式总结」） |
-| 需要阿里云云侧证据（WAF / SAS / 云防火墙 / ActionTrail / 云资源配置） | `references/cloud_log_queries.md` |
-| SAS 主机遥测覆盖时间窗；`w3wp.exe` 子进程；父链含 `sshd` 或要确认 SSH 来源 IP；DNSLog / OOB 域名请求 | `references/sas_sls_host_telemetry.md` |
-| 进程关联、文件时间分析 | `references/tech_process_file.md` |
-| 进程隐藏、命令替换、Python 标准库注入 | `references/tech_attack_countermeasures.md` |
-| 威胁情报 | 用运行环境的联网检索查哈希、IP、域名（如 VirusTotal 的 Relations / Community、微步）；平台无检出时，用主机上看似无关的目录名或报错原文检索社区分析与 GitHub Issue |
+按告警类型或异常现象读对应小节；模式二按用户描述推断最可能的类型。命令只是参考，按实际线索调整参数。判读边界统一见 `references/verification_checklist.md`，实战技巧与云侧证据源按 `references/workflow.md`「知识路由」选择。
 
 ## Web Shell
 
@@ -96,7 +84,7 @@
 
 ## 持久化后门
 
-告警本身是持久化类（恶意 cron / 服务 / SSH key 植入）时用本节深挖；步骤 6 的六维扫查与命中项的通用下一步见 `references/workflow_tracing.md` 与 `references/recon_residual.md`。
+告警本身是持久化类（恶意 cron / 服务 / SSH key 植入）时用本节深挖；步骤 6 的六维扫查与命中项的通用下一步见 `references/workflow.md` 步骤 6。
 
 1. **定时任务全覆盖**：逐用户 `crontab -l` 之外，核对 `/etc/crontab`、`/etc/cron.d/`、`cron.{hourly,daily,weekly,monthly}/`，以及易漏的 systemd timer（`systemctl list-timers --all`）和 at 任务（`at -l`、`ls /var/spool/at* /var/spool/cron`）。
 2. **服务与启动链**：`systemctl list-unit-files --type=service` 配合 `/etc/systemd/system`、`/usr/lib/systemd/system` 的文件元数据筛查，按 `references/tech_process_file.md` 分别查看 mtime/ctime 候选；读可疑 unit 的 `ExecStart`、`User=`、`WorkingDirectory=`，用 `journalctl -u <unit>` 核实启动记录。

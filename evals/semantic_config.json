@@ -85,15 +85,17 @@
       "没查到≠不存在",
       "时间或路径对应≠已证实"
     ],
-    "skills/sleuth/references/workflow_recon.md": [
-      "待证问题",
+    "skills/sleuth/references/workflow.md": [
+      "知识路由",
       "最短必要证据",
-      "不要为了“多取证”无目标扩张范围"
-    ],
-    "skills/sleuth/references/workflow_tracing.md": [
-      "调查闭环与停止条件",
+      "追加为新项",
       "不得为了字段完整或告警名称强行匹配 CVE",
-      "追加为新项"
+      "timeout_seconds"
+    ],
+    "skills/sleuth/references/verification_checklist.md": [
+      "承重断言",
+      "结论交付隔离",
+      "通过后把 writer 稿原样发送"
     ],
     "skills/sleuth/references/findings_spec.md": [
       "未发现需要绑定的漏洞",

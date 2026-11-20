@@ -16,6 +16,10 @@
 - `runtime_compat.md` 删除「多 Agent 分工」一节，「跨客户端工具映射」加一行指向 SKILL.md 和 `delegate` 的工具说明。原因：怎么派、收到结果后怎么核对和 worker 规则分别写在 `delegate` 工具说明、SIREN 发给 Lead 的结果消息和 worker 的首条提示里，本节是第三份。
 - SKILL.md「worker 会话」不再要求先读 `runtime_compat.md`，改为按首条提示取证和收尾，并写明不进步骤 7；「多 Agent 分工」去掉同一个读取指令。只读原则和其他护栏不变。
 
+- references 从 14 个文件合并为 10 个，必读点从五处减到两处。`workflow_recon.md`、`workflow_tracing.md`、`runtime_compat.md`、`recon_residual.md` 合并为 `workflow.md`，步骤 1 读取，全程适用；`workflow_delivery.md` 并入 `verification_checklist.md`，步骤 7 读取。`playbooks.md` 的「实战技巧路由」表移到 `workflow.md`「知识路由」，并加一行告警类型到 `playbooks.md` 小节的对应。原因：11-07 以来 149 个 Pi Lead 会话里，步骤 1 的文件有 21–31% 的会话读，步骤 3 的 `workflow_tracing.md` 只有 4%，`runtime_compat.md` 9%，`playbooks.md` 2%；11-19 改成「先读 X」后开场文件升到 42–52%，步骤 3 的文件仍是 10% 和 0。读取指令在开场和交付时有效，中途无效。
+- 合并时删除的内容只有对 SKILL.md 的复述（排查清单六维、六维名称、按需加载说明、工具名映射）和文件间的互相指引。步骤编号（1.1–1.4、2、3.2、4、5、6）保留，裁决规则、反驳清单和结论交付隔离原文未改。措辞等级不变。
+- SKILL.md 的读取指令相应改为：步骤 1 读 `workflow.md` 和 `findings_spec.md`「排查清单位置」，步骤 3 按「知识路由」读，步骤 6 可疑项按 `workflow.md` 的表跟进，步骤 7 读 `verification_checklist.md`，run 异常按 `workflow.md`「运行机制」处理。安全护栏未改。
+
 ### 删除
 
 - `scripts/gen_trust_report.py`、`reports/trust_report.*` 和对应的 CI 步骤。原因：08-26 以来 51 个提交里有 42 个要重新生成这份报告，它的包哈希检查恒为通过。密钥扫描（AccessKey ID、私钥块、带引号的凭据赋值）并入 `scripts/validate.py`；高熵字符串启发式没有保留。

@@ -65,7 +65,7 @@ systemctl status aliyun.service                          # systemd 单元
 
 投递方式与查询语法见 `sls` skill；Project 有 AccessKey 时可用 `aliyun actiontrail LookupEvents` 查事件；免费事件窗与控制台功能见 `opencli-aliyun-ir`。本节只写判读要点。
 
-- `LookupEvents` 大窗口扫描前先取一页，确认过滤条件生效并估算事件密度。过滤未生效或页数过多时，优先查已投递 SLS 的跟踪；没有投递时按 `references/runtime_compat.md`「本地长任务」后台扫描。
+- `LookupEvents` 大窗口扫描前先取一页，确认过滤条件生效并估算事件密度。过滤未生效或页数过多时，优先查已投递 SLS 的跟踪；没有投递时按 `references/workflow.md`「本地长任务」后台扫描。
 - AccessKey 审计只记录每个云产品/API 的最后一次调用；完整调用列表靠事件查询（90 天内管控事件），更早或复杂关联需要已投递 SLS 的跟踪。
 - **无 `errorCode` 不等于成功**：部分 API（如 `DescribeInstances`）权限不足时直接返回空数据，需结合 AK 实际权限判断。
 - 操作者名称大小写敏感：角色名可能以小写出现（`AliyunServiceRoleForECSWorkbench` → `aliyunserviceroleforecsworkbench`），查不到先换大小写。

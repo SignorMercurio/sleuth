@@ -71,7 +71,7 @@ Case Board 的状态不代替步骤 7 验证门；`CE` 编号也不代替底稿�
 - 没有任何时间边界时不写事件，把问题留在清单。
 - `precision` 按来源实际精度填，不用补零冒充更细的精度。`from`、`to` 不校正主机时钟偏差，偏差写进 `clock_note`。
 - 有日志佐证时用日志时间和 `record`，不用文件时间。不把 ctime 当创建时间。
-- ATT&CK 编号基准见 `references/workflow_tracing.md` 步骤 5，同一行为可跨多个战术。
+- ATT&CK 编号基准见 `references/workflow.md` 步骤 5，同一行为可跨多个战术。
 - 校验失败时不要为通过校验改写事实，证据不足就保持 `inferred`。
 
 快照规则：

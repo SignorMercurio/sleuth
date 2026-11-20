@@ -121,17 +121,13 @@ Report generation, merging, revision, and review live in the `dossier` skill (`s
 │       │   ├── interface.yaml              # Canonical cross-target interface contract
 │       │   └── openai.yaml                 # Codex app metadata and SIREN MCP dependency hint
 │       └── references/
-│           ├── workflow_recon.md           # Step 1-2: capabilities, mode routing, client/host list, first sweep
-│           ├── workflow_tracing.md         # Step 3-6 detail: playbook routing, cloud cross-validation, ATT&CK, residual risk
-│           ├── workflow_delivery.md        # Step 7 detail: verification handoff and conclusion-writer isolation
-│           ├── playbooks.md                # Step-3 alarm-type playbooks and tradecraft routing table
-│           ├── tech_*.md                   # 4 cross-cutting tradecraft guides
-│           ├── runtime_compat.md           # Cross-client tool mapping, sub-agents, context budget, SIREN failures
-│           ├── findings_spec.md            # Per-host findings worksheet: naming, slugs, structure; read by dossier
-│           ├── cloud_log_queries.md        # WAF / SAS / ActionTrail log routing
-│           ├── sas_sls_host_telemetry.md   # SAS host telemetry: field gotchas, w3wp.exe, SSH attribution, OOB/DNSLog
-│           ├── recon_residual.md           # Residual-risk follow-ups after the 6-axis sweep
-│           └── verification_checklist.md   # Adversarial verification gate run before delivery
+│           ├── workflow.md                 # Read at step 1: step 1-6 detail, knowledge routing table, runtime mechanics, SIREN failures
+│           ├── findings_spec.md            # Read at step 1: per-host findings worksheet (naming, slugs, structure); read by dossier
+│           ├── verification_checklist.md   # Read at step 7: adversarial verification gate and conclusion delivery
+│           ├── playbooks.md                # On demand: alarm-type playbooks
+│           ├── tech_*.md                   # On demand: 4 cross-cutting tradecraft guides
+│           ├── cloud_log_queries.md        # On demand: WAF / SAS / ActionTrail log routing
+│           └── sas_sls_host_telemetry.md   # On demand: SAS host telemetry field gotchas, w3wp.exe, SSH attribution, OOB/DNSLog
 ├── scripts/
 │   ├── validate.py                         # Frontmatter, guardrail anchors, trust block, links, orphans, secret scan
 │   └── air_session_stats.py                # Round trips, context load, and exec output sizes in Codex AIR rollouts
@@ -142,7 +138,7 @@ Report generation, merging, revision, and review live in the `dossier` skill (`s
     └── runtime/                            # Mock SIREN, scenarios, transcript compliance, and fault tests
 ```
 
-Loading is two-phase. `SKILL.md` is the only resident layer: safety rails, investigation-mode routing, the 8-step skeleton, the report handoff, and the rules each step must follow (the investigation loop and stop conditions, when to delegate, and verdict rules). A model that reads only `SKILL.md` can still run a full investigation. Everything else under `skills/sleuth/references/` holds detail and is loaded on demand. Each step names the `workflow_*.md` file to read when it starts. Playbooks and tradecraft guides load only when the current alarm or scenario needs them. This keeps the initial context small.
+Loading is two-phase. `SKILL.md` is the only resident layer: safety rails, investigation-mode routing, the 8-step skeleton, the report handoff, and the rules each step must follow (the investigation loop and stop conditions, when to delegate, and verdict rules). A model that reads only `SKILL.md` can still run a full investigation. Everything else under `skills/sleuth/references/` holds detail. There are two required reads: `workflow.md` and `findings_spec.md` at step 1, and `verification_checklist.md` at step 7. Session data showed that models follow a read instruction at the start of an investigation and at delivery, but rarely in between, so the step 1-6 detail is one file read up front. Playbooks and tradecraft guides load only when the routing table in `workflow.md` matches the current alarm or scenario.
 
 ## Findings output
 

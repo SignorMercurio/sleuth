@@ -119,17 +119,13 @@ Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运�
 │       │   ├── interface.yaml              # 跨平台接口契约
 │       │   └── openai.yaml                 # Codex 应用元数据与 SIREN MCP 依赖提示
 │       └── references/
-│           ├── workflow_recon.md           # 步骤 1-2：能力确认、模式路由、client/主机清单、首轮扫描
-│           ├── workflow_tracing.md         # 步骤 3-6 细则：playbook 路由、云侧交叉验证、ATT&CK、残留风险
-│           ├── workflow_delivery.md        # 步骤 7 细则：验证门交接与结论 writer 隔离
-│           ├── playbooks.md                # 步骤 3 分类型调查指南与技巧路由表
-│           ├── tech_*.md                   # 4 个横向技术指南
-│           ├── runtime_compat.md           # 跨客户端工具映射、子 agent、上下文预算、SIREN 异常
-│           ├── findings_spec.md            # 每主机 findings 工作表：命名、slug、结构；dossier 据此写报告
-│           ├── cloud_log_queries.md        # WAF / SAS / ActionTrail 日志路由
-│           ├── sas_sls_host_telemetry.md   # SAS 主机遥测：字段坑、w3wp.exe、SSH 登录归因、OOB/DNSLog
-│           ├── recon_residual.md           # 六轴扫描后的残留风险跟进
-│           └── verification_checklist.md   # 交付前对抗验证门
+│           ├── workflow.md                 # 步骤 1 必读：步骤 1-6 细则、知识路由表、运行机制、SIREN 异常
+│           ├── findings_spec.md            # 步骤 1 必读：每主机 findings 工作表（命名、slug、结构）；dossier 据此写报告
+│           ├── verification_checklist.md   # 步骤 7 必读：对抗验证门与结论交付
+│           ├── playbooks.md                # 按需：分类型调查指南
+│           ├── tech_*.md                   # 按需：4 个横向技术指南
+│           ├── cloud_log_queries.md        # 按需：WAF / SAS / ActionTrail 日志路由
+│           └── sas_sls_host_telemetry.md   # 按需：SAS 主机遥测字段坑、w3wp.exe、SSH 登录归因、OOB/DNSLog
 ├── scripts/
 │   ├── validate.py                         # Frontmatter、护栏锚点、信任块、链接、孤立引用、密钥扫描
 │   └── air_session_stats.py                # Codex AIR 会话的往返次数、上下文负载与 exec 输出分布
@@ -140,7 +136,7 @@ Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运�
     └── runtime/                            # Mock SIREN、场景、转录合规与故障测试
 ```
 
-加载分两阶段。`SKILL.md` 是唯一常驻层：安全护栏、调查模式路由、8 步骨架、报告交接，以及每步必须遵守的规则（调查闭环与停止条件、多 Agent 何时派、核验裁决口径），只读 SKILL.md 的模型也能走完一次排查。`skills/sleuth/references/` 下的其余内容只放细则，按需加载——每步开头写明先读哪个 `workflow_*.md`，playbook 和技术指南仅在当前告警或场景需要时加载，保持初始上下文精简。
+加载分两阶段。`SKILL.md` 是唯一常驻层：安全护栏、调查模式路由、8 步骨架、报告交接，以及每步必须遵守的规则（调查闭环与停止条件、多 Agent 何时派、核验裁决口径），只读 SKILL.md 的模型也能走完一次排查。`skills/sleuth/references/` 下的其余内容只放细则。必读文件有两处：步骤 1 读 `workflow.md` 和 `findings_spec.md`，步骤 7 读 `verification_checklist.md`。会话数据显示，模型在调查开始和交付时会执行读取指令，中途很少执行，所以步骤 1–6 的细则合成一个开场读取的文件。playbook 和技术指南只在 `workflow.md` 的路由表命中当前告警或场景时加载。
 
 ## Findings 输出
 
