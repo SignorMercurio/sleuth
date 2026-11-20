@@ -71,7 +71,8 @@
       "严禁状态变更",
       "mcp__siren__ls",
       "mcp__siren__run",
-      "不经 SIREN 执行"
+      "不经 SIREN 执行",
+      "不从排查请求推断"
     ]
   },
   "workflow_contract": {

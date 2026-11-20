@@ -29,6 +29,9 @@ import re
 
 # -- tool surface -----------------------------------------------------------
 
+# `deploy`, `allow` and `egress` stay off this list. SKILL.md permits them only
+# when the user names the instance or IP and asks for it, and no drill
+# transcript carries such a request.
 SIREN_ALLOWED_TOOLS = frozenset(
     {
         "mcp__siren__ls",

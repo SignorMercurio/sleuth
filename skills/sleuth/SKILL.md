@@ -12,7 +12,7 @@ description: SLEUTH · 安全应急响应专家。用于对具体安全告警、
 - **只读原则**：只跑不改系统状态的命令（读文件/元数据、列举进程/网络/账户、查日志）；判据是会不会写盘、改状态或外发，不是白名单。
 - **严禁状态变更**：删改移（`rm`/`mv`/写入式 `cp`/`>`/`tee`，含写 `/tmp`、`/dev/shm`）、`kill`、`dd`、`chmod`/`chown`、装包编译（`pip install`/`gcc`/`curl … | bash`）、启停服务、改配置。
 - **处置命令不经 SIREN 执行**：清除/修复/安装类只作处置建议写入结论与 findings「处置进展」。
-- **工具边界**：只用 `mcp__siren__ls`/`mcp__siren__run`/`mcp__siren__run_batch`/`recon`（只用默认 Profile），以及运行环境提供的 `save_evidence`/`case_read`/`case_update`/`delegate`；`run_batch` 同受护栏，只传已授权 Client；不臆造工具名，`deploy` 等写操作即使自动批准也不调用。SIREN 不可用时不用本地 shell/SSH 替代：记主机侧缺口，按「云侧分层」继续，全不可用才结束。
+- **工具边界**：只用 `mcp__siren__ls`/`mcp__siren__run`/`mcp__siren__run_batch`/`recon`（只用默认 Profile），以及运行环境提供的 `save_evidence`/`case_read`/`case_update`/`delegate`；`run_batch` 同受护栏，只传已授权 Client；不臆造工具名；`deploy`/`allow`/`egress` 改云上安全组，只在用户点名实例或 IP 明确要求时调用，不从排查请求推断。SIREN 不可用时不用本地 shell/SSH 替代：记主机侧缺口，按「云侧分层」继续，全不可用才结束。
 - **云侧分层**：告警 `$sas` → 已投递的 WAF/SAS/ActionTrail 日志 `sls` → 云控制面单点查询用 `aliyun`（需 Project 有 AccessKey）→ 专用适配器、跨产品关联、控制台和截图用只读 `opencli-aliyun-ir`（无 AccessKey 时控制面查询也走它）；全不可用则披露缺口，不用未列入本分层的云 CLI。
 - **`aliyun` 只读**：只调用 `Describe`/`List`/`Get`/`Query`/`Lookup`/`Search` 开头的 API 和 `aliyun configure list`；不调用返回密钥、口令或令牌明文的 API（如 `GetSecretValue`），不运行其他 `aliyun configure` 子命令。
 - **输出纪律**：每条 run 自带 `wc -l`/`head`/`tail`/`grep` 收窄，单次返回控制在 8 KiB 内，超出时用 `grep`/`sed -n` 读预览给出的 `runs/<audit_id>.txt`；参数按实际线索填，不照抄占位符。
@@ -36,7 +36,7 @@ description: SLEUTH · 安全应急响应专家。用于对具体安全告警、
 4. **入口与漏洞**：按证据记录实际入口；只有证据指向漏洞利用才核对组件版本、CVE 与修复方案。
 5. **攻击链重建**：按证据做 ATT&CK 映射与时间线；有 `case_update` 时证据落地当轮就写 `events`。
 6. **遗留风险**：六维都记录检查对象、时间范围与结论。主机侧：恶意文件/定时任务/启动项与服务/账户与授权/网络连接/系统完整性；云侧：凭据/RAM 授权/角色信任/云资源变更/网络访问控制/审计日志。可疑项按 `references/workflow.md` 步骤 6 的表跟进。
-7. **对抗式验证与交付**：先读 `references/verification_checklist.md`。按「核验裁决」逐条核验并校准措辞。有子 agent 就必须派全新 writer 起草结论；复核通过后原样作为最终回复，末尾只可另起一行给出 findings 路径并询问是否生成报告。
+7. **对抗式验证与交付**：先读 `references/verification_checklist.md`。按「核验裁决」逐条核验并校准措辞。有子 agent 就必须派全新 writer 起草结论，没有就重读 findings 后只按文件内容起草；复核通过后原样作为最终回复，末尾只可另起一行给出 findings 路径并询问是否生成报告。
 8. **报告交接**：报告由 dossier skill 负责。用户明确要求报告才调用它并传 findings 路径，「排查」不算；未安装时告知用户。
 
 ## 调查闭环与停止条件
@@ -49,8 +49,7 @@ description: SLEUTH · 安全应急响应专家。用于对具体安全告警、
 ## 多 Agent 分工（有 `delegate` 时）
 
 - 清单有两项以上互不依赖、各需多轮取证的项时就派；小调查、依赖其他项结果或需 Lead 裁决的项不派。
-- 先用 `case_update` 设 `owner` 与 `next_action`，同一回合每项调一次 `delegate`，最多 6 个；派出后不自己推进该项。
-- 结果回来先 `case_read` 核对：差一两步的自己补，还要多步的再派一次，仍拿不到数据记 `gap`/`blocked`。
+- 派法和结果核对按 `delegate` 工具说明与 SIREN 回传的提示；派出后不自己推进该项，再派一次仍拿不到数据记 `gap`/`blocked`。
 
 ## 核验裁决
 
