@@ -12,7 +12,7 @@
   changes, enumerate references with `rg 'T1[0-9]{3}'` and check each for drift.
 - Delegate alarm-driven lookup to the `sas` skill. Its parameter contract is
   `../log0-utils/.agents/skills/sas/SKILL.md`. When that contract changes, keep
-  SLEUTH step 1.2, README usage, report naming, findings handoff, and selector
+  SLEUTH step 1.2, README usage, findings naming, findings handoff, and selector
   evals synchronized. Do not duplicate the CLI contract elsewhere.
 - Use direct `sas` first for alarms and direct `sls` for delivered
   WAF/SAS/ActionTrail logs.

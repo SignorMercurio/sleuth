@@ -2,7 +2,7 @@
   "name": "sleuth",
   "version": "1.1.0",
   "owner": "Mercurio <signormercurio@gmail.com>",
-  "updated_at": "2026-11-09",
+  "updated_at": "2026-11-20",
   "status": "active",
   "maturity_tier": "production",
   "lifecycle_stage": "production",
@@ -17,11 +17,9 @@
   ],
   "factory_components": [
     "skills/sleuth/references",
-    "skills/sleuth/assets",
     "skills/sleuth/agents",
     "scripts",
-    "evals",
-    "reports"
+    "evals"
   ],
-  "notes": "Risk class is governed (public distribution, remote execution via SIREN, false-attribution risk). The governed-release trust report (secret scan, script surface, dependency pinning, package hash; reports/trust_report.json, scripts/gen_trust_report.py) and the runtime permission probe (scripts/permission_probe.py) are generated, passing, and gated in CI; SKILL.md's two-phase load is compressed within the governed context-budget tier. Maturity stays production: the Review Studio decision page is still not generated for this package, and 5 output-lab pairs still await blind human review (see reports/review_waivers.md). governance_score is 95/100 (governed band) per reports/governance_scorecard.json. Accepted warnings are tracked in reports/review_waivers.md. Report generation, templates, and the complete-report contract fixtures moved to the dossier repository's skills/dossier package on 2026-11-09; sleuth ends at step 7 and hands findings over."
+  "notes": "Risk class: public distribution, remote execution via SIREN, false-attribution risk. CI runs scripts/validate.py (skill metadata, guardrail and workflow markers, interface trust block, reference links, secret scan over tracked files) and the offline mock SIREN suite. SKILL.md is capped at 8 KiB and holds every must-follow rule. The generated trust report, permission probe, scorecards and waiver ledger were removed on 2026-11-20: they did not test agent behavior, and the output-lab pairs they tracked evaluate report writing, which moved to the dossier repository's skills/dossier package on 2026-11-09. sleuth ends at step 7 and hands findings over."
 }

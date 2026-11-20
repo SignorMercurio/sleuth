@@ -479,7 +479,7 @@ def suite_compliance_checker() -> Suite:
             ("aliyun", {"command": "aliyun actiontrail LookupEvents"}),
             ("mcp__siren__recon", {"client_id": "1"}),
             ("mcp__siren__save_evidence", {"audit_id": "a", "label": "b"}),
-            ("mcp__siren__case_handoff", {"note": "n", "remaining": []}),
+            ("mcp__siren__delegate", {"item": "Q01", "prompt": "p"}),
             ("mcp__siren__run_batch", {"client_ids": ["1"], "command": "uname -a"}),
         )
         suite.check(report.ok, f"read-only cloud and SIREN tools are compliant: {report.codes()}")
@@ -540,10 +540,11 @@ def suite_concurrency() -> Suite:
     with ThreadPoolExecutor(max_workers=8) as pool:
         results = list(pool.map(lambda command: (command, session.run("1", command)), plan))
 
-    for command, result in results:
-        suite.check(result.text == reference[command],
-                    f"concurrent result differs for {command}")
-        suite.check(not result.is_error, f"concurrent call errored for {command}")
+    differing = sorted({command for command, result in results
+                        if result.text != reference[command]})
+    suite.equal(differing, [], "concurrent results match the serial reference")
+    suite.equal(sum(result.is_error for _, result in results), 0,
+                "no concurrent call errors")
     suite.equal(session.call_count, len(plan), "every concurrent call is counted once")
     suite.equal(len(session.audit_log), len(plan), "every concurrent call is audited")
     audit_ids = [entry["audit_id"] for entry in session.audit_log]

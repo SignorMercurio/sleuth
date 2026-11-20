@@ -113,8 +113,7 @@ Report generation, merging, revision, and review live in the `dossier` skill (`s
 ├── manifest.json                           # Package metadata: owner, maturity, review cadence, budget tier
 ├── requirements.txt                        # Exact Python dependency pins for repository checks
 ├── docs/
-│   ├── agent-guidance/                     # Task-specific guidance for AI agents working on this repo
-│   └── sleuth-design-principles.*          # Design principles (HTML + PDF)
+│   └── agent-guidance/                     # Task-specific guidance for AI agents working on this repo
 ├── skills/
 │   └── sleuth/
 │       ├── SKILL.md                        # Resident layer: safety rails, mode routing, 8-step skeleton, stop rules, delegation and verdicts
@@ -134,17 +133,13 @@ Report generation, merging, revision, and review live in the `dossier` skill (`s
 │           ├── recon_residual.md           # Residual-risk follow-ups after the 6-axis sweep
 │           └── verification_checklist.md   # Adversarial verification gate run before delivery
 ├── scripts/
-│   ├── validate.py                         # Frontmatter, link, and orphan checks
-│   ├── permission_probe.py                 # Runtime trust and read-only guardrail anchors
-│   ├── permission_probe_anchors.yaml       # Expected trust anchors for permission_probe.py
-│   ├── gen_trust_report.py                 # Secret, script-surface, dependency, and package-hash evidence
+│   ├── validate.py                         # Frontmatter, guardrail anchors, trust block, links, orphans, secret scan
 │   └── air_session_stats.py                # Round trips, context load, and exec output sizes in Codex AIR rollouts
-├── evals/
-│   ├── semantic_config.json                # Semantic eval configuration
-│   ├── blind_holdout/                      # Blind holdout trigger cases for human review
-│   ├── dev/                                # Development trigger cases
-│   └── runtime/                            # Mock SIREN, scenarios, transcript compliance, and fault tests
-└── reports/                                # Generated trust evidence, scorecards, blind review, and waivers
+└── evals/
+    ├── semantic_config.json                # Routing, guardrail and workflow markers checked by validate.py
+    ├── blind_holdout/                      # Blind holdout trigger cases for human review
+    ├── dev/                                # Development trigger cases
+    └── runtime/                            # Mock SIREN, scenarios, transcript compliance, and fault tests
 ```
 
 Loading is two-phase. `SKILL.md` is the only resident layer: safety rails, investigation-mode routing, the 8-step skeleton, the report handoff, and the rules each step must follow (the investigation loop and stop conditions, when to delegate, and verdict rules). A model that reads only `SKILL.md` can still run a full investigation. Everything else under `skills/sleuth/references/` holds detail and is loaded on demand. Each step names the `workflow_*.md` file to read when it starts. Playbooks and tradecraft guides load only when the current alarm or scenario needs them. This keeps the initial context small.
@@ -165,13 +160,11 @@ Install the pinned repository-check dependency, then run the full baseline from 
 ```bash
 python3 -m pip install -r requirements.txt
 python3 scripts/validate.py
-python3 scripts/permission_probe.py
-python3 scripts/gen_trust_report.py --check
 python3 evals/runtime/run_mock_siren_tests.py
 git diff --check
 ```
 
-`scripts/gen_trust_report.py --check` is read-only. If it reports stale evidence after a package, script, dependency, or tracked-file change, run `python3 scripts/gen_trust_report.py` once and commit the refreshed `reports/trust_report.json` and `reports/trust_report.md`.
+`scripts/validate.py` is read-only. It checks the skill metadata, the guardrail and workflow markers in `evals/semantic_config.json`, the trust block of the interface files, reference links, and git-tracked files for leaked credentials.
 
 The mock SIREN suite is a contract regression. It verifies runtime policy, scenario evidence, fault handling, transcript compliance, and concurrency, but it does not prove that an agent reaches the right conclusion. Use the [isolated model drill](evals/runtime/README.md) for real model outputs and costs, then apply the semantic review kept in the dossier repository (`evals/output/review.md`). The opt-in runner invokes the configured model service and writes a new explicit directory outside the repository; it is not part of offline CI. Blind human review remains separate.
 

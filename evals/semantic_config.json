@@ -65,6 +65,15 @@
       "生成、合并、修订或审校正式报告"
     ]
   },
+  "guardrail_contract": {
+    "required_anchors": [
+      "只读",
+      "严禁状态变更",
+      "mcp__siren__ls",
+      "mcp__siren__run",
+      "不经 SIREN 执行"
+    ]
+  },
   "workflow_contract": {
     "skills/sleuth/SKILL.md": [
       "references 不会自动加载",

@@ -11,5 +11,5 @@
   contract. Its 「文件命名」, 「内容结构」, and 「结论交付层使用规则」 sections
   are what the `dossier` writer relies on; after changing them, run the dossier
   repository's checks (see the verification guide).
-- Repo-level `scripts/`, `evals/`, and `reports/` are validation and evidence
-  surfaces; they are not part of the installed skill package.
+- Repo-level `scripts/` and `evals/` are validation surfaces; they are not part
+  of the installed skill package.

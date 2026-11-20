@@ -7,12 +7,9 @@ changes to the installable Skill contract, run all checks below. For narrower
 changes, select the applicable checks:
 
 - Ordinary repository prose or instruction routing: check affected references.
-- Skill metadata, structure, references or routing/workflow semantics:
+- Skill metadata, structure, references, routing/workflow semantics, guardrail
+  anchors, the interface trust block, or any new tracked file (secret scan):
   `python3 scripts/validate.py`.
-- Permission, trust or allowed-command contracts: `python3 scripts/permission_probe.py`.
-- Trust-report inputs (tracked files, scripts, dependencies or the Skill package):
-  `python3 scripts/gen_trust_report.py --check`; regenerate evidence as described in
-  [Runtime governance](runtime-governance.md).
 - SIREN tool workflow or runtime compatibility: `python3 evals/runtime/run_mock_siren_tests.py`.
 
 Combine relevant checks when surfaces overlap. Operational rules written in Markdown

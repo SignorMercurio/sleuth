@@ -8,6 +8,21 @@
 
 本文件建立之前的变更历史，见仓库 `git log`。
 
+## 2026-11-20
+
+### 删除
+
+- `scripts/gen_trust_report.py`、`reports/trust_report.*` 和对应的 CI 步骤。原因：08-26 以来 51 个提交里有 42 个要重新生成这份报告，它的包哈希检查恒为通过。密钥扫描（AccessKey ID、私钥块、带引号的凭据赋值）并入 `scripts/validate.py`；高熵字符串启发式没有保留。
+- `scripts/permission_probe.py` 和 `scripts/permission_probe_anchors.yaml`。信任块和适配器权限检查并入 `scripts/validate.py`，护栏锚点移到 `evals/semantic_config.json` 的 `guardrail_contract`，检查内容不变。
+- `reports/` 目录：output-lab 评分卡、盲评包与裁决、治理评分、waiver 台账和两份 9 月的实验记录。原因：没有脚本读取它们；output-lab 评测的是报告写作，已归 dossier 仓库；waiver 台账记的 SKILL.md 体积（4495 B）已不符合现状。历史版本在 git 里。
+
+### 修正
+
+- 转录合规检查的工具白名单：删除已不存在的 `mcp__siren__case_handoff`，加入 `mcp__siren__delegate`。
+- `evals/dev/trigger_cases.json`：「合并报告」「写最终 IR 交付报告」两条从应触发移到近邻，与 description 的排除项一致。
+- mock SIREN 并发测试把 480 条逐结果检查合成两条汇总检查，覆盖范围不变（总数 979 → 501）。
+- `manifest.json` 去掉不存在的 `skills/sleuth/assets` 和 `reports`，重写 notes；README 目录树去掉未入库的设计原则文档；`evals/runtime/README.md` 去掉指向已删除文件的链接。
+
 ## 2026-11-19
 
 ### 变更

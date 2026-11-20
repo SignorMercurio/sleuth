@@ -22,10 +22,6 @@
       "family": "mining_multihost"
     },
     {
-      "text": "把这几台主机的应急响应报告合并成一份",
-      "family": "merge"
-    },
-    {
       "text": "investigate this alert and trace this intrusion on host web01",
       "family": "en_alert"
     },
@@ -48,10 +44,6 @@
     {
       "text": "核实一下这份 IR 报告里的结论是否成立，有问题的逐条列出来",
       "family": "report_verify"
-    },
-    {
-      "text": "SLS 和 SAS 都查完了，写最终的 IR 交付报告，按入侵链路来写",
-      "family": "report_generate"
     }
   ],
   "should_not_trigger": [
@@ -104,6 +96,14 @@
     {
       "text": "把这份应急响应报告的文字润色得简洁一点",
       "family": "report_polish_only"
+    },
+    {
+      "text": "把这几台主机的应急响应报告合并成一份",
+      "family": "dossier_report_merge"
+    },
+    {
+      "text": "SLS 和 SAS 都查完了，写最终的 IR 交付报告，按入侵链路来写",
+      "family": "dossier_report_generate"
     }
   ]
 }

@@ -111,8 +111,7 @@ Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运�
 ├── manifest.json                           # 包元数据：责任人、成熟度、审查周期、预算等级
 ├── requirements.txt                        # 仓库检查的 Python 依赖精确锁定
 ├── docs/
-│   ├── agent-guidance/                     # AI agent 协作本仓库的分任务指南
-│   └── sleuth-design-principles.*          # 设计原则（HTML + PDF）
+│   └── agent-guidance/                     # AI agent 协作本仓库的分任务指南
 ├── skills/
 │   └── sleuth/
 │       ├── SKILL.md                        # 常驻层：安全护栏、模式路由、8 步骨架、闭环与停止条件、委派与核验裁决
@@ -132,17 +131,13 @@ Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运�
 │           ├── recon_residual.md           # 六轴扫描后的残留风险跟进
 │           └── verification_checklist.md   # 交付前对抗验证门
 ├── scripts/
-│   ├── validate.py                         # Frontmatter、链接、孤立引用检查
-│   ├── permission_probe.py                 # 运行时信任与只读护栏锚点检查
-│   ├── permission_probe_anchors.yaml       # permission_probe.py 的预期信任锚点
-│   ├── gen_trust_report.py                 # 密钥扫描、脚本执行面、依赖锁定、包哈希证据
+│   ├── validate.py                         # Frontmatter、护栏锚点、信任块、链接、孤立引用、密钥扫描
 │   └── air_session_stats.py                # Codex AIR 会话的往返次数、上下文负载与 exec 输出分布
-├── evals/
-│   ├── semantic_config.json                # 语义评估配置
-│   ├── blind_holdout/                      # 人工盲审 trigger cases
-│   ├── dev/                                # 开发用 trigger cases
-│   └── runtime/                            # Mock SIREN、场景、转录合规与故障测试
-└── reports/                                # 信任证据、评分卡、盲审与 waiver
+└── evals/
+    ├── semantic_config.json                # validate.py 检查的路由、护栏与流程标记
+    ├── blind_holdout/                      # 人工盲审 trigger cases
+    ├── dev/                                # 开发用 trigger cases
+    └── runtime/                            # Mock SIREN、场景、转录合规与故障测试
 ```
 
 加载分两阶段。`SKILL.md` 是唯一常驻层：安全护栏、调查模式路由、8 步骨架、报告交接，以及每步必须遵守的规则（调查闭环与停止条件、多 Agent 何时派、核验裁决口径），只读 SKILL.md 的模型也能走完一次排查。`skills/sleuth/references/` 下的其余内容只放细则，按需加载——每步开头写明先读哪个 `workflow_*.md`，playbook 和技术指南仅在当前告警或场景需要时加载，保持初始上下文精简。
@@ -163,13 +158,11 @@ Skill 返回简洁的已验证调查结论，并在 cwd 为每台主机维护一
 ```bash
 python3 -m pip install -r requirements.txt
 python3 scripts/validate.py
-python3 scripts/permission_probe.py
-python3 scripts/gen_trust_report.py --check
 python3 evals/runtime/run_mock_siren_tests.py
 git diff --check
 ```
 
-`scripts/gen_trust_report.py --check` 为只读模式。如果在包、脚本、依赖或跟踪文件变更后报告证据过时，运行一次 `python3 scripts/gen_trust_report.py` 并提交刷新的 `reports/trust_report.json` 和 `reports/trust_report.md`。
+`scripts/validate.py` 只读。它检查 skill 元数据、`evals/semantic_config.json` 里的护栏与流程标记、接口文件的信任块、引用链接，并扫描 git 跟踪文件里的凭据。
 
 mock SIREN 套件是契约回归测试，验证运行时策略、场景证据、故障处理、转录合规和并发，但不证明 agent 能得出正确结论。使用[隔离模型演练](evals/runtime/README.md)采集真实输出与成本，再按 dossier 仓库的 `evals/output/review.md` 做事实复核。演练运行器需要显式启动，会调用已配置的模型服务并写入仓库外的新目录，不进入离线 CI；人工盲评仍单独进行。
 
