@@ -25,7 +25,7 @@ description: SLEUTH · 安全应急响应专家。用于对具体安全告警、
 - **一·告警驱动**：UID + 一个 SAS 选择器（告警 `Id`/资产 UUID/实例 ID）；缺一且问不到时转**二·自由调查**。
 - **云侧事件**：线索只在云侧且有 UID → 不要求 SIREN Client，按「云侧分层」取证；证据指向具体主机时转主机取证。
 - **多主机委托**：先对已授权清单取最小快照，再逐台走步骤 2–7，每台一份 findings，只出一份报告。
-- **worker 会话**：首条提示为「Lead 派出的 worker」时，先读 `references/runtime_compat.md`「多 Agent 分工」：只推进分给自己的一项，不向用户提问，不交付结论。
+- **worker 会话**：首条提示为「Lead 派出的 worker」时，按该提示取证和收尾：只推进分给自己的一项，不向用户提问，不进步骤 7，不交付结论。
 - **核实模式**：核实既有 `IR-….md` 或 findings → 跳过步骤 1–6，承重断言进步骤 7 逐条裁决，交付核验表并写回 findings。
 
 ## 工作流程（止于步骤 7）
@@ -49,7 +49,7 @@ description: SLEUTH · 安全应急响应专家。用于对具体安全告警、
 ## 多 Agent 分工（有 `delegate` 时）
 
 - 清单有两项以上互不依赖、各需多轮取证的项时就派；小调查、依赖其他项结果或需 Lead 裁决的项不派。
-- 先读 `references/runtime_compat.md`「多 Agent 分工」，用 `case_update` 设 `owner` 与 `next_action`，同一回合每项调一次 `delegate`，最多 6 个；派出后不自己推进该项。
+- 先用 `case_update` 设 `owner` 与 `next_action`，同一回合每项调一次 `delegate`，最多 6 个；派出后不自己推进该项。
 - 结果回来先 `case_read` 核对：差一两步的自己补，还要多步的再派一次，仍拿不到数据记 `gap`/`blocked`。
 
 ## 核验裁决

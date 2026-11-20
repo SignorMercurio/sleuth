@@ -50,25 +50,15 @@ findings 是内部工作底稿，去留由用户决定。正式报告名由 doss
 
 `case_update` 的状态依次对应 `open`、`confirmed`、`refuted`、`gap`、`blocked`；维度「入口、凭据或权限来源、执行与持久化、横向与关联资产、影响范围与数据、处置状态」依次对应 `entry`、`credentials`、`execution_persistence`、`lateral_assets`、`impact_data`、`response_status`，事件线索引出的待证问题用 `lead`。
 
-写回规则：
+写回规则。字段格式、长度上限和各状态的必填项以 `case_update` 的工具说明为准，下面只写工具说明没有的规则：
 
-- 每轮把变化的项合并成一次调用。新项不传 `id`，以返回的 `Q` 编号继续更新。
-- 定性或影响判断变化时，同一次调用传 `summary`：先写已确定的定性与影响，再写还没验证的内容，合计不超过 200 字。未过步骤 7 验证门的内容标「推测」或「待证」。
-- Case Board 把 `answer` 显示为发现，把 `next_action` 显示为下一步，`question` 只在展开后显示。`question` 只写问题，不写结果。
-- `answer` 写已查实的事实，`confirmed`、`refuted`、`gap` 必填。用一句陈述谁在什么时间对什么对象做了什么，写具体的主机、账号、路径、时间和数量，不超过 120 字；编号清单、逐项数字和取证过程写进证据文件，SIREN 拒绝超长的 `answer`。
-- `answer` 不写「可能」「疑似」「暂未发现」「不能排除」「建议进一步」。查不实的内容不写进 `answer`：保持 `open`，在 `next_action` 写怎么查实。已查实一部分时，新建一项记为 `confirmed`，原项继续查。
+- 每轮把变化的项和事件合并成一次调用。
+- 定性或影响判断变化时，同一次调用传 `summary`。未过步骤 7 验证门的内容标「推测」或「待证」。
+- 已查实一部分时，新建一项记为 `confirmed`，原项继续查。
 - `refuted` 的 `answer` 写排除了什么，以及查过的范围。例如：web-02 在 11-01 至 11-03 的 SSH 登录全部来自堡垒机，没有来自 web-01 的登录。
-- `gap` 的 `answer` 写缺什么，以及因此定不了哪个结论。例如：11-01 前的 auth 日志已轮转，入口时间定不了。
-- `next_action` 写一个具体动作，写明对象和数据源，不超过 80 字，`open`、`blocked` 必填；`blocked` 的 `next_action` 写需要谁提供什么。例如：查 web-02 11-01 至 11-03 的 sshd 日志，确认 10.0.0.5 是否登录；受阻时写：客户导出 11-01 至 11-03 的 ActionTrail。不写「继续排查」。项关闭时不传 `next_action`，SIREN 会清空旧值；还有后续工作就新建一项。
-- 按状态补齐字段：`confirmed` 和 `refuted` 需要证据；`confirmed`、`refuted`、`gap` 需要 `answer`；`open`、`blocked` 需要 `next_action`。项没有 `reason`、`tried_sources` 和证据 `role` 字段，传了会被拒绝。
-- `owner` 取 `lead`、`entry`、`host`、`cloud`，决定 `delegate` 把该项交给哪个 worker，规则见 `references/runtime_compat.md`「多 Agent 分工」。
-- `entities`、`evidence` 只传新增内容，SIREN 追加到已有列表。要去掉时用 `remove_entities`、`remove_evidence` 传编号。
-- 返回末尾的 `Remaining` 列出未结项，`Dimensions with no items` 列出还没有项的维度，据此选下一项。
-- 证据优先传 run 的 `audit_id` 加 `label`，SIREN 原样保存；`sls -save` 等已落盘文件传 `evidence/<文件>#L<n>-L<m>`；复用时传 `CE` 编号。
-- 主机实体用 `kind: host` 加 SIREN Client ID；其他实体用 `ip`、`domain`、`identity`、`file`、`resource`，或复用 `A` 编号。
-- 文件路径、本机账号、本机资源所在的主机是 SIREN client 时，实体加 `host` 传该主机的 Client ID。`value` 只写路径或账号名，不写主机名前缀。同一路径或账号在两台主机上是两个实体。文件哈希、云账号、云资源不传 `host`。
-- 证据链接变化，或项进入、离开 `open` 以外的状态，或这些状态下的 `answer` 变化时，证据版本递增；已登记的报告随之标为落后。登记由 dossier skill 在报告通过 QA 后完成。
-- 校验失败时按错误补齐字段后重试。不要为通过校验改写结论或状态；证据确实不足就保持原状态或记为缺口。
+- `sls -save` 等已落盘的云侧结果按 `evidence/<文件>#L<n>-L<m>` 传证据。
+- 不传 `reports`：报告版本由 dossier skill 在报告通过 QA 后登记。
+- 校验失败时按报错补齐字段后重试。不要为通过校验改写结论或状态；证据确实不足就保持原状态或记为缺口。
 
 Case Board 的状态不代替步骤 7 验证门；`CE` 编号也不代替底稿证据编号，底稿引用时写全 `CE01`。
 
@@ -76,17 +66,13 @@ Case Board 的状态不代替步骤 7 验证门；`CE` 编号也不代替底稿�
 
 运行环境提供 `case_update` 时，调查中的时间线只写 Case Board 的 `events`，§3 和 §5 各留一行 `时间线：Case Board`，定稿时按下方快照规则写回。没有该工具时，直接维护 §3 和 §5。
 
-写回规则：
+写回规则。事件字段同样以 `case_update` 的工具说明为准，下面只写工具说明没有的规则：
 
-- 事件和清单项合并在同一次 `case_update` 里。新事件不传 `id`，以返回的 `TL` 编号继续更新；`items` 传它回答的 `Q` 编号。`entities`、`evidence` 只传新增内容；`attack`、`items` 传入时整体替换。
-- `kind` 只用 `attack`（攻击者动作）、`detection`（客户侧发现）、`response`（客户侧处置）。排查动作不写入事件。
-- `from`、`to` 用带时区偏移的 RFC 3339。单一时刻两者相同；只知道最晚时间时只传 `to`，只知道最早时间时只传 `from`。没有任何时间边界时不写事件，把问题留在清单。
-- `original_time` 保留来源原文。`precision` 取 `second`、`minute`、`hour`、`day`，按来源实际精度填，不用补零冒充更细的精度。
-- `clock_note` 写时区假设、syslog 年份推断和主机时钟偏差。`from`、`to` 不自动校正主机时钟偏差。
-- `time_basis` 取 `record`（日志、审计、告警时间戳）、`process_start`、`file_time`（文件 mtime、ctime、birth time）、`derived`（由其他事件推出）。`file_time` 和 `derived` 只能配 `inferred`；有日志佐证时改用日志时间和 `record`。不把 ctime 当创建时间。
-- `status` 取 `confirmed`、`inferred`、`withdrawn`。`confirmed` 需要实体和证据；`inferred` 需要证据和 `reason`；`withdrawn` 需要 `reason`，用于被推翻、重复或误写的事件。事件不能删除。
-- `attack` 只用于 `kind: attack`，每条传 `tactic` 和 `technique`，同一行为可跨多个战术。`tactic` 用 `initial_access`、`command_and_control` 这类下划线枚举值，编号基准见 `references/workflow_tracing.md` 步骤 5。
-- 事件内容变化时证据版本递增，已登记的报告随之标为落后。校验失败时不要为通过校验改写事实，证据不足就保持 `inferred`。
+- 没有任何时间边界时不写事件，把问题留在清单。
+- `precision` 按来源实际精度填，不用补零冒充更细的精度。`from`、`to` 不校正主机时钟偏差，偏差写进 `clock_note`。
+- 有日志佐证时用日志时间和 `record`，不用文件时间。不把 ctime 当创建时间。
+- ATT&CK 编号基准见 `references/workflow_tracing.md` 步骤 5，同一行为可跨多个战术。
+- 校验失败时不要为通过校验改写事实，证据不足就保持 `inferred`。
 
 快照规则：
 

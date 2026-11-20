@@ -10,6 +10,12 @@
 
 ## 2026-11-20
 
+### 变更
+
+- `findings_spec.md` 两处「写回规则」只保留 `case_update` 工具说明没有的规则，删除字段格式、长度上限和各状态必填项的复述。原因：这些规则由 SIREN 的工具说明和 schema 维护并校验，本仓库每次都要跟着 SIREN 版本改；11-07 以来 149 个 Pi Lead 会话里 `case_update` 报错率是 45%，11-19 之后仍是 46%，复述没有降低报错。保留的规则：未过验证门的内容标「推测」或「待证」、部分查实时新建一项、`refuted` 写查过的范围、不为通过校验改写结论或事实。措辞等级不变。
+- `runtime_compat.md` 删除「多 Agent 分工」一节，「跨客户端工具映射」加一行指向 SKILL.md 和 `delegate` 的工具说明。原因：怎么派、收到结果后怎么核对和 worker 规则分别写在 `delegate` 工具说明、SIREN 发给 Lead 的结果消息和 worker 的首条提示里，本节是第三份。
+- SKILL.md「worker 会话」不再要求先读 `runtime_compat.md`，改为按首条提示取证和收尾，并写明不进步骤 7；「多 Agent 分工」去掉同一个读取指令。只读原则和其他护栏不变。
+
 ### 删除
 
 - `scripts/gen_trust_report.py`、`reports/trust_report.*` 和对应的 CI 步骤。原因：08-26 以来 51 个提交里有 42 个要重新生成这份报告，它的包哈希检查恒为通过。密钥扫描（AccessKey ID、私钥块、带引号的凭据赋值）并入 `scripts/validate.py`；高熵字符串启发式没有保留。

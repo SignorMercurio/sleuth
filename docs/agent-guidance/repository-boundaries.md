@@ -13,3 +13,6 @@
   repository's checks (see the verification guide).
 - Repo-level `scripts/` and `evals/` are validation surfaces; they are not part
   of the installed skill package.
+- SIREN owns the `case_update` and `delegate` contracts (field formats, length
+  limits, per-state required fields, worker rules). The skill states only what
+  the tool descriptions do not; do not copy those contracts into `references/`.

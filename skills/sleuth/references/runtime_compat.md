@@ -11,22 +11,13 @@
 - **读取本 skill 文件**：用本地文件读取工具读相对 skill 根目录的 `references/...` 或 `assets/...`。
 - **SIREN MCP**：使用环境实际暴露的 list client / remote run 等价工具；名称与只读边界以 SKILL.md 为准。
 - **Case Board**：`case_read`/`case_update` 只在 SIREN AIR 的 Project 端点提供；Raven 等其他运行时没有这些工具，按 `references/findings_spec.md`「排查清单位置」使用 Markdown 清单。
+- **多 Agent 分工**：`delegate` 只在 SIREN AIR 的 Project 端点提供。何时派和收到结果后的核对见 SKILL.md「多 Agent 分工」，参数和 worker 的行为以 `delegate` 的工具说明为准；worker 的规则由 SIREN 写在它的首条提示里。
 - **主机快照**：`recon` 由运行环境提供时按 `references/workflow_recon.md` 步骤 2 使用；`hunt` Profile 只有操作者能在 WebUI 运行。
 - **证据保存**：`save_evidence` 把 `audit_id` 对应的结果原样存入 Project 的 `evidence/`，只在 SIREN AIR 的 Project 端点提供；其他运行时把决定性原文写进 findings 证据记录。
 - **run 结果文件**：SIREN 的 Project 端点把每次有输出的 run 存为 Project 目录的 `runs/<audit_id>.txt`，文件头记录主机、命令和时间，之后是完整输出；用本地文件工具读取和搜索。其他端点不保存完整输出，超出预览的部分用完整输出模式或缩小命令重取。
 - **调用云侧 skill**：只调用已安装的 skill，路由与委派契约见 `references/workflow_tracing.md` 步骤 3.2；参数格式、默认值、分页和支持区域由对应 skill 管理。`aliyun` 是命令行工具，不是 skill：先运行 `aliyun configure list`，空列表表示当前 Project 没有 AccessKey；有多个 profile 时每条命令带 `--profile <名称>`。Raven 等没有 Project AccessKey 的运行时跳过这一层。全部不可用则记录覆盖缺口，不用未列入 SKILL.md「云侧分层」的云 CLI。模式一缺 `$sas` 时向用户索取告警摘要，区分用户提供与独立核验的事实；拿不到摘要则按模式二继续。
 - **联网查询**：需要查 CVE、Exploit 或修复方案时，使用运行环境提供的搜索工具、浏览器或官方/可信来源检索工具；不可联网时说明该部分未做外部验证。
 - **派生子 agent**：隔离大输出（步骤 3）或独立核验与结论交付（步骤 7）时用运行环境的 subagent / 委托机制。调查与核验子 agent 同受只读护栏约束，能访问 SIREN 就让它跑定向只读命令，不能就只处理传入的证据文本；结论 writer 不得访问 SIREN。运行时不提供子 agent 时按各节的内联方式降级，不跳过对应步骤。
-
-## 多 Agent 分工（SIREN `delegate`）
-
-运行环境提供 `delegate` 工具时，本会话是 Lead，可以把清单项交给 SIREN 起的 worker 会话并行取证，用法同后台子 agent。worker 由 SIREN 启动和关闭，用户能看它的进展，但用户和 Lead 都不能与它对话。首条提示写明「Lead 派出的 worker」的会话按下面的 worker 规则收尾，不按 SKILL.md「调查闭环与停止条件」。何时派、派前设置与收到结果后的核对以 SKILL.md「多 Agent 分工」为准，下面写细则。
-
-- **怎么派**：先用 `case_update` 把要派的项设为 `open`，`owner` 指给 `entry`（初始入口、利用方式、复现）、`host`（主机侧取证）或 `cloud`（云侧分层），`next_action` 写明要查什么。再每项调用一次 `delegate`：`item` 传 `Q` 编号，`prompt` 写这个 worker 要查清什么，并给出调查对象、时间窗和已知关键事实，不超过 2000 字。要并行就在同一回合里连续调用，同时最多 6 个在运行。worker 只看得到 prompt 和 Board，看不到本会话的对话。
-- **派出之后**：`delegate` 立即返回，不等 worker。期间继续推进 `owner` 为 `lead` 的项，或结束回合；不要自己推进已派出的项。每个 worker 结束后，SIREN 在本会话不在回合中时以一条新消息发来结果：结束方式、项的当前状态和 worker 的最终回复；同时结束的几个合成一条。
-- **收到结果后**：先 `case_read`。逐项核对 `confirmed`、`refuted` 的证据是否撑得住结论。差一两步就能定论的，Lead 自己补查并写回；还要多步取证的改回 `open` 再派，拿不到数据的记为 `gap`。worker 没登记的实体、没写的时间线事件由 Lead 补全。`owner` 为 `lead` 的新线索由 Lead 判断。然后改写 summary。还有 worker 在运行就等它们的结果；全部回来后，还要再查的项按上面再派，不需要再查就交付。
-- **何时停**：同一项派过一次仍未结、再派也拿不到新数据时不再派，记为 `gap` 或 `blocked`，写明缺什么或谁要提供什么，然后交付。
-- **Entry / Host / Cloud worker**：每个会话只负责一项、只跑一个回合，回合结束会话即关闭。只改分给自己的那一项，改别的项会被拒绝；按步骤 2–6 取证，不写 summary，不生成报告，不向用户提问。一有结果就立刻用 `case_update` 写回状态和证据，按 `references/findings_spec.md`「写回规则」补齐该状态要求的字段，并把本项涉及的文件、IP、账号、主机登记为 `entities`；确认了攻击者动作且有时间依据的，按同一文件「攻击时间线位置」在同一次调用里写 `attack` 事件，`items` 传本项编号。不攒到回合末：回合超时或会话关闭后没写回的全部丢失。发现值得追的新线索时新建一项，写清 `question` 和 `next_action`；新项一律归 Lead。工具、凭据、环境问题只在本项上记 `gap` 或 `blocked`，不为此新建项。本项推进到无法再前进（confirmed、refuted、gap、blocked）后结束回合；最后一条回复会原样转给 Lead，用几句话写清结论、关键证据和还缺什么。回合快到时间上限时 SIREN 会插入收尾提醒：收到后停止取证，把手头证据写回 Board 并结束回合。
 
 ## 重输出隔离（调查子 agent）
 
