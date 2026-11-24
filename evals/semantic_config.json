@@ -1,6 +1,6 @@
 {
   "optimizer_hints": {
-    "capability": "Read-only incident response on hosts over SIREN and in Alibaba Cloud through SAS/SLS/aliyun/OpenCLI, delivering verified ATT&CK-mapped findings; formal IR reports are handed to the dossier skill",
+    "capability": "Read-only incident response on hosts over SIREN and in Alibaba Cloud through SAS/SLS/act/aliyun/OpenCLI, delivering verified ATT&CK-mapped findings; formal IR reports are handed to the dossier skill",
     "inputs": [
       "security alerts",
       "host anomalies",

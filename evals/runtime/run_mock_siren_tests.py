@@ -459,6 +459,16 @@ def suite_compliance_checker() -> Suite:
         report = check_transcript.check_file(waived)
         suite.check(report.ok, f"free-form sls -> opencli is compliant: {report.codes()}")
 
+        act_first = Path(folder) / "act-first.jsonl"
+        act_first.write_text(
+            '{"type": "meta", "investigation_mode": "free_form"}\n'
+            '{"type": "call", "tool": "act", "arguments": {}}\n'
+            '{"type": "call", "tool": "sls", "arguments": {}}\n',
+            encoding="utf-8",
+        )
+        report = check_transcript.check_file(act_first)
+        suite.equal(report.codes(), ["LAYER_SKIPPED"], "act before sls skips a layer")
+
         def after_sls(name: str, *calls: tuple[str, dict]) -> check_transcript.Report:
             path = Path(folder) / f"{name}.jsonl"
             entries = [{"type": "meta", "investigation_mode": "free_form"},
@@ -477,6 +487,7 @@ def suite_compliance_checker() -> Suite:
             shell("aliyun --profile 'a b' ecs DescribeInstances | jq ."),
             shell("/usr/local/bin/aliyun ram ListUsers"),
             ("aliyun", {"command": "aliyun actiontrail LookupEvents"}),
+            ("act", {}),
             ("mcp__siren__recon", {"client_id": "1"}),
             ("mcp__siren__save_evidence", {"audit_id": "a", "label": "b"}),
             ("mcp__siren__delegate", {"item": "Q01", "prompt": "p"}),

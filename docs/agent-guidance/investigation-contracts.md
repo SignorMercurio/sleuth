@@ -16,6 +16,9 @@
   evals synchronized. Do not duplicate the CLI contract elsewhere.
 - Use direct `sas` first for alarms and direct `sls` for delivered
   WAF/SAS/ActionTrail logs.
+- Use the `act` skill for ActionTrail events only after `sls` reports a final
+  `actiontrail` miss. Its contract is `../log0-utils/.agents/skills/act/SKILL.md`;
+  do not duplicate its flags, filter pairs, or region rules.
 - Use `aliyun` directly for single control-plane lookups when the Project has
   AccessKeys. SIREN does not restrict those keys, so SLEUTH owns the read-only
   API rule; `evals/runtime/compliance/rules.py` mirrors it.

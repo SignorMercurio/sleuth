@@ -13,7 +13,8 @@ Three rule families live here:
    cannot make that judgement, so the allowlist is the tractable approximation
    and is meant to be extended when a legitimate read-only command is missing.
 3. Cloud layering -- alarms go to `$sas`, delivered logs to `sls`, and only
-   then control-plane gaps to `aliyun` or `opencli-aliyun-ir`. Every `aliyun`
+   then ActionTrail gaps to `act` and control-plane gaps to `aliyun` or
+   `opencli-aliyun-ir`. Every `aliyun`
    command must also call a read-only API. A call that skips a layer
    must carry a `fallback_reason` recording why the lower layer could not
    answer.
@@ -90,8 +91,10 @@ CLOUD_LAYERS = {
     "$opencli-aliyun-ir": 3,
     "opencli": 3,
     "aliyun": 3,
+    "act": 3,
+    "$act": 3,
 }
-LAYER_NAMES = {1: "$sas", 2: "sls", 3: "aliyun or opencli-aliyun-ir"}
+LAYER_NAMES = {1: "$sas", 2: "sls", 3: "act, aliyun, or opencli-aliyun-ir"}
 
 # SKILL.md "aliyun 只读": SIREN does not restrict Project AccessKeys.
 ALIYUN_READ_API_PREFIXES = ("describe", "list", "get", "query", "lookup", "search")
