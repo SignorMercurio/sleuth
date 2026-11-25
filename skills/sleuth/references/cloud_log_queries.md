@@ -17,6 +17,7 @@
 ## 调用要点
 
 - 目标主机查询必须绑定已核对的实例/资产标识，结果保留该标识；PID、用户名、私网 IP 和进程名不单独作为跨记录关联键。跨资产扩展与单机取证分开，超出授权清单先确认。
-- `act` 按 SKILL.md「云侧分层」补 SLS 缺失的 ActionTrail 事件；查询方式与结果判读由 `act` skill 负责，结果标注来源为 LookupEvents。
-- `aliyun` 只查云控制面单点事实，如实例、安全组、RAM 用户和 AccessKey 状态；ActionTrail 事件先用 `act`，`act` 不可用时才用 `aliyun actiontrail LookupEvents`。只在 `aliyun configure list` 有 profile 时使用，只读规则见 SKILL.md「`aliyun` 只读」。
+- `act` 按 SKILL.md「云侧分层」补 SLS 缺失的 ActionTrail 事件；查询方式与结果判读由 `act` skill 负责，结果标注来源为 LookupEvents。需要全部事件时加 `-all`，不手写 next-token 循环。
+- 要作为证据引用的 `sls`、`$sas`、`act` 结果，查询时加 `-save <label>`，按文件行号引用；不用自己整理的副本代替。`$sas` 需要全部告警时加 `-all`，不逐页手翻。
+- `aliyun` 只查云控制面单点事实，如实例、安全组、RAM 用户和 AccessKey 状态；ActionTrail 事件先用 `act`，`act` 不可用时才用 `aliyun actiontrail LookupEvents --pager path=Events NextToken=NextToken`，由 CLI 合并全部分页，不手写 NextToken 循环，不自己签名请求或读 AccessKey 配置。其他分页接口同样用 `--pager`。只在 `aliyun configure list` 有 profile 时使用，只读规则见 SKILL.md「`aliyun` 只读」。
 - `opencli-aliyun-ir` 补充专用适配器（云防火墙、ACK/DAS 等）、跨产品关联、内部控制台、控制台截图、免费 ActionTrail 事件窗或其他直接工具覆盖缺口；Project 没有 AccessKey 时也由它查控制面。前一层已完整回答时不重复调用。
