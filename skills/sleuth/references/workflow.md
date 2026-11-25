@@ -113,16 +113,16 @@ SKILL.md 步骤 1 加载本文件，调查全程按本文执行。安全护栏�
 - **多 Agent 分工**：`delegate` 只在 SIREN AIR 的 Project 端点提供。何时派和收到结果后的核对见 SKILL.md「多 Agent 分工」，参数和 worker 的行为以 `delegate` 的工具说明为准；worker 的规则由 SIREN 写在它的首条提示里。
 - **证据保存**：`save_evidence` 把 `audit_id` 对应的结果原样存入 Project 的 `evidence/`，只在 SIREN AIR 的 Project 端点提供；其他运行时把决定性原文写进 findings 证据记录。
 - **run 结果文件**：SIREN 的 Project 端点把每次有输出的 run 存为 Project 目录的 `runs/<audit_id>.txt`，文件头记录主机、命令和时间，之后是完整输出；用本地文件工具读取和搜索。其他端点不保存完整输出，超出预览的部分用完整输出模式或缩小命令重取。
-- **子 agent**：隔离大输出或做独立核验与结论交付时，用运行环境的 subagent / 委托机制。调查与核验子 agent 同受只读护栏约束，能访问 SIREN 就让它跑定向只读命令，不能就只处理传入的证据文本；结论 writer 不得访问 SIREN。运行时不提供子 agent 时按内联方式降级，不跳过对应步骤。
+- **子 agent**：隔离大输出或做独立核验与结论交付时，用运行环境的 subagent / 委托机制。调查与核验子 agent 同受只读护栏约束，能访问 SIREN 就让它跑定向只读命令，不能就只处理传入的证据文本；结论 writer 不得访问 SIREN。派发提示写明子 agent 要读的文件：调查与核验子 agent 只读 SKILL.md「安全护栏」和提示点名的 reference 小节，不自行加载其他 references；writer 的读取范围见 `references/verification_checklist.md`「结论交付隔离」。运行时不提供子 agent 时按内联方式降级，不跳过对应步骤。
 
 ### 大输出与截断
 
 大日志、目录搜索、SLS 大结果先按待证问题限定资产、时间和字段；预估仍大时才派子 agent 读取，回传决定性原文和 `references/findings_spec.md` 规定的证据记录，不只给结论。内联降级遵守同一完整性要求。
 
-每次读取先检查命令退出状态及工具的 `truncated`、`shown_ranges`、`omitted_ranges` 等实际返回字段；头尾预览不代表全量，`wc -l` 也不能证明传输未截断。字段未提供时记「完整性未知」，不得猜为完整。截断后优先按时间/条件分块补读，必要时使用工具实际支持的完整输出模式并再次检查；仍有省略就记录未读范围，不凭已展示部分断言没有其他命中。错误输出、权限拒绝与空结果分开处理。
+每次读取先检查命令退出状态和工具实际返回的完整性信息：SIREN `run` 看首行（`outcome`、`exit_code`、`capture_incomplete`、`file`）和 `Preview:` 行的省略范围，`run_batch` 看各主机的 `preview_complete`；头尾预览不代表全量，`wc -l` 也不能证明传输未截断。字段未提供时记「完整性未知」，不得猜为完整。截断后优先按时间/条件分块补读，必要时使用工具实际支持的完整输出模式并再次检查；仍有省略就记录未读范围，不凭已展示部分断言没有其他命中。错误输出、权限拒绝与空结果分开处理。
 
 - **run_batch**：每台预览 1 KiB；结果被截断时返回 `path`（`runs/<audit_id>.txt`）和正文起始行 `body_start_line`，按此读文件，不为补读重跑命令。需保留的大段原文按运行环境既有证据规则落盘（如 AIR 的 `evidence/`），之后用 `grep`/`sed -n` 读片段，不整文件回读。
-- **exec 脚本**：Codex 经 exec 脚本调工具时只取 `structuredContent` 中需要的字段（如 `outcome`、`truncated`、`omitted_ranges`、`audit_id` 与所需输出片段），不 `text()` 整个结果；首行声明 `// @exec: {"max_output_tokens": N}`。
+- **exec 脚本**：Codex 经 exec 脚本调工具时只取需要的部分。`run` 只返回文本，取首行和所需输出片段；其他工具取 `structuredContent` 中需要的字段（如 `outcome`、`audit_id`）。不 `text()` 整个结果；首行声明 `// @exec: {"max_output_tokens": N}`。
 - **图片**：默认 `detail: "low"`；需读小字才用 `view_image` 的 `original`，且一次一张。
 
 ### 本地长任务

@@ -53,9 +53,10 @@ evals/runtime/
 - 只暴露 `ls` 与 `run` 两个工具。调用 `exec` / `deploy` / `list_clients` / `wait` 之类
   臆造的名字，返回 JSON-RPC 硬错误，不是静默无操作。
 - `run` 参数是 `client_id`（数字字符串）、`command`、可选 `output_mode`（`auto` / `full`）。
-- 结果超过 8 KiB 时 `auto` 模式退化为 4 KiB 头 + 4 KiB 尾的预览，`structuredContent` 里带
-  `truncated` / `preview_strategy` / `shown_ranges` / `omitted_ranges`。
-- `structuredContent.text` 与普通文本内容完全一致，输出 schema 要求 `text`，避免只读取结构化结果的客户端拿不到命令输出。
+- `run` 只返回文本，没有 `structuredContent`。第一行是 `SIREN run audit_id=...; outcome=...`，
+  有退出码时带 `exit_code`，输出从第二行开始。
+- 结果超过 8 KiB 时 `auto` 模式退化为 4 KiB 头 + 4 KiB 尾的预览，`Preview:` 行写明省略的字节范围。
+  mock 不保存结果文件，预览提示与 SIREN Global 端点一致。
 - 错误措辞照抄：`client not found`、`invalid client ID: must be a number`、
   `command blocked by policy (matched: ...)`。
 - 服务端命令黑名单按 `mcp.cmdBlacklist` 镜像。**注意它比 SLEUTH 的只读护栏松**：

@@ -43,8 +43,9 @@ TOOL_DEFINITIONS = [
     {
         "name": "run",
         "description": (
-            "Execute a command on a SIREN client. Results over 8 KiB default to a "
-            "recoverable head/tail preview."
+            "Execute a command on a SIREN client. The result is one header line "
+            "(audit_id, outcome, exit code), then the output. Results over 8 KiB "
+            "default to a head/tail preview."
         ),
         "inputSchema": {
             "type": "object",
@@ -71,12 +72,6 @@ TOOL_DEFINITIONS = [
                 },
             },
             "required": ["client_id", "command"],
-        },
-        "outputSchema": {
-            "type": "object",
-            "properties": {"text": {"type": "string"}},
-            "required": ["text"],
-            "additionalProperties": True,
         },
     },
 ]
@@ -146,8 +141,7 @@ class MockSirenMCPServer:
                 arguments.get("output_mode", "auto"),
             )
             return _result(message_id, {
-                "content": [{"type": "text", "text": result.text}],
-                "structuredContent": result.structured,
+                "content": [{"type": "text", "text": result.mcp_text}],
                 "isError": result.is_error,
             })
         return _error(message_id, INVALID_PARAMS, f"unknown tool: {name}")

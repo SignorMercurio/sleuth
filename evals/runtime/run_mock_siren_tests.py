@@ -162,17 +162,15 @@ def suite_mcp_protocol() -> Suite:
     suite.contains(ls_text, "web01", "ls lists the scenario client")
 
     run_result = by_id.get(4, {}).get("result", {})
-    suite.equal(run_result.get("content", [{}])[0].get("text"), "web01", "run returns stdout")
+    run_text = run_result.get("content", [{}])[0].get("text", "")
+    header, _, body = run_text.partition("\n")
+    suite.check(header.startswith("SIREN run audit_id=mock-"), "run header names the audit_id")
+    suite.contains(header, "; outcome=success", "run header carries the outcome")
+    suite.contains(header, "; exit_code=0", "run header carries the exit code")
+    suite.equal(body, "web01", "run returns stdout after the header")
     suite.equal(run_result.get("isError"), False, "successful run is not an error")
-    structured = run_result.get("structuredContent", {})
-    for key in ("audit_id", "outcome", "complete", "truncated", "original_bytes",
-                "returned_bytes", "preview_strategy", "created_at"):
-        suite.check(key in structured, f"run structured content carries {key}")
-    suite.equal(structured.get("outcome"), "success", "run outcome")
-    suite.equal(structured.get("text"), "web01",
-                "structured-only clients receive the same command text")
-    suite.check("text" in run_tool.get("outputSchema", {}).get("required", []),
-                "run output schema requires readable text")
+    suite.check("structuredContent" not in run_result and "outputSchema" not in run_tool,
+                "run returns text only, like SIREN")
 
     missing_client = by_id.get(5, {}).get("result", {})
     suite.equal(missing_client.get("isError"), True, "unknown client is a tool error")
@@ -183,9 +181,8 @@ def suite_mcp_protocol() -> Suite:
     suite.equal(blocked.get("isError"), True, "blacklisted command is a tool error")
     suite.contains(blocked.get("content", [{}])[0].get("text", ""), "blocked by policy",
                    "blacklist message")
-    suite.equal(blocked.get("structuredContent", {}).get("text"),
-                blocked.get("content", [{}])[0].get("text"),
-                "structured-only clients receive policy errors too")
+    suite.contains(blocked.get("content", [{}])[0].get("text", ""), "; outcome=blocked",
+                   "policy errors carry the run header")
 
     unknown_tool = by_id.get(7, {})
     suite.check("error" in unknown_tool, "an invented tool name fails hard")
@@ -352,10 +349,9 @@ def suite_fault_injection() -> Suite:
     session = MockSirenSession(synthetic)
     auto = session.run("1", "cat /var/log/big.log")
     suite.equal(auto.truncated, True, "large output is truncated in auto mode")
-    suite.equal(auto.structured["preview_strategy"], "head_tail", "auto preview strategy")
-    suite.check(auto.structured["returned_bytes"] <= INLINE_MAX_BYTES,
+    suite.check(len(auto.mcp_text.encode("utf-8")) <= INLINE_MAX_BYTES + 1024,
                 "auto preview stays within the inline budget")
-    suite.contains(auto.text, "bytes omitted", "preview marks the omitted range")
+    suite.contains(auto.text, "bytes shown; bytes [4096,", "preview marks the omitted range")
     suite.contains(auto.text, "line 000000", "preview keeps the head")
     suite.contains(auto.text, "line 000599", "preview keeps the tail")
     full = session.run("1", "cat /var/log/big.log", output_mode="full")
