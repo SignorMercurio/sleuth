@@ -128,6 +128,7 @@ Report generation, merging, revision, and review live in the `dossier` skill (`s
 │           ├── playbooks.md                # On demand: alarm-type playbooks
 │           ├── tech_*.md                   # On demand: 4 cross-cutting tradecraft guides
 │           ├── cloud_log_queries.md        # On demand: WAF / SAS / ActionTrail log routing
+│           ├── customer_message.md         # On demand: plain-text customer updates to paste into DingTalk
 │           └── sas_sls_host_telemetry.md   # On demand: SAS host telemetry field gotchas, w3wp.exe, SSH attribution, OOB/DNSLog
 ├── scripts/
 │   ├── validate.py                         # Frontmatter, guardrail anchors, trust block, links, orphans, secret scan

@@ -125,6 +125,7 @@ Skill 将 UID 和选择器传给 `$sas`，获取告警上下文，端到端运�
 │           ├── playbooks.md                # 按需：分类型调查指南
 │           ├── tech_*.md                   # 按需：4 个横向技术指南
 │           ├── cloud_log_queries.md        # 按需：WAF / SAS / ActionTrail 日志路由
+│           ├── customer_message.md         # 按需：可直接贴到钉钉的对客纯文本消息
 │           └── sas_sls_host_telemetry.md   # 按需：SAS 主机遥测字段坑、w3wp.exe、SSH 登录归因、OOB/DNSLog
 ├── scripts/
 │   ├── validate.py                         # Frontmatter、护栏锚点、信任块、链接、孤立引用、密钥扫描
