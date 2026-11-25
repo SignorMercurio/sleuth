@@ -51,6 +51,12 @@ class RunResult:
         header = f"SIREN run audit_id={self.audit_id}; outcome={self.outcome}"
         if self.exit_code is not None:
             header += f"; exit_code={self.exit_code}"
+        if self.outcome == "timeout":
+            # SIREN puts what to do next on the line after the header.
+            header += (
+                "; timed_out\nTimed out: narrow the command (timeout_seconds is at most 120), "
+                "or start it in the background with its output in a file and read that file in a later run."
+            )
         return f"{header}\n{self.text}" if self.text else header
 
 
