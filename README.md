@@ -21,7 +21,6 @@ Investigation outputs are generated in Simplified Chinese by design (the skill t
 - **Isolated conclusion writer**: when sub-agents are available, the Step 7 conclusion is drafted by a fresh writer that sees only the verified findings, and the orchestrator only passes or rejects it, sending a passed draft verbatim. The writer cannot access SIREN or the investigation transcript
 - **Context-isolation sub-agents**: large outputs are narrowed by a sub-agent (or inline), returning decisive evidence with scope and truncation metadata, keeping the orchestrator's context lean
 - **Multi-host engagements**: authorized hosts receive minimal volatile-evidence snapshots first, followed by per-host investigation; each worksheet is updated throughout and verified before delivery; the `dossier` skill merges them into one report on request (see *Multi-host and merge* below)
-- **Console screenshots as evidence**: verified cloud-side facts can carry console screenshots captured read-only through `opencli-aliyun-ir`, recorded in the findings and referenced from the report
 
 ## Prerequisites
 

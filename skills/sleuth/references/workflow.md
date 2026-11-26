@@ -74,7 +74,7 @@ SKILL.md 步骤 1 加载本文件，调查全程按本文执行。安全护栏�
 
 ## 步骤 3.2 阿里云云侧交叉验证
 
-主机证据不足或需交叉验证时，按 SKILL.md「云侧分层」和 `references/cloud_log_queries.md` 选择证据源；`$sas` 告警查询按步骤 1.2。委派时只传目标 UID、已确认的站点/地域、资产标识、时间窗、待验证的清单项和已知 IoC，不传整段对话；回传按 `references/findings_spec.md` 的证据记录格式，原始大日志先在委派侧收窄。`aliyun` 由编排者直接调用，不委派。只调用已安装的 skill，查询语法、参数与适配器由对应 skill 管理；不可用时记录覆盖缺口，不用本地 shell 或 SSH 做主机取证，不绕开 `opencli-aliyun-ir` 直接操作浏览器，也不用未列入「云侧分层」的云 CLI。控制台截图等步骤 7 验证门过完再按 `references/findings_spec.md`「证据截图」委派。
+主机证据不足或需交叉验证时，按 SKILL.md「云侧分层」和 `references/cloud_log_queries.md` 选择证据源；`$sas` 告警查询按步骤 1.2。委派时只传目标 UID、已确认的站点/地域、资产标识、时间窗、待验证的清单项和已知 IoC，不传整段对话；回传按 `references/findings_spec.md` 的证据记录格式，原始大日志先在委派侧收窄。`aliyun` 由编排者直接调用，不委派。只调用已安装的 skill，查询语法、参数与适配器由对应 skill 管理；不可用时记录覆盖缺口，不用本地 shell 或 SSH 做主机取证，不绕开 `opencli-aliyun-ir` 直接操作浏览器，也不用未列入「云侧分层」的云 CLI。
 
 ## 步骤 4 入口与漏洞定位（按证据）
 
